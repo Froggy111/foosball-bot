@@ -13899,7 +13899,7 @@
 			(justify left bottom mirror)
 		)
 	)
-	(gr_text "Badly made mainboard for\nbadly made foosball robot\nBy TYR & LJY"
+	(gr_text "By TYR & LJY"
 		(at 75 44.4 90)
 		(layer "F.SilkS")
 		(uuid "07efd4d7-ba41-443b-b5f8-8a7e3c325097")
@@ -13983,6 +13983,19 @@
 			(font
 				(size 0.9 0.9)
 				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
+	)
+	(gr_text "FOOSBOARD V0.1"
+		(at 71.8 44.8 90)
+		(layer "F.SilkS")
+		(uuid "6e654d3c-cef6-4e9c-9e62-fa234a3357b5")
+		(effects
+			(font
+				(size 3 3)
+				(thickness 0.5)
+				(bold yes)
 			)
 			(justify left bottom)
 		)
@@ -14133,6 +14146,18 @@
 				(bold yes)
 			)
 			(justify left bottom mirror)
+		)
+	)
+	(gr_text "plug it in the\nwrong way :D"
+		(at 34 97.6 90)
+		(layer "F.SilkS")
+		(uuid "bfb06d68-ecfb-4826-abc7-d9fdc8684ce0")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.3)
+			)
+			(justify left bottom)
 		)
 	)
 	(gr_text "M1"
