@@ -13886,8 +13886,8 @@
 			(justify left bottom mirror)
 		)
 	)
-	(gr_text "Why did you take me off :("
-		(at 95.4 13 90)
+	(gr_text "Why did you take me off :(\nDid you fry me..."
+		(at 94.6 13 90)
 		(layer "B.SilkS")
 		(uuid "828726c3-68ef-4b10-9d0c-84753ccb6cd1")
 		(effects
@@ -14095,6 +14095,18 @@
 			(font
 				(size 0.9 0.9)
 				(thickness 0.15)
+			)
+			(justify left bottom)
+		)
+	)
+	(gr_text "screwholes are not\nelectrically connected."
+		(at 1.4 87.8 0)
+		(layer "F.SilkS")
+		(uuid "b48214b1-d468-403c-89c3-5bd1cb935462")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.3)
 			)
 			(justify left bottom)
 		)
