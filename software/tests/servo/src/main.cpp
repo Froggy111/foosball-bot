@@ -33,10 +33,10 @@ void loop() {
   Serial.println("Loop");
   servo.write(180);
   digitalWrite(led_pin, 1);
-  delay(1000);
+  delay(500);
   servo.write(0);
   digitalWrite(led_pin, 0);
-  delay(10000);
+  delay(5000);
   // for (int i = 0; i <= 180; i++) {
   //   // analogWrite(servo_pin, i);
   //   servo.write(i);
