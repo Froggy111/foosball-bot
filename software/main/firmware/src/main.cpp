@@ -1,5 +1,6 @@
 #include "types.hpp"
 #include "stepper.hpp"
+#include "debug.hpp"
 
 using namespace types;
 
@@ -18,10 +19,15 @@ const u8 led_pin = 25;
 arm::Stepper stepper(DRV_NFAULT, DRV_NRESET, DRV_NSLEEP, DRV_ENABLE, DRV_STEP, DRV_DIR, DRV_MODE0, DRV_MODE1, DRV_MODE2);
 
 void setup() {
+  Serial.begin(115200);
+  debug::printf("Starting setup\n");
   stepper.begin(100, 100);
+  debug::printf("Completed setup\n");
 }
 
 void loop() {
+  debug::printf("move forward\n");
   stepper.move(50, 100, 100);
+  debug::printf("move backward\n");
   stepper.move(0, 100, 100);
 }

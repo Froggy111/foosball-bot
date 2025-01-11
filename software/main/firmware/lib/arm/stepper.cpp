@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "types.hpp"
 #include "stepper.hpp"
+#include "debug.hpp"
 
 using namespace types;
 
@@ -111,6 +112,7 @@ bool Stepper::setup_move(i32 pos, u32 speed, u32 accel, u32 time) {
   sla.accel = accel;
   i32 move_steps = mm_to_steps<i32>(pos) - _step_coord;
   if (move_steps == 0) {
+    debug::printf("move_steps in setup_move is zero for some stupid reason\n");
     return false;
   }
   sla.move_steps = move_steps;
@@ -132,6 +134,10 @@ bool Stepper::setup_move(i32 pos, u32 speed, u32 accel, u32 time) {
   // setup counters
   sla.step_count = 0;
   sla.steps_remaining = abs(sla.move_steps);
+  debug::printf("setup_move values: speed: %u, accel: %u, direction: %u, move_steps: %i, accel_steps: %i, step_count: %u, \
+steps_remaining: %u, cruise_step_timing: %u, step_timing: %u, rest: %u\n",
+                sla.speed, sla.accel, (u32) sla.direction, sla.move_steps, sla.accel_steps, sla.step_count,
+                sla.steps_remaining, sla.cruise_step_timing, sla.step_timing, sla.rest);
   return true;
 }
 
@@ -219,8 +225,9 @@ void Stepper::calc_timing(void) {
     sla.step_timing = sla.cruise_step_timing;
   }
   else if (sla.steps_remaining <= sla.accel_steps) { // decelerating.
-    sla.step_timing = sla.step_timing - (2 * sla.step_timing + sla.rest) / (-4 * sla.steps_remaining + 1);
-    sla.rest = (2 * sla.step_timing + sla.rest) % (-4 * sla.steps_remaining + 1);
+    sla.step_timing = sla.step_timing - (2 * (i32) sla.step_timing + (i32) sla.rest) / (-4 * (i32) sla.steps_remaining + 1);
+    debug::printf("new step timing when decelerating: %u\n", sla.step_timing);
+    sla.rest = (2 * (i32) sla.step_timing + (i32) sla.rest) % (-4 * (i32) sla.steps_remaining + 1);
   }
   else return;
 }
@@ -235,6 +242,10 @@ u32 Stepper::next_step(void) {
     delayMicroseconds(min_step_pulse_duration);
     digitalWrite(_pins.step_pin, LOW);
     sla.last_step_time = micros();
+    debug::printf("next_step values: speed: %u, accel: %u, direction: %u, move_steps: %i, accel_steps: %i, step_count: %u, \
+steps_remaining: %u, cruise_step_timing: %u, step_timing: %u, rest: %u\n",
+                  sla.speed, sla.accel, (u32) sla.direction, sla.move_steps, sla.accel_steps, sla.step_count,
+                  sla.steps_remaining, sla.cruise_step_timing, sla.step_timing, sla.rest);
     return sla.step_timing;
   }
   else {
