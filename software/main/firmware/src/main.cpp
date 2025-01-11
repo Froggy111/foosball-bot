@@ -20,14 +20,15 @@ arm::Stepper stepper(DRV_NFAULT, DRV_NRESET, DRV_NSLEEP, DRV_ENABLE, DRV_STEP, D
 
 void setup() {
   Serial.begin(115200);
+  delay(5000);
   debug::printf("Starting setup\n");
-  stepper.begin(100, 100);
+  stepper.begin(10, 10, 16);
   debug::printf("Completed setup\n");
 }
 
 void loop() {
   debug::printf("move forward\n");
-  stepper.move(50, 100, 100);
+  stepper.move(50, 10, 10);
   debug::printf("move backward\n");
-  stepper.move(0, 100, 100);
+  stepper.move(0, 10, 10);
 }

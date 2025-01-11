@@ -33,9 +33,10 @@ Stepper::Stepper(u8 nfault_pin, u8 nreset_pin, u8 nsleep_pin,
   _um_per_step = mm_per_rev * 1000 / steps_per_rev; /* micrometers per step. This should be an integer value for regular pulleys. (200 for GT2-20T)*/
 }
 
-bool Stepper::begin(u32 max_speed, u32 max_accel) {
+bool Stepper::begin(u32 max_speed, u32 max_accel, u8 microsteps) {
   _max_speed = max_speed;
   _max_accel = max_accel;
+  set_microsteps(microsteps);
 
   _max_steps_per_second = mm_to_steps<u32>(max_speed);
   _max_steps_accel = mm_to_steps<u32>(max_accel);
@@ -50,14 +51,14 @@ bool Stepper::begin(u32 max_speed, u32 max_accel) {
   digitalWrite(_pins.enable_pin, LOW);
   pinMode(_pins.nfault_pin, INPUT);
 
-  // hardcoded set to no microstepping (M0 low, M1 low, M2 low)
-  pinMode(_pins.m0_pin, OUTPUT);
-  digitalWrite(_pins.m0_pin, LOW);
-  pinMode(_pins.m1_pin, OUTPUT);
-  digitalWrite(_pins.m1_pin, LOW);
-  pinMode(_pins.m2_pin, OUTPUT);
-  digitalWrite(_pins.m2_pin, LOW);
-
+  // // hardcoded set to no microstepping (M0 low, M1 low, M2 low)
+  // pinMode(_pins.m0_pin, OUTPUT);
+  // digitalWrite(_pins.m0_pin, LOW);
+  // pinMode(_pins.m1_pin, OUTPUT);
+  // digitalWrite(_pins.m1_pin, LOW);
+  // pinMode(_pins.m2_pin, OUTPUT);
+  // digitalWrite(_pins.m2_pin, LOW);
+  //
   return true;
 }
 
@@ -77,10 +78,10 @@ bool Stepper::faulted(void) {
   return !digitalRead(_pins.nfault_pin);
 }
 
-bool Stepper::reset(u32 reset_time) {
+bool Stepper::reset(void) {
   // enter reset mode
   digitalWrite(_pins.nreset_pin, LOW);
-  delayMicroseconds(reset_time);
+  delayMicroseconds(wakeup_time);
   // exit reset mode
   digitalWrite(_pins.nreset_pin, HIGH);
   // if still faulted, return false
@@ -93,7 +94,7 @@ bool Stepper::move(i32 pos, u32 speed, u32 accel) {
   return true;
 }
 
-bool Stepper::setup_move(i32 pos, u32 speed, u32 accel, u32 time) {
+bool Stepper::setup_move(i32 pos, u32 speed, u32 accel) {
   if (speed == 0) {
     speed = _max_speed;
   }
@@ -105,12 +106,12 @@ bool Stepper::setup_move(i32 pos, u32 speed, u32 accel, u32 time) {
 
   StepperLinearAccel &sla = _stepper_linear_accel; // alias to prevent 100 long lines
 
-  // convert to steps units
-  speed = mm_to_steps<u32>(speed);
-  accel = mm_to_steps<u32>(accel);
+  // convert to microsteps units
+  speed = mm_to_steps<u32>(speed) * _microsteps;
+  accel = mm_to_steps<u32>(accel) * _microsteps;
   sla.speed = speed;
   sla.accel = accel;
-  i32 move_steps = mm_to_steps<i32>(pos) - _step_coord;
+  i32 move_steps = (mm_to_steps<i32>(pos) - _step_coord) * (i32) _microsteps - (i32) _microstep_counter;
   if (move_steps == 0) {
     debug::printf("move_steps in setup_move is zero for some stupid reason\n");
     return false;
@@ -210,12 +211,23 @@ void Stepper::calc_timing(void) {
   sla.steps_remaining --;
   sla.step_count ++;
   if (sla.direction) {
-    _step_coord ++;
+    if (_microstep_counter < _microsteps - 1) { // another microstep does not finish a full step
+      _microstep_counter ++;
+    }
+    else {
+      _step_coord ++;
+      _microstep_counter = 0;
+    }
   }
   else {
-    _step_coord --;
+    if (_microstep_counter > 0) {
+      _microstep_counter --;
+    }
+    else {
+      _step_coord --;
+      _microstep_counter = _microsteps - 1;
+    }
   }
-  _total_steps_moved ++;
 
   if (sla.step_count < sla.accel_steps) { // accelerating
     sla.step_timing = sla.step_timing - (2 * sla.step_timing + sla.rest) / (4 * sla.step_count + 1);
@@ -243,9 +255,9 @@ u32 Stepper::next_step(void) {
     digitalWrite(_pins.step_pin, LOW);
     sla.last_step_time = micros();
     debug::printf("next_step values: speed: %u, accel: %u, direction: %u, move_steps: %i, accel_steps: %i, step_count: %u, \
-steps_remaining: %u, cruise_step_timing: %u, step_timing: %u, rest: %u\n",
+steps_remaining: %u, cruise_step_timing: %u, step_timing: %u, rest: %u, microstep_counter: %u\n",
                   sla.speed, sla.accel, (u32) sla.direction, sla.move_steps, sla.accel_steps, sla.step_count,
-                  sla.steps_remaining, sla.cruise_step_timing, sla.step_timing, sla.rest);
+                  sla.steps_remaining, sla.cruise_step_timing, sla.step_timing, sla.rest, (u32) _microstep_counter);
     return sla.step_timing;
   }
   else {
@@ -276,6 +288,9 @@ u32 Stepper::max_steps_per_second(void) {
 u32 Stepper::max_steps_accel(void) {
   return _max_steps_accel;
 }
+u8 Stepper::microsteps(void) {
+  return _microsteps;
+}
 bool Stepper::set_max_speed(u32 max_speed) {
   _max_speed = max_speed;
   return true;
@@ -292,6 +307,53 @@ bool Stepper::set_mm_per_rev(u8 mm_per_rev) {
   _mm_per_rev = mm_per_rev;
   return true;
 }
+bool Stepper::set_microsteps(u8 microsteps) {
+  switch (microsteps) {
+  case 0:
+    digitalWrite(_pins.m0_pin, LOW);
+    digitalWrite(_pins.m1_pin, LOW);
+    digitalWrite(_pins.m2_pin, LOW);
+    _microsteps = 1;
+    break;
+  case 1:
+    digitalWrite(_pins.m0_pin, LOW);
+    digitalWrite(_pins.m1_pin, LOW);
+    digitalWrite(_pins.m2_pin, LOW);
+    _microsteps = 1;
+    break;
+  case 2:
+    digitalWrite(_pins.m0_pin, HIGH);
+    digitalWrite(_pins.m1_pin, LOW);
+    digitalWrite(_pins.m2_pin, LOW);
+    _microsteps = 2;
+    break;
+  case 4:
+    digitalWrite(_pins.m0_pin, LOW);
+    digitalWrite(_pins.m1_pin, HIGH);
+    digitalWrite(_pins.m2_pin, LOW);
+    _microsteps = 4;
+    break;
+  case 8:
+    digitalWrite(_pins.m0_pin, HIGH);
+    digitalWrite(_pins.m1_pin, HIGH);
+    digitalWrite(_pins.m2_pin, LOW);
+    _microsteps = 8;
+    break;
+  case 16:
+    digitalWrite(_pins.m0_pin, LOW);
+    digitalWrite(_pins.m1_pin, LOW);
+    digitalWrite(_pins.m2_pin, HIGH);
+    _microsteps = 16;
+    break;
+  case 32:
+    digitalWrite(_pins.m0_pin, HIGH);
+    digitalWrite(_pins.m1_pin, LOW);
+    digitalWrite(_pins.m2_pin, HIGH);
+    _microsteps = 32;
+    break;
+  };
+  return true;
+}
 
 // variables
 i32 Stepper::step_coord(void) {
@@ -300,18 +362,8 @@ i32 Stepper::step_coord(void) {
 i32 Stepper::um_coord(void) {
   return _step_coord * _um_per_step;
 }
-u32 Stepper::total_steps_moved(void) {
-  return _total_steps_moved;
-}
-u64 Stepper::um_moved(void) {
-  return (u64) _total_steps_moved * (u64) _um_per_step;
-}
 bool Stepper::set_step_coord(i32 step_coord) {
   _step_coord = step_coord;
-  return true;
-}
-bool Stepper::set_total_steps_moved(u32 total_steps_moved) {
-  _total_steps_moved = 0;
   return true;
 }
 
