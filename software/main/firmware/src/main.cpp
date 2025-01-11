@@ -22,7 +22,7 @@ void setup() {
   Serial.begin(115200);
   delay(5000);
   debug::printf("Starting setup\n");
-  stepper.begin(10, 10, 16);
+  stepper.begin(100, 100, 16);
   debug::printf("Completed setup\n");
 }
 
