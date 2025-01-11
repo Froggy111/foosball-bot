@@ -22,5 +22,6 @@ void setup() {
 }
 
 void loop() {
-  stepper.move(100, 100, 100);
+  stepper.move(50, 100, 100);
+  stepper.move(0, 100, 100);
 }
