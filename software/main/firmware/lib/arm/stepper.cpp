@@ -120,7 +120,7 @@ bool Stepper::setup_move(i32 pos, u32 speed, u32 accel, u32 time) {
   sla.accel_steps = speed * speed / (accel * 2);
   // cannot reach specified speed, clamp to accelerate halfway
   if (sla.accel_steps * 2 > (u32) abs(move_steps)) {
-    sla.accel_steps = move_steps / 2;
+    sla.accel_steps = (u32) abs(move_steps) / 2;
   }
 
   // setup timers
@@ -131,7 +131,68 @@ bool Stepper::setup_move(i32 pos, u32 speed, u32 accel, u32 time) {
 
   // setup counters
   sla.step_count = 0;
-  sla.steps_remaining = sla.move_steps;
+  sla.steps_remaining = abs(sla.move_steps);
+  return true;
+}
+
+// bool Stepper::setup_move_override(i32 pos, u32 speed, u32 accel, u32 time) {
+//   // testing for overriding a previous move.
+//   if (speed == 0) {
+//     speed = _max_speed;
+//   }
+//   if (accel == 0) {
+//     accel = _max_accel;
+//   }
+//   speed = min(speed, _max_speed);
+//   accel = min(accel, _max_accel);
+//
+//   StepperLinearAccel &sla = _stepper_linear_accel; // alias to prevent 100 long lines
+//
+//   // convert to steps units
+//   speed = mm_to_steps<u32>(speed);
+//   accel = mm_to_steps<u32>(accel);
+//   sla.speed = speed;
+//   sla.accel = accel;
+//   i32 move_steps = mm_to_steps<i32>(pos) - _step_coord;
+//   if (move_steps == 0) {
+//     return false;
+//   }
+//   sla.move_steps = move_steps;
+//   sla.direction = sla.move_steps > 0;
+//
+//   // calculate how many steps to accelerate for
+//   sla.accel_steps = speed * speed / (accel * 2);
+//   // cannot reach specified speed, clamp to accelerate halfway
+//   if (sla.accel_steps * 2 > (u32) abs(move_steps)) {
+//     sla.accel_steps = move_steps / 2;
+//   }
+//
+//   // setup timers
+//   // https://ww1.microchip.com/downloads/en/Appnotes/doc8017.pdf (Linear speed control of stepper motor)
+//   sla.step_timing = (1e+6)*0.676*sqrt(2.0f/accel);
+//   sla.cruise_step_timing = 1e+6 / speed;
+//   sla.last_step_time = micros();
+//
+//   // setup counters
+//   sla.step_count = 0;
+//   sla.steps_remaining = sla.move_steps;
+//   return true;
+// }
+
+// reset all the stepper accel move profile values to 0
+bool Stepper::cancel_move(void) {
+  StepperLinearAccel &sla = _stepper_linear_accel; // alias to prevent 100 long lines
+  sla.speed = 0;
+  sla.accel = 0;
+  sla.direction = 0;
+  sla.move_steps = 0;
+  sla.accel_steps = 0;
+  sla.step_count = 0;
+  sla.steps_remaining = 0;
+  sla.cruise_step_timing = 0;
+  sla.last_step_time = 0;
+  sla.step_timing = 0;
+  sla.rest = 0;
   return true;
 }
 
@@ -172,8 +233,7 @@ u32 Stepper::next_step(void) {
     return sla.step_timing;
   }
   else {
-    sla.last_step_time = 0;
-    sla.step_timing = 0;
+    cancel_move(); // this is so that setup_move will not pick up a completed move as an override.
   }
   return sla.step_timing;
 }
