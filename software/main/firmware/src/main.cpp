@@ -28,7 +28,7 @@ void setup() {
 
 void loop() {
   debug::printf("move forward\n");
-  stepper.move(50, 10, 10);
+  stepper.move(50, 100, 100);
   debug::printf("move backward\n");
-  stepper.move(0, 10, 10);
+  stepper.move(0, 100, 100);
 }
