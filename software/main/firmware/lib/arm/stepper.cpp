@@ -110,14 +110,16 @@ bool Stepper::setup_move(i32 pos, u32 speed, u32 accel, u32 time) {
   sla.speed = speed;
   sla.accel = accel;
   i32 move_steps = mm_to_steps<i32>(pos) - _step_coord;
+  if (move_steps == 0) {
+    return false;
+  }
   sla.move_steps = move_steps;
-  sla.direction = sla.move_steps >= 0;
+  sla.direction = sla.move_steps > 0;
 
   // calculate how many steps to accelerate for
   sla.accel_steps = speed * speed / (accel * 2);
-  u32 cruise_steps;
   // cannot reach specified speed, clamp to accelerate halfway
-  if (sla.accel_steps * 2 > abs(move_steps)) {
+  if (sla.accel_steps * 2 > (u32) abs(move_steps)) {
     sla.accel_steps = move_steps / 2;
   }
 
@@ -138,8 +140,10 @@ void Stepper::calc_timing(void) {
   if (sla.steps_remaining <= 0){  // this should not happen, but avoids strange calculations
     return;
   }
-  sla.steps_remaining--;
-  sla.step_count++;
+  sla.steps_remaining --;
+  sla.step_count ++;
+  _step_coord += (u8) sla.direction;
+  _total_steps_moved ++;
 
   if (sla.step_count < sla.accel_steps) { // accelerating
     sla.step_timing = sla.step_timing - (2 * sla.step_timing + sla.rest) / (4 * sla.step_count + 1);
