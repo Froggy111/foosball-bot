@@ -203,7 +203,12 @@ void Stepper::calc_timing(void) {
   }
   sla.steps_remaining --;
   sla.step_count ++;
-  _step_coord += (u8) sla.direction;
+  if (sla.direction) {
+    _step_coord ++;
+  }
+  else {
+    _step_coord --;
+  }
   _total_steps_moved ++;
 
   if (sla.step_count < sla.accel_steps) { // accelerating
