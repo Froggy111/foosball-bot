@@ -51,9 +51,11 @@ public:
   bool move(types::i32 pos, types::u32 speed = 0, types::u32 accel = 0); // move and come to a stop at some position, while keeping to the max speed and accels specified.
   // non blocking
   bool setup_move(types::i32 pos, types::u32 speed = 0, types::u32 accel = 0, types::u32 time = 0); // move and come to a stop at some position, while keeping to the max speed and accels specified.
+  bool setup_move_override(types::i32 pos, types::u32 speed, types::u32 accel, types::u32 time);
   // non blocking
   bool start_move_continous(types::u32 speed, types::u32 accel);
   types::u32 next_step(void);
+  bool cancel_move(void);
 
   // get and set for settings and constants
   types::u32 max_speed(void); // this is in mm/s
