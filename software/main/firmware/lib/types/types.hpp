@@ -1,7 +1,6 @@
 #pragma once
 
-#include <pico/stdlib.h>
-#include <pico/float.h>
+#include <cstdint>
 
 namespace types {
 
