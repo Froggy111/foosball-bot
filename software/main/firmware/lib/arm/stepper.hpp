@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Arduino.h>
-#include <DRV8825.h>
 #include <types.hpp>
 
 namespace arm {
@@ -22,6 +21,7 @@ struct StepperPins {
 struct StepperLinearAccel {
   types::u32 speed = 0;
   types::u32 accel = 0;
+  bool direction = 0;
   types::i32 move_steps = 0;
   types::u32 accel_steps = 0;
   types::u32 step_count = 0;
@@ -82,7 +82,7 @@ private:
     T steps = mm * 1000 / _um_per_step;
     return steps;
   }
-  types::u32 calc_timing(void);
+  void calc_timing(void);
   // pins
   StepperPins _pins;
 

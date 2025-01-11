@@ -1,13 +1,17 @@
 #include <Arduino.h>
-#include <DRV8825.h>
-#include <RPi_Pico_TimerInterrupt.h>
-#include "TimerInterrupt_Generic_Debug.h"
 #include "types.hpp"
 #include "stepper.hpp"
 
 using namespace types;
 
 namespace arm {
+
+const u32 min_step_pulse_duration = 2; // step must be on high for at least 2 microseconds
+const u32 wakeup_time = 1700;
+
+void delay_from_time_us(u32 duration, u64 time) {
+  delayMicroseconds(duration - (time - micros()));
+}
 
 Stepper::Stepper(u8 nfault_pin, u8 nreset_pin, u8 nsleep_pin,
                  u8 enable_pin, u8 step_pin, u8 dir_pin,
@@ -83,21 +87,8 @@ bool Stepper::reset(u32 reset_time) {
 }
 
 bool Stepper::move(i32 pos, u32 speed, u32 accel) {
-  if (speed == 0) {
-    speed = _max_speed;
-  }
-  if (accel == 0) {
-    accel = _max_accel;
-  }
-  speed = min(speed, _max_speed);
-  accel = min(accel, _max_accel);
-
-
-  // convert to steps units
-  speed = mm_to_steps<u32>(speed);
-  accel = mm_to_steps<u32>(accel);
-  i32 move_steps = mm_to_steps<i32>(pos) - _step_coord;
-
+  setup_move(pos, speed, accel);
+  while (next_step());
   return true;
 }
 
@@ -120,6 +111,7 @@ bool Stepper::setup_move(i32 pos, u32 speed, u32 accel, u32 time) {
   sla.accel = accel;
   i32 move_steps = mm_to_steps<i32>(pos) - _step_coord;
   sla.move_steps = move_steps;
+  sla.direction = sla.move_steps >= 0;
 
   // calculate how many steps to accelerate for
   sla.accel_steps = speed * speed / (accel * 2);
@@ -141,8 +133,14 @@ bool Stepper::setup_move(i32 pos, u32 speed, u32 accel, u32 time) {
   return true;
 }
 
-u32 Stepper::calc_timing(void) {
+void Stepper::calc_timing(void) {
   StepperLinearAccel &sla = _stepper_linear_accel; // alias to prevent 100 long lines
+  if (sla.steps_remaining <= 0){  // this should not happen, but avoids strange calculations
+    return;
+  }
+  sla.steps_remaining--;
+  sla.step_count++;
+
   if (sla.step_count < sla.accel_steps) { // accelerating
     sla.step_timing = sla.step_timing - (2 * sla.step_timing + sla.rest) / (4 * sla.step_count + 1);
     sla.rest = (sla.step_count < sla.accel_steps) ? (2 * sla.step_timing + sla.rest) % (4 * sla.step_count + 1) : 0;
@@ -150,18 +148,30 @@ u32 Stepper::calc_timing(void) {
   else if (sla.step_count == sla.accel_steps) {
     sla.step_timing = sla.cruise_step_timing;
   }
-  else if ()
-            if (step_count < steps_to_cruise){
-                step_pulse = step_pulse - (2*step_pulse+rest)/(4*step_count+1);
-                rest = (step_count < steps_to_cruise) ? (2*step_pulse+rest) % (4*step_count+1) : 0;
-            } else {
-                // The series approximates target, set the final value to what it should be instead
-                step_pulse = cruise_step_pulse;
-            }
+  else if (sla.steps_remaining <= sla.accel_steps) { // decelerating.
+    sla.step_timing = sla.step_timing - (2 * sla.step_timing + sla.rest) / (-4 * sla.steps_remaining + 1);
+    sla.rest = (2 * sla.step_timing + sla.rest) % (-4 * sla.steps_remaining + 1);
+  }
+  else return;
 }
 
 u32 Stepper::next_step(void) {
-
+  StepperLinearAccel &sla = _stepper_linear_accel; // alias to prevent 100 long lines
+  if (sla.steps_remaining > 0) {
+    delay_from_time_us(sla.step_timing, sla.last_step_time);
+    digitalWrite(_pins.dir_pin, sla.direction);
+    digitalWrite(_pins.step_pin, HIGH);
+    calc_timing();
+    delayMicroseconds(min_step_pulse_duration);
+    digitalWrite(_pins.step_pin, LOW);
+    sla.last_step_time = micros();
+    return sla.step_timing;
+  }
+  else {
+    sla.last_step_time = 0;
+    sla.step_timing = 0;
+  }
+  return sla.step_timing;
 }
 
 // settings and constants
