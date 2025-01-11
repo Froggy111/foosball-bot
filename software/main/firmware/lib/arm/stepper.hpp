@@ -41,17 +41,17 @@ public:
           types::u8 m0_pin, types::u8 m1_pin, types::u8 m2_pin,
           types::u16 steps_per_rev = 200, types::u8 mm_per_rev = 40);
 
-  bool begin(types::u32 max_speed, types::u32 max_accel);
+  bool begin(types::u32 max_speed, types::u32 max_accel, types::u8 microsteps = 1);
 
   bool enable(void);
   bool disable(void);
   bool faulted(void);
-  bool reset(types::u32 reset_time);
+  bool reset(void);
   // blocking
   bool move(types::i32 pos, types::u32 speed = 0, types::u32 accel = 0); // move and come to a stop at some position, while keeping to the max speed and accels specified.
   // non blocking
-  bool setup_move(types::i32 pos, types::u32 speed = 0, types::u32 accel = 0, types::u32 time = 0); // move and come to a stop at some position, while keeping to the max speed and accels specified.
-  bool setup_move_override(types::i32 pos, types::u32 speed, types::u32 accel, types::u32 time);
+  bool setup_move(types::i32 pos, types::u32 speed = 0, types::u32 accel = 0); // move and come to a stop at some position, while keeping to the max speed and accels specified.
+  bool setup_move_override(types::i32 pos, types::u32 speed, types::u32 accel);
   // non blocking
   bool start_move_continous(types::u32 speed, types::u32 accel);
   types::u32 next_step(void);
@@ -65,16 +65,16 @@ public:
   types::u16 um_per_step(void);
   types::u32 max_steps_per_second(void);
   types::u32 max_steps_accel(void); // this is in steps/s^2
+  types::u8 microsteps(void);
   bool set_max_speed(types::u32 max_speed);
   bool set_max_accel(types::u32 max_accel);
   bool set_steps_per_rev(types::u16 steps_per_rev);
   bool set_mm_per_rev(types::u8 mm_per_rev);
+  bool set_microsteps(types::u8 microsteps);
 
   // get and set for variables
   types::i32 step_coord(void);
   types::i32 um_coord(void); // coordinate in micrometers
-  types::u32 total_steps_moved(void);
-  types::u64 um_moved(void); // total moved in micrometers (64 bit as 32 bit can potentially overflow if it has travelled more than 4.3km total)
   bool set_step_coord(types::i32 step_coord);
   bool set_total_steps_moved(types::u32 total_steps_moved);
 
@@ -96,6 +96,7 @@ private:
   types::u16 _um_per_step = 0; // micrometers per step (no floating point due to drift)
 
   // settings
+  types::u8 _microsteps = 0; // 1. 2. 4. 8. 16. 32
   types::u32 _max_speed = 0; // this is in mm/s
   types::u32 _max_accel = 0; // this is in mm/s^2
 
@@ -104,8 +105,8 @@ private:
   types::u32 _max_steps_accel = 0; // this is in steps/s^2
 
   // variables
+  types::u8 _microstep_counter = 0; // which microstep the stepper is currently in.
   types::i32 _step_coord = 0; // coordinate in steps
-  types::u32 _total_steps_moved = 0; // total amount of steps moved
   
   // acceleration handling
   StepperLinearAccel _stepper_linear_accel;

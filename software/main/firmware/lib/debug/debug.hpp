@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 namespace debug {
 
 #ifdef DEBUG
