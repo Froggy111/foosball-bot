@@ -17,11 +17,9 @@ const u8 DRV_NRESET = 4;
 
 const u8 led_pin = 25;
 
-#define TEST_OVERRIDE
-
 arm::Stepper stepper(DRV_NFAULT, DRV_NRESET, DRV_NSLEEP, DRV_ENABLE, DRV_STEP, DRV_DIR, DRV_MODE0, DRV_MODE1, DRV_MODE2);
 
-#define TEST_OVERRIDE
+// #define TEST_OVERRIDE
 
 void setup() {
   Serial.begin(115200);
@@ -30,7 +28,7 @@ void setup() {
   #ifdef TEST_OVERRIDE
   stepper.begin(100, 1000, 16);
   #else
-  stepper.begin(100, 100, 16);
+  stepper.begin(200, 5000, 16);
   #endif
   debug::printf("Completed setup\n");
 }
@@ -47,7 +45,7 @@ void loop() {
   while (stepper.next_step());
   #else
   debug::printf("move forward\n");
-  stepper.setup_move_override(50);
+  stepper.setup_move_override(100);
   while(stepper.next_step());
   debug::printf("move backward with override\n");
   stepper.setup_move_override(0);
