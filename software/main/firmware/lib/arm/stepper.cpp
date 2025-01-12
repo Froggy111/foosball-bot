@@ -11,7 +11,7 @@ const u32 min_step_pulse_duration = 2; // step must be on high for at least 2 mi
 const u32 wakeup_time = 1700;
 
 void delay_from_time_us(u32 duration, u64 time) {
-  delayMicroseconds(duration - (time - micros()));
+  while (micros() < time + (u64) duration);
 }
 
 Stepper::Stepper(u8 nfault_pin, u8 nreset_pin, u8 nsleep_pin,
