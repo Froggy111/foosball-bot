@@ -1,5 +1,9 @@
-namespace arm {
+#include <Arduino.h>
+#include <RP2040_PWM.h>
+#include "types.hpp"
+#include "debug.hpp"
 
+namespace arm {
 
 class Servo {
 public:

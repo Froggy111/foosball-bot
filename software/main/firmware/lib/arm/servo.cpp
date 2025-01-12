@@ -30,10 +30,14 @@ void Servo::move(u16 target_ang){
     if (target_ang > 7200){
         target_ang = target_ang % 7200;
     }
-    f64 pulsewidth = target_ang * ((_max_pulse-_min_pulse)/7200) + _min_pulse;  
-    f64 duty_cycle = pulsewidth / _period;
-    delay(1000);
+    // Serial.print("target angle: ");
+    // Serial.println(target_ang);
+    f32 pulsewidth = target_ang * (_max_pulse-_min_pulse) /7200 + _min_pulse;
+    // Serial.print("pulsewidth: ");
+    // Serial.println(pulsewidth);
+    f32 duty_cycle = pulsewidth * 100 / _period;
     PWM_Instance->setPWM(_servo_pin, 50, duty_cycle);
+    // Serial.println(duty_cycle);
 }
 
 }
