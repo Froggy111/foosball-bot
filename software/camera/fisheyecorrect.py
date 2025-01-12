@@ -26,7 +26,6 @@ ball_max = np.array([ball_max[0] / 2, ball_max[1] * 255, ball_max[2] * 255], dty
 green_min = np.array([80, 120, 100], dtype=np.uint8)
 green_max = np.array([110, 255, 230], dtype=np.uint8)
 
-cX, cY = 0,0
 
 # camera = Picamera2()
 # camera.configure(camera.create_preview_configuration(main={"format": 'XRGB8888', "size": (640, 480)}))
@@ -56,31 +55,36 @@ class StreamingOutput(io.BufferedIOBase):
 
 
 picam2 = Picamera2()
-picam2.configure(picam2.create_video_configuration(main={"size": (640, 480)}))
+picam2.configure(picam2.create_video_configuration(main={"format": 'XRGB8888',"size": (640, 480)},controls={"FrameDurationLimits": (10000, 20000)}))
 output = StreamingOutput()
 picam2.start_recording(JpegEncoder(), FileOutput(output))
 
 
-
 def generate_frames(feed):
+    cX = 0
+    cY = 0
+    temp = 0
+    topleft = [96,33]
+    topright = [232,  66]
+    bottomleft = [100, 250]
+    bottomright = [229, 302]
     while True:
         start = t.perf_counter()
-        with output.condition:
-            output.condition.wait()
-            frame = output.frame
-        frame = np.array(bytearray(frame), dtype = "uint8")
-        frame = cv2.imdecode(frame, -1)
+        print(1/(start-temp))
+        temp = start
+        # with output.condition:
+        #     output.condition.wait()
+        #     frame = output.frame
+        # frame = np.array(bytearray(frame), dtype = "uint8")
+        # frame = cv2.imdecode(frame, -1)
+        frame = picam2.capture_array()
+        # print(1/(t.perf_counter()-start))
         dst = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
         x, y, wi, he = roi
-        dst = dst[y-50:y+he+50, x:x+wi]
-        hsv_frame = cv2.cvtColor(dst, cv2.COLOR_BGR2HSV)
-        green_mask = cv2.inRange(hsv_frame, green_min, green_max)
+        # hsv_frame = cv2.cvtColor(dst, cv2.COLOR_BGR2HSV)
+        # green_mask = cv2.inRange(hsv_frame, green_min, green_max)
         # ball_mask = cv2.inRange(hsv_frame, ball_min, ball_max)
         # greencontours = cv2.findContours(green_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
-        topleft = [96,33]
-        topright = [232,  66]
-        bottomleft = [100, 250]
-        bottomright = [229, 302]
         # greenarea = 0
         # threshold = 500
         # topleftpt = [240,320]
@@ -108,40 +112,42 @@ def generate_frames(feed):
         #                  [toprightpt],
         #                  [bottomrightpt],
         #                  [bottomleftpt]])
-        cnt = np.array([[topleft],
-                        [topright],
-                        [bottomright],
-                        [bottomleft]])
+        # cnt = np.array([[topleft],
+        #                 [topright],
+        #                 [bottomright],
+        #                 [bottomleft]])
         # print("topleft", topleftpt)
         # print("topright", toprightpt)
         # print("bottomleft", bottomleftpt)
         # print("bottomright", bottomrightpt)
-        rect = cv2.minAreaRect(cnt)
+        # rect = cv2.minAreaRect(cnt)
         # convert rect to 4 points format
-        box = cv2.boxPoints(rect)
-        box = np.intp(box)
+        # box = cv2.boxPoints(rect)
+        # box = np.intp(box)
 
         # draw the rotated rectangle box in the image
-        cv2.drawContours(dst, [box], 0, (0, 0, 255), 2)
+        # cv2.drawContours(dst, [box], 0, (0, 0, 255), 2)
         # # dst = crop_minAreaRect(dst, rect)
+        dst = dst[y-50:y+he+50, x:x+wi]
         dst = dst[topleft[1]-5:bottomright[1]+5,topleft[0]-5:bottomright[0]+5]
         hsv_frame2 = cv2.cvtColor(dst, cv2.COLOR_BGR2HSV)
         ball_mask = cv2.inRange(hsv_frame2, ball_min, ball_max)
         ballcontours = cv2.findContours(ball_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
         for c in ballcontours:
             # continue
-            if cv2.contourArea(c) > 20:
+            if cv2.contourArea(c) > 15:
                 # print(cv2.contourArea(c))
                 M = cv2.moments(c)
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])  
         #     # draw the contour and center of the shape on the image
-                cv2.drawContours(dst, [c], -1, (0, 255, 0), 2)
+                # cv2.drawContours(dst, [c], -1, (0, 255, 0), 2)
         cv2.circle(dst, (cX, cY), 7, (255, 255, 255), -1)
+        print(cX, cY)
         
         if feed == 1:
 
-            ret, buffer = cv2.imencode(".jpg", green_mask)
+            ret, buffer = cv2.imencode(".jpg", dst)
             # img = np.array(buffer)
             # print(img.shape)
             # h,  w = img.shape[:2]
@@ -167,34 +173,13 @@ def generate_frames(feed):
             yield (b'--frame\r\n'
                 b'Content-Type: image/jpef\r\n\r\n' + frame + b'\r\n'
                 )
-        end = t.perf_counter()
-        print(end-start)
+        # end = t.perf_counter()
+        # print(1/(end-start))
 
-
-def crop_minAreaRect(img, rect):
-
-    # rotate img
-    angle = rect[2]
-    rows,cols = img.shape[0], img.shape[1]
-    M = cv2.getRotationMatrix2D((cols/2,rows/2),angle,1)
-    img_rot = cv2.warpAffine(img,M,(cols,rows))
-
-    # rotate bounding box
-    rect0 = (rect[0], rect[1], 0.0) 
-    box = cv2.boxPoints(rect0)
-    pts = np.int0(cv2.transform(np.array([box]), M))[0]    
-    pts[pts < 0] = 0
-
-    # crop
-    img_crop = img_rot[pts[1][1]:pts[0][1], 
-                       pts[1][0]:pts[2][0]]
-    
-    return img_crop
 
 
 @app.route('/video_feed')
 def video_feed():
-    t.sleep(0.5)
     return Response(generate_frames(1), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/video_feed2')
@@ -203,7 +188,6 @@ def video_feed2():
 
 @app.route('/video_feed3')
 def video_feed3():
-    t.sleep(0.5)
     return Response(generate_frames(3), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
