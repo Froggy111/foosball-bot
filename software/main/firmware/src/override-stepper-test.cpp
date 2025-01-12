@@ -17,6 +17,8 @@ const u8 DRV_NRESET = 4;
 
 const u8 led_pin = 25;
 
+#define TEST_OVERRIDE
+
 arm::Stepper stepper(DRV_NFAULT, DRV_NRESET, DRV_NSLEEP, DRV_ENABLE, DRV_STEP, DRV_DIR, DRV_MODE0, DRV_MODE1, DRV_MODE2);
 
 void setup() {

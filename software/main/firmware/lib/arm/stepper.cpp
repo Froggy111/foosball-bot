@@ -352,9 +352,9 @@ void Stepper::calc_timing(void) {
 
   if (sla.step_count < sla.initial_decel_steps) { // need to run an initial deceleration.
     // "accel steps" for this initial deceleration is initial_decel_steps - step_count.
-    i32 n = (i32) sla.initial_decel_steps - (i32) sla.step_count;
+    i32 n = (i32) sla.initial_decel_steps - (i32) sla.step_count + 1;
     sla.step_timing = sla.step_timing - (2 * (i32) sla.step_timing + (i32) sla.step_timing_remainder) / (-4 * n + 1);
-    sla.step_timing_remainder = (2 * sla.step_timing + sla.step_timing_remainder) % (-4 * n + 1);
+    sla.step_timing_remainder = (2 * (i32) sla.step_timing + (i32) sla.step_timing_remainder) % (-4 * n + 1);
     digitalWrite(_pins.dir_pin, sla.initial_decel_direction);
     sla.current_direction = sla.initial_decel_direction;
   }
@@ -367,8 +367,8 @@ void Stepper::calc_timing(void) {
     }
     // "accel steps" for this acceleration is step_count - initial_decel_steps.
     i32 n = (i32) sla.step_count - (i32) sla.initial_decel_steps;
-    sla.step_timing = sla.step_timing - (2 * sla.step_timing + sla.step_timing_remainder) / (4 * n + 1);
-    sla.step_timing_remainder = (2 * sla.step_timing + sla.step_timing_remainder) % (4 * n + 1);
+    sla.step_timing = sla.step_timing - (2 * (i32) sla.step_timing + (i32) sla.step_timing_remainder) / (4 * n + 1);
+    sla.step_timing_remainder = (2 * (i32) sla.step_timing + (i32) sla.step_timing_remainder) % (4 * n + 1);
     digitalWrite(_pins.dir_pin, sla.accel_direction);
     sla.current_direction = sla.accel_direction;
   }
@@ -390,6 +390,7 @@ void Stepper::calc_timing(void) {
     sla.current_direction = sla.final_decel_direction;
   }
   else if (sla.step_count == sla.move_steps) { // move completed.
+    debug::printf("move completed\n");
     cancel_move();
   }
   else return;
