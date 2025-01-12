@@ -4,6 +4,7 @@
 #include "stepper.hpp"
 #include "servo.hpp"
 #include "debug.hpp"
+#include <Servo.h>
 
 #define _PWM_LOGLEVEL_ 3
 
