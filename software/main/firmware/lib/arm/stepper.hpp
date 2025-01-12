@@ -21,15 +21,24 @@ struct StepperPins {
 struct StepperLinearAccel {
   types::u32 speed = 0;
   types::u32 accel = 0;
-  bool direction = 0;
-  types::i32 move_steps = 0;
+
+  // step timing profile descriptors
+  bool direction = 0; // the direction of the net move.
+  types::u32 move_steps = 0;
+  types::u32 initial_decel_steps = 0; // this is for when overriding movement when it is already moving.
+  bool initial_decel_direction = 0;
   types::u32 accel_steps = 0;
+  bool accel_direction = 0;
+  types::u32 final_decel_steps = 0; // when stopping.
+  bool final_decel_direction = 0;
+  types::u32 cruise_step_timing = 0; // fixed speed
+
+  // trackers of step timing profile
   types::u32 step_count = 0;
-  types::u32 steps_remaining = 0;
-  types::u32 cruise_step_timing = 0;
   types::u64 last_step_time = 0;
   types::u32 step_timing = 0;
-  types::u32 rest = 0; // remainder used in stepper calculations. i dunno how it works but it does?
+  types::u32 step_timing_remainder = 0;
+  bool current_direction = 0;
 };
 
 // Currently does not implement microstepping. Will be noisy, but 0.2mm resolution is plenty for foosball.
@@ -51,11 +60,13 @@ public:
   bool move(types::i32 pos, types::u32 speed = 0, types::u32 accel = 0); // move and come to a stop at some position, while keeping to the max speed and accels specified.
   // non blocking
   bool setup_move(types::i32 pos, types::u32 speed = 0, types::u32 accel = 0); // move and come to a stop at some position, while keeping to the max speed and accels specified.
-  bool setup_move_override(types::i32 pos, types::u32 speed, types::u32 accel);
+  bool setup_move_override(types::i32 pos, types::u32 speed = 0, types::u32 accel = 0);
   // non blocking
   bool start_move_continous(types::u32 speed, types::u32 accel);
   types::u32 next_step(void);
+  types::u32 next_step_override(void);
   bool cancel_move(void);
+  bool setup_stop(types::u32 accel = 0);
 
   // get and set for settings and constants
   types::u32 max_speed(void); // this is in mm/s
