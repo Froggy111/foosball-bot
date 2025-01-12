@@ -358,13 +358,12 @@ void Stepper::calc_timing(void) {
     digitalWrite(_pins.dir_pin, sla.initial_decel_direction);
     sla.current_direction = sla.initial_decel_direction;
   }
+  else if (sla.step_count == sla.initial_decel_steps) { // decelerated and is accelerating now.
+    sla.step_timing_remainder = 0;
+    sla.step_timing = sla.from_zero_step_timing;
+    digitalWrite(_pins.dir_pin, sla.accel_direction);
+  }
   else if (sla.step_count >= sla.initial_decel_steps && sla.step_count < sla.accel_steps + sla.initial_decel_steps) { // accelerating
-    if (sla.step_count == sla.initial_decel_steps) {
-      sla.step_timing_remainder = 0;
-      if (sla.initial_decel_steps != 0) { // this means it has decelerated and is starting from zero
-        sla.step_timing = sla.from_zero_step_timing;
-      }
-    }
     // "accel steps" for this acceleration is step_count - initial_decel_steps.
     i32 n = (i32) sla.step_count - (i32) sla.initial_decel_steps;
     sla.step_timing = sla.step_timing - (2 * (i32) sla.step_timing + (i32) sla.step_timing_remainder) / (4 * n + 1);
