@@ -32,6 +32,7 @@ struct StepperLinearAccel {
   types::u32 final_decel_steps = 0; // when stopping.
   bool final_decel_direction = 0;
   types::u32 cruise_step_timing = 0; // fixed speed
+  types::u32 from_zero_step_timing = 0; // constant for some accel value
 
   // trackers of step timing profile
   types::u32 step_count = 0;

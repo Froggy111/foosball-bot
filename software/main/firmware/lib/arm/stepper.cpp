@@ -154,31 +154,53 @@ bool Stepper::setup_move_override(i32 pos, u32 speed, u32 accel) {
   accel = min(accel, _max_accel);
 
   // convert to steps units
-  speed = mm_to_steps<u32>(speed);
-  accel = mm_to_steps<u32>(accel);
-  i32 move_steps = mm_to_steps<i32>(pos) - _step_coord;
+  speed = mm_to_steps<u32>(speed) * _microsteps;
+  accel = mm_to_steps<u32>(accel) * _microsteps;
+  i32 move_steps = (mm_to_steps<i32>(pos) - _step_coord) * (i32) _microsteps - (i32) _microstep_counter;
   if (move_steps == 0) {
+    debug::printf("move_steps = 0 in setup_move_override\n");
     return false;
   }
   bool direction = move_steps > 0;
   sla.speed = speed;
   sla.accel = accel;
 
+  // https://ww1.microchip.com/downloads/en/Appnotes/doc8017.pdf (Linear speed control of stepper motor)
+  sla.from_zero_step_timing = (1e+6)*0.676*sqrt(2.0f/accel);
+
   // check what is needed to override
   if (sla.move_steps == 0) { // no move to override, do normal.
-    setup_move(pos, speed, accel);
+    debug::printf("no override\n");
+    sla.initial_decel_steps = 0;
+    sla.initial_decel_direction = direction;
+    sla.direction = direction;
+    // calculate how many steps to accelerate for
+    sla.accel_steps = speed * speed / (accel * 2);
+    sla.accel_direction = direction;
+    // cannot reach specified speed, clamp to accelerate halfway
+    if (sla.accel_steps * 2 > (u32) abs(move_steps)) {
+      debug::printf("clamp\n");
+      sla.accel_steps = (u32) abs(move_steps) / 2;
+    }
+    sla.final_decel_steps = sla.accel_steps;
+    sla.final_decel_direction = direction;
+    sla.step_timing = sla.from_zero_step_timing;
+    sla.move_steps = (u32) abs(move_steps);
   }
   else if (direction == sla.direction) { // going in the same direction. modify accelerations and speeds.
+    debug::printf("overriding in same direction\n");
     u32 current_speed = 1e+6 / sla.step_timing; // steps per second. this would have a resolution of 0.2mm/s (using the current design), which is enough.
     u32 min_decel_steps = current_speed * current_speed / (accel * 2);
     // first check if move_steps is enough to decelerate.
     if ((u32) abs(move_steps) < min_decel_steps) { // will overshoot, thus do decel, accel then decel
+      debug::printf("overshoot\n");
       sla.initial_decel_steps = min_decel_steps; // schedule decel first, which will overshoot
       sla.initial_decel_direction = sla.direction;
       u32 remaining_move_steps = min_decel_steps - move_steps;
       sla.accel_steps = speed * speed / (accel * 2);
       // cannot reach specified speed, clamp to accelerate halfway
       if (sla.accel_steps * 2 > remaining_move_steps) {
+        debug::printf("clamp\n");
         sla.accel_steps = remaining_move_steps / 2;
       }
       sla.accel_direction = !sla.direction; // accelerate back
@@ -187,7 +209,9 @@ bool Stepper::setup_move_override(i32 pos, u32 speed, u32 accel) {
       sla.move_steps = sla.initial_decel_steps + remaining_move_steps;
     }
     else { // does not overshoot. Move to position aggressively.
+      debug::printf("no overshoot\n");
       if (speed < current_speed) { // target max speed lower, need to decel first.
+        debug::printf("need initial decel\n");
         // do a deceleration to speed, cruise, then decelerate to 0.
         u32 initial_decel_speed = current_speed - speed;
         sla.initial_decel_steps = initial_decel_speed * initial_decel_speed / (accel * 2);
@@ -202,10 +226,12 @@ bool Stepper::setup_move_override(i32 pos, u32 speed, u32 accel) {
         sla.final_decel_direction = sla.direction;
       }
       else { // target max speed equal or higher, accelerate then decelerate.
+        debug::printf("no initial decel\n");
         u32 max_accel_speed = speed - current_speed;
         u32 max_accel_steps = max_accel_speed * max_accel_speed / (accel * 2);
         u32 max_decel_steps = speed * speed / (accel * 2);
         if (max_accel_steps + max_decel_steps > (u32) abs(move_steps)) { // need to clamp
+          debug::printf("clamp\n");
           u32 clamp_amount = max_accel_steps + max_decel_steps - (u32) abs(move_steps);
           sla.initial_decel_steps = 0;
           sla.initial_decel_direction = sla.accel_direction;
@@ -226,6 +252,7 @@ bool Stepper::setup_move_override(i32 pos, u32 speed, u32 accel) {
     }
   }
   else { // going in opposite direction. Decelerate to a stop first, then setup as normal.
+    debug::printf("overriding in opposite direction\n");
     u32 current_speed = 1e+6 / sla.step_timing; // steps per second. this would have a resolution of 0.2mm/s (using the current design), which is enough.
     // initial decel
     sla.initial_decel_steps = current_speed * current_speed / (accel * 2);
@@ -235,6 +262,7 @@ bool Stepper::setup_move_override(i32 pos, u32 speed, u32 accel) {
     sla.accel_steps = speed * speed / (accel * 2);
     // cannot reach specified speed, clamp to accelerate halfway
     if (sla.accel_steps * 2 > remaining_move_steps) {
+      debug::printf("clamp\n");
       sla.accel_steps = remaining_move_steps / 2;
     }
     sla.accel_direction = !sla.direction; // accelerate back
@@ -243,21 +271,22 @@ bool Stepper::setup_move_override(i32 pos, u32 speed, u32 accel) {
     sla.move_steps = sla.initial_decel_steps + remaining_move_steps;
   }
 
-  // calculate how many steps to accelerate for
-  sla.accel_steps = speed * speed / (accel * 2);
-  // cannot reach specified speed, clamp to accelerate halfway
-  if (sla.accel_steps * 2 > (u32) abs(move_steps)) {
-    sla.accel_steps = move_steps / 2;
-  }
-
   // setup timers
   // https://ww1.microchip.com/downloads/en/Appnotes/doc8017.pdf (Linear speed control of stepper motor)
-  sla.step_timing = (1e+6)*0.676*sqrt(2.0f/accel);
   sla.cruise_step_timing = 1e+6 / speed;
   sla.last_step_time = micros();
 
   // setup counters
   sla.step_count = 0;
+  debug::printf("speed: %u, accel: %u, direction: %u, move_steps: %u, initial_decel_steps: %u, \
+initial_decel_direction: %u, accel_steps: %u, accel_direction: %u, final_decel_steps: %u, \
+final_decel_direction: %u, cruise_step_timing: %u, from_zero_step_timing: %u, \
+step_count: %u, step_timing: %u, step_timing_remainder: %u, current_direction: %u\n",
+                sla.speed, sla.accel, (u32) sla.direction, sla.move_steps, sla.initial_decel_steps,
+                (u32) sla.initial_decel_direction, sla.accel_steps, (u32) sla.accel_direction,
+                sla.final_decel_steps, (u32) sla.final_decel_direction, sla.cruise_step_timing,
+                sla.from_zero_step_timing, sla.step_count, sla.step_timing, sla.step_timing_remainder,
+                (u32) sla.current_direction);
   return true;
 }
 
@@ -332,6 +361,9 @@ void Stepper::calc_timing(void) {
   else if (sla.step_count >= sla.initial_decel_steps && sla.step_count < sla.accel_steps + sla.initial_decel_steps) { // accelerating
     if (sla.step_count == sla.initial_decel_steps) {
       sla.step_timing_remainder = 0;
+      if (sla.initial_decel_steps != 0) { // this means it has decelerated and is starting from zero
+        sla.step_timing = sla.from_zero_step_timing;
+      }
     }
     // "accel steps" for this acceleration is step_count - initial_decel_steps.
     i32 n = (i32) sla.step_count - (i32) sla.initial_decel_steps;
@@ -371,10 +403,15 @@ u32 Stepper::next_step(void) {
   delayMicroseconds(min_step_pulse_duration);
   digitalWrite(_pins.step_pin, LOW);
   sla.last_step_time = micros();
-  debug::printf("next_step values: speed: %u, accel: %u, direction: %u, move_steps: %i, accel_steps: %i, step_count: %u, \
-steps_remaining: %u, cruise_step_timing: %u, step_timing: %u, step_timing_remainder: %u, microstep_counter: %u\n",
-                sla.speed, sla.accel, (u32) sla.direction, sla.move_steps, sla.accel_steps, sla.step_count,
-                sla.move_steps - sla.step_count, sla.cruise_step_timing, sla.step_timing, sla.step_timing_remainder, (u32) _microstep_counter);
+  debug::printf("speed: %u, accel: %u, direction: %u, move_steps: %u, initial_decel_steps: %u, \
+initial_decel_direction: %u, accel_steps: %u, accel_direction: %u, final_decel_steps: %u, \
+final_decel_direction: %u, cruise_step_timing: %u, from_zero_step_timing: %u, \
+step_count: %u, step_timing: %u, step_timing_remainder: %u, current_direction: %u\n",
+                sla.speed, sla.accel, (u32) sla.direction, sla.move_steps, sla.initial_decel_steps,
+                (u32) sla.initial_decel_direction, sla.accel_steps, (u32) sla.accel_direction,
+                sla.final_decel_steps, (u32) sla.final_decel_direction, sla.cruise_step_timing,
+                sla.from_zero_step_timing, sla.step_count, sla.step_timing, sla.step_timing_remainder,
+                (u32) sla.current_direction);
   return sla.step_timing;
 }
 
