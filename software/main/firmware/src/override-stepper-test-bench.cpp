@@ -34,6 +34,7 @@ void setup() {
 }
 
 void loop() {
+  u64 start_loop_time = micros();
   #ifdef TEST_OVERRIDE
   debug::printf("move forward\n");
   stepper.setup_move_override(100);
@@ -46,9 +47,16 @@ void loop() {
   #else
   debug::printf("move forward\n");
   stepper.setup_move_override(100);
+  u64 start_stepping_time = micros();
   while(stepper.next_step());
+  Serial.print("time for stepping: ");
+  Serial.print((u32) micros() - start_stepping_time);
+  Serial.print("\n");
   debug::printf("move backward with override\n");
   stepper.setup_move_override(0);
   while (stepper.next_step());
   #endif
+  Serial.print("time for loop: ");
+  Serial.print((u32) micros() - start_loop_time);
+  Serial.print("\n");
 }
