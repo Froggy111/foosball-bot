@@ -1,5 +1,8 @@
+#include <Arduino.h>
+#include <RP2040_PWM.h>
 #include "types.hpp"
 #include "stepper.hpp"
+#include "servo.hpp"
 #include "debug.hpp"
 
 using namespace types;
