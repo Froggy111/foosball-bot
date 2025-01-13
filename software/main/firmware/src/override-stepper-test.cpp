@@ -45,10 +45,10 @@ void loop() {
   while (stepper.next_step());
   #else
   debug::printf("move forward\n");
-  stepper.setup_move_override(100);
+  stepper.setup_move(100);
   while(stepper.next_step());
   debug::printf("move backward with override\n");
-  stepper.setup_move_override(0);
+  stepper.setup_move(0);
   while (stepper.next_step());
   #endif
 }

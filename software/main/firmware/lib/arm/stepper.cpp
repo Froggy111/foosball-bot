@@ -95,54 +95,8 @@ bool Stepper::move(i32 pos, u32 speed, u32 accel) {
 }
 
 bool Stepper::setup_move(i32 pos, u32 speed, u32 accel) {
-  if (speed == 0) {
-    speed = _max_speed;
-  }
-  if (accel == 0) {
-    accel = _max_accel;
-  }
-  speed = min(speed, _max_speed);
-  accel = min(accel, _max_accel);
-
-  StepperLinearAccel &sla = _stepper_linear_accel; // alias to prevent 100 long lines
-
-  // convert to microsteps units
-  speed = mm_to_steps<u32>(speed) * _microsteps;
-  accel = mm_to_steps<u32>(accel) * _microsteps;
-  sla.speed = speed;
-  sla.accel = accel;
-  i32 move_steps = (mm_to_steps<i32>(pos) - _step_coord) * (i32) _microsteps - (i32) _microstep_counter;
-  if (move_steps == 0) {
-    debug::printf("move_steps in setup_move is zero for some stupid reason\n");
-    return false;
-  }
-  sla.move_steps = (u32) abs(move_steps);
-  sla.direction = move_steps > 0;
-
-  // calculate how many steps to accelerate for
-  sla.accel_steps = speed * speed / (accel * 2);
-  // cannot reach specified speed, clamp to accelerate halfway
-  if (sla.accel_steps * 2 > sla.move_steps) {
-    sla.accel_steps = sla.move_steps / 2;
-  }
-
-  // setup timers
-  // https://ww1.microchip.com/downloads/en/Appnotes/doc8017.pdf (Linear speed control of stepper motor)
-  sla.step_timing = (1e+6)*0.676*sqrt(2.0f/accel);
-  sla.cruise_step_timing = 1e+6 / speed;
-  sla.last_step_time = micros();
-
-  // setup counters
-  sla.step_count = 0;
-  debug::printf("setup_move values: speed: %u, accel: %u, direction: %u, move_steps: %i, accel_steps: %i, step_count: %u, \
-steps_remaining: %u, cruise_step_timing: %u, step_timing: %u, step_timing_remainder: %u\n",
-                sla.speed, sla.accel, (u32) sla.direction, sla.move_steps, sla.accel_steps, sla.step_count,
-                sla.move_steps - sla.step_count, sla.cruise_step_timing, sla.step_timing, sla.step_timing_remainder);
-  return true;
-}
-
-bool Stepper::setup_move_override(i32 pos, u32 speed, u32 accel) {
   // setup move that is overriding a previous move.
+  // this is a huge mess and i don't fully know what is going on (?)...
   StepperLinearAccel &sla = _stepper_linear_accel; // alias to prevent 100 long lines
   if (speed == 0) {
     speed = _max_speed;
@@ -290,8 +244,12 @@ step_count: %u, step_timing: %u, step_timing_remainder: %u, current_direction: %
   return true;
 }
 
+bool Stepper::in_move(void) {
+  return _stepper_linear_accel.move_steps > 0;
+}
+
 // reset all the stepper accel move profile values to 0
-bool Stepper::cancel_move(void) {
+bool Stepper::clear_move(void) {
   StepperLinearAccel &sla = _stepper_linear_accel; // alias to prevent 100 long lines
   sla.speed = 0;
   sla.accel = 0;
@@ -314,11 +272,6 @@ bool Stepper::cancel_move(void) {
   sla.current_direction = 0;
 
   return true;
-}
-
-bool Stepper::setup_stop(u32 accel) {
-  // setup a stop for the current move, using the current acceleration.
-
 }
 
 void Stepper::calc_timing(void) {
@@ -390,7 +343,7 @@ void Stepper::calc_timing(void) {
   }
   else if (sla.step_count == sla.move_steps) { // move completed.
     debug::printf("move completed\n");
-    cancel_move();
+    clear_move();
   }
   else return;
 }
@@ -510,6 +463,13 @@ i32 Stepper::step_coord(void) {
 }
 i32 Stepper::um_coord(void) {
   return _step_coord * _um_per_step;
+}
+i32 Stepper::current_speed(void) {
+  i32 current_speed = 1e+6 / _stepper_linear_accel.step_timing; // steps per second. this would have a resolution of 0.2mm/s (using the current design), which is enough.
+  if (_stepper_linear_accel.current_direction == 0) {
+    return -current_speed;
+  }
+  else return current_speed;
 }
 bool Stepper::set_step_coord(i32 step_coord) {
   _step_coord = step_coord;

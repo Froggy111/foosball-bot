@@ -55,19 +55,15 @@ public:
 
   bool enable(void);
   bool disable(void);
-  bool faulted(void);
   bool reset(void);
   // blocking
   bool move(types::i32 pos, types::u32 speed = 0, types::u32 accel = 0); // move and come to a stop at some position, while keeping to the max speed and accels specified.
   // non blocking
-  bool setup_move(types::i32 pos, types::u32 speed = 0, types::u32 accel = 0); // move and come to a stop at some position, while keeping to the max speed and accels specified.
-  bool setup_move_override(types::i32 pos, types::u32 speed = 0, types::u32 accel = 0);
-  // non blocking
-  bool start_move_continous(types::u32 speed, types::u32 accel);
+  bool setup_move(types::i32 pos, types::u32 speed = 0, types::u32 accel = 0); // will override any existing moves by default.
+  bool in_move(void);
   types::u32 next_step(void);
   types::u32 next_step_override(void);
-  bool cancel_move(void);
-  bool setup_stop(types::u32 accel = 0);
+  bool faulted(void);
 
   // get and set for settings and constants
   types::u32 max_speed(void); // this is in mm/s
@@ -87,8 +83,8 @@ public:
   // get and set for variables
   types::i32 step_coord(void);
   types::i32 um_coord(void); // coordinate in micrometers
+  types::i32 current_speed(void);
   bool set_step_coord(types::i32 step_coord);
-  bool set_total_steps_moved(types::u32 total_steps_moved);
 
 private:
   template<typename T>
@@ -97,6 +93,7 @@ private:
     return steps;
   }
   void calc_timing(void);
+  bool clear_move(void);
   // pins
   StepperPins _pins;
 
