@@ -55,7 +55,6 @@ public:
 
   bool enable(void);
   bool disable(void);
-  bool faulted(void);
   bool reset(void);
   // blocking
   bool move(types::i32 pos, types::u32 speed = 0, types::u32 accel = 0); // move and come to a stop at some position, while keeping to the max speed and accels specified.
@@ -65,6 +64,7 @@ public:
   bool start_move_continous(types::u32 speed, types::u32 accel);
   types::u32 next_step(void);
   types::u32 next_step_override(void);
+  bool faulted(void);
 
   // get and set for settings and constants
   types::u32 max_speed(void); // this is in mm/s
@@ -84,6 +84,7 @@ public:
   // get and set for variables
   types::i32 step_coord(void);
   types::i32 um_coord(void); // coordinate in micrometers
+  types::i32 current_speed(void);
   bool set_step_coord(types::i32 step_coord);
   bool set_total_steps_moved(types::u32 total_steps_moved);
 

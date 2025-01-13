@@ -1,6 +1,6 @@
 #include <Arduino.h>
+#include <Servo.h>
 #include "stepper.hpp"
-#include "servo.hpp"
 #include "types.hpp"
 
 using namespace types;

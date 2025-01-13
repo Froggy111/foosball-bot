@@ -25,3 +25,6 @@ const types::u8 LIDAR_TX = 16;
 const types::u8 LIDAR_RX = 17;
 const types::u8 LIDAR_TX_DIR = 18;
 const types::u8 LIDAR_RX_DIR = 19;
+
+// misc
+const types::u8 ONBOARD_LED = 25;

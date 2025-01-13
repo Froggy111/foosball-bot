@@ -1,6 +1,8 @@
 #include <Arduino.h>
+#include <Servo.h>
+#include "pico/mutex.h"
 #include "stepper.hpp"
-#include "servo.hpp"
+#include "homing.hpp"
 #include "debug.hpp"
 #include "types.hpp"
 #include "pinouts.hpp"
@@ -9,43 +11,212 @@ using namespace types;
 
 bool core1_separate_stack = true;
 
+const u16 stepper_cmd_buffer_size = 512;
 mutex_t stepper_cmd_updated_mutex;
 bool stepper_cmd_updated = false;
+u32 stepper_cmd_len = 0;
+u8 stepper_cmd[stepper_cmd_buffer_size] = {0}; // 512 bytes should be much more than enough.
 
-mutex_t core0_ready_mutex;
-bool core0_ready = false;
-const u32 core1_check_core0_ready_micros = 100;
+const u16 stepper_response_buffer_size = 512;
+mutex_t stepper_response_updated_mutex;
+bool stepper_response_updated = false;
+u32 stepper_response_len = 0;
+u8 stepper_response[stepper_response_buffer_size] = {0}; // 512 bytes should be much more than enough.
 
-bool idk = __isFreeRTOS;
+bool core1_ready = false;
 
-void setup() {
-  Serial.begin();
-}
+// stepper
+const u16 steps_per_rev = 200;
+const u8 mm_per_rev = 40;
+const u32 default_max_speed = 1000;
+const u32 default_max_accel = 10000;
+const u8 default_microsteps = 4;
+arm::Stepper stepper(DRV_NFAULT, DRV_NRESET, DRV_NSLEEP,
+                     DRV_ENABLE, DRV_STEP, DRV_DIR,
+                     DRV_MODE0, DRV_MODE1, DRV_MODE2, steps_per_rev, mm_per_rev);
 
-void loop() {
-  Serial.println(idk);
-}
+// servo
+const u8 servo_gear_ratio = 4;
+const u16 servo_range = 180; // in degrees
+const u16 servo_geared_range = servo_range * servo_gear_ratio; // in degrees
+const u16 servo_min_pulse = 500;
+const u16 servo_max_pulse = 2500;
+const u16 servo_deadband = 7;
+Servo servo;
 
-// enum class Core1Commands : u32 {
-// };
+/* Command format:
+ * Byte 1: MSB 0 = command for core0, MSB 1 = command for core1. Same for responses.
+ * The rest of the bits should be its payload length in bytes.
+ */
+
+const u8 which_core_bitmask = 0b10000000;
+const u8 core0_val = 0b00000000;
+const u8 core1_val = 0b10000000;
+const u8 payload_length_bitmask = 0b01111111;
+
+enum class StepperCommands : u8 {
+  enable = 0,
+  disable = 1,
+  reset = 2,
+  move = 3,
+  home = 4,
+
+  fault_state = 5,
+  get_max_speed = 6,
+  get_max_accel = 7,
+  get_steps_per_rev = 8,
+  get_mm_per_rev = 9,
+  get_um_per_step = 10,
+  get_max_steps_per_second = 11,
+  get_max_steps_accel = 12,
+  get_microsteps = 13,
+
+  set_max_speed = 14,
+  set_max_accel = 15,
+  set_steps_per_rev = 16,
+  set_mm_per_rev = 17,
+  set_microsteps = 18,
+
+  get_step_coord = 19,
+  get_um_coord = 20,
+  get_current_speed = 21,
+  set_step_coord = 22,
+  set_total_steps_moved = 23
+};
+
+bool estopped = false;
+enum class Core0Commands : u8 {
+  estop = 0,
+  restart = 1,
+  
+  move_servo = 2,
+};
+
+/* Response format:
+ * Byte 1: MSB 0 = command failed, MSB 1 = command success
+ */
 
 // Multicore notes:
 // Serial class writes are already protected by mutex. Initialise in one core, and can write from both. Keep one full packet as one write. Flush after.
 // Serial reads should be done on core 0.
-// void setup() {
-//   CoreMutex ready_m(&core0_ready_mutex); // grab core0_ready_mutex
-//   core0_ready = false;
-//   delete &ready_m; // release core0_ready_mutex
-//   Serial.begin();
-// }
-//
-// void setup1() {
-//   bool run = false;
-//   do {
-//     CoreMutex ready_m(&core0_ready_mutex); // grab core0_ready_mutex
-//     if (core0_ready = false) {
-//       delayMicroseconds(core1_check_core0_ready_micros);
-//     }
-//
-//   }
-// }
+void setup() {
+  while (!core1_ready); // wait until core1 is ready so that commands do not get voided.
+
+  Serial.begin();
+  
+  // servo
+  pinMode(SERVO_DIR, OUTPUT);
+  digitalWrite(SERVO_DIR, HIGH); // set direction from SERVO_CTRL to SERVO_CTRL on 5V.
+  servo.attach(SERVO_CTRL, servo_min_pulse, servo_max_pulse);
+}
+
+void loop() {
+  // poll if any serial sent.
+  if (Serial.available()) {
+    u8 first_byte = Serial.read();
+
+    // whether on first core or not
+    bool is_core0_cmd = (first_byte & which_core_bitmask) == core0_val;
+
+    // read payload
+    u8 payload_length = first_byte & payload_length_bitmask;
+    u8 payload_buffer[stepper_cmd_buffer_size] = {0};
+    for (u16 i = 0; i < payload_length; i++) {
+      payload_buffer[i] = Serial.read();
+    }
+
+    if (estopped) {
+      if (is_core0_cmd && (Core0Commands) payload_buffer[0] == Core0Commands::restart) {
+        watchdog_reboot(0, 0, 0); // restart entire program. This is simpler.
+      }
+    }
+
+    // now update command
+    if (is_core0_cmd) {
+      Core0Commands command = (Core0Commands) payload_buffer[0];
+      switch (command) {
+      case Core0Commands::estop:
+        estopped = true;
+        rp2040.idleOtherCore(); // stop core1
+        break;
+      case Core0Commands::move_servo: // no homing for now...
+        servo.write((float) payload_buffer[1] / servo_gear_ratio);
+        break;
+      case Core0Commands::restart: // ignore
+        break;
+      }
+    }
+    else { // core1 command
+      // grab mutex
+      mutex_enter_blocking(&stepper_cmd_updated_mutex);
+      memcpy(stepper_cmd, payload_buffer, sizeof(stepper_cmd));
+      stepper_cmd_updated = true;
+      // release mutex
+      mutex_exit(&stepper_cmd_updated_mutex);
+    }
+  }
+
+  // forward back any responses from stepper control
+  mutex_enter_blocking(&stepper_response_updated_mutex);
+  if (stepper_response_updated) {
+    Serial.write(stepper_response, stepper_response_len);
+  }
+  mutex_exit(&stepper_response_updated_mutex);
+}
+
+void setup1() { // runs the stepper.
+  core1_ready = false;
+
+  mutex_init(&stepper_cmd_updated_mutex);
+  mutex_enter_blocking(&stepper_cmd_updated_mutex);
+  stepper_cmd_updated = false;
+  mutex_exit(&stepper_cmd_updated_mutex);
+  stepper.begin(default_max_speed, default_max_accel, default_microsteps);
+
+  core1_ready = true;
+}
+
+void loop1() {
+  u8 response_buffer[stepper_response_buffer_size] = {0};
+  mutex_enter_blocking(&stepper_cmd_updated_mutex);
+  StepperCommands command = (StepperCommands) stepper_cmd[0];
+  switch (command) {
+  case StepperCommands::disable:
+    stepper.disable();
+    break;
+  case StepperCommands::enable:
+    stepper.enable();
+    break;
+  case StepperCommands::reset:
+    stepper.reset();
+    break;
+  case StepperCommands::move: {
+    i32 pos = *(i32*)(&stepper_cmd[1]); // reintepret cast basically
+    u32 move_speed = *(u32*)(&stepper_cmd[1+sizeof(pos)]); // reintepret cast basically
+    u32 move_accel = *(u32*)(&stepper_cmd[1+sizeof(pos)+sizeof(move_speed)]); // reintepret cast basically
+    stepper.setup_move(pos, move_speed, move_accel);
+    break;
+  }
+  case StepperCommands::home: {
+    u8 endstop_pin = stepper_cmd[1];
+    u8 moveforward_mm = stepper_cmd[2];
+    u8 movebackward_mm = stepper_cmd[3];
+    u8 midpoint_pos = stepper_cmd[4];
+    u32 home_speed = *(u32*)(&stepper_cmd[5]); // reintepret cast basically
+    u32 home_accel = *(u32*)(&stepper_cmd[5+sizeof(home_speed)]); // reintepret cast basically
+    arm::home_stepper(stepper, endstop_pin, moveforward_mm, movebackward_mm, midpoint_pos, home_speed, home_accel);
+    break;
+  }
+
+  case StepperCommands::fault_state: {
+    response_buffer[0] = (u8) stepper.faulted();
+    break;
+  }
+  case StepperCommands::get_max_speed: {
+    u32 max_speed = stepper.max_speed();
+    memcpy(&response_buffer[0], &max_speed, sizeof(max_speed));
+  }
+
+  }
+  mutex_exit(&stepper_cmd_updated_mutex);
+}

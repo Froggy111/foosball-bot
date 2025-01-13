@@ -460,6 +460,13 @@ i32 Stepper::step_coord(void) {
 i32 Stepper::um_coord(void) {
   return _step_coord * _um_per_step;
 }
+i32 Stepper::current_speed(void) {
+  i32 current_speed = 1e+6 / _stepper_linear_accel.step_timing; // steps per second. this would have a resolution of 0.2mm/s (using the current design), which is enough.
+  if (_stepper_linear_accel.current_direction == 0) {
+    return -current_speed;
+  }
+  else return current_speed;
+}
 bool Stepper::set_step_coord(i32 step_coord) {
   _step_coord = step_coord;
   return true;
