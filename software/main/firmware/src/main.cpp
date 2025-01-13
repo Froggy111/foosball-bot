@@ -100,16 +100,20 @@ void setup() {
   while (!core1_ready); // wait until core1 is ready so that commands do not get voided.
 
   Serial.begin();
+  Serial.println("setting up core 0");
   
   // servo
   pinMode(SERVO_DIR, OUTPUT);
   digitalWrite(SERVO_DIR, HIGH); // set direction from SERVO_CTRL to SERVO_CTRL on 5V.
   servo.attach(SERVO_CTRL, servo_min_pulse, servo_max_pulse);
+  Serial.println("set up core 0");
 }
 
 void loop() {
+  delay(100);
   // poll if any serial sent.
   if (Serial.available()) {
+    Serial.println("Serial recieved");
     u8 first_byte = Serial.read();
 
     // whether on first core or not
@@ -117,9 +121,12 @@ void loop() {
 
     // read payload
     u8 payload_length = first_byte & payload_length_bitmask;
+    Serial.print("payload length: "); Serial.println(payload_length);
     u8 payload_buffer[stepper_cmd_buffer_size] = {0};
     for (u16 i = 0; i < payload_length; i++) {
+      while (!Serial.available());
       payload_buffer[i] = Serial.read();
+      Serial.println("read byte");
     }
 
     if (estopped) {
@@ -149,12 +156,16 @@ void loop() {
       }
     }
     else { // core1 command
+      Serial.println("is core1 command");
       // grab mutex
       mutex_enter_blocking(&stepper_cmd_mutex);
+      Serial.println("grabbed mutex");
       memcpy(stepper_cmd, payload_buffer, sizeof(stepper_cmd));
       stepper_cmd_updated = true;
+      Serial.println("set command for core1");
       // release mutex
       mutex_exit(&stepper_cmd_mutex);
+      Serial.println("released mutex");
     }
   }
 }
@@ -172,6 +183,8 @@ void setup1() { // runs the stepper.
 }
 
 void loop1() {
+  delay(100);
+  Serial.println("core 1 grabbed mutex");
   mutex_enter_blocking(&stepper_cmd_mutex);
   if (stepper_cmd_updated) {
     StepperCommands command = (StepperCommands) stepper_cmd[0];
@@ -192,12 +205,14 @@ void loop1() {
         Serial.write(true);
       }
       case StepperCommands::move: {
+        Serial.println("Detected move command");
         i32 move_pos;
         memcpy(&move_pos, stepper_cmd + 1, sizeof(move_pos));
         u32 move_speed;
         memcpy(&move_speed, stepper_cmd + 1 + sizeof(move_pos), sizeof(move_speed));
         u32 move_accel;
         memcpy(&move_accel, stepper_cmd + 1 + sizeof(move_pos) + sizeof(move_speed), sizeof(move_accel));
+        Serial.println(move_pos); Serial.println(move_speed); Serial.println(move_accel);
         stepper.setup_move(move_pos, move_speed, move_accel);
         Serial.write(true);
         break;
@@ -321,6 +336,7 @@ void loop1() {
     memset(stepper_cmd, 0, sizeof(stepper_cmd));
   }
   mutex_exit(&stepper_cmd_mutex);
+  Serial.println("core 1 released mutex");
   if (stepper.in_move()) {
     if (!stepper.next_step()) {
       Serial.write(stepper_move_complete_response);
