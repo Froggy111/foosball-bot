@@ -2,6 +2,7 @@
 #include <Servo.h>
 #include "stepper.hpp"
 #include "types.hpp"
+#include "homing.hpp"
 
 using namespace types;
 

@@ -77,7 +77,6 @@ enum class StepperCommands : u8 {
   get_um_coord = 20,
   get_current_speed = 21,
   set_step_coord = 22,
-  set_total_steps_moved = 23
 };
 
 bool estopped = false;
@@ -140,7 +139,7 @@ void loop() {
         }
         case Core0Commands::move_servo: { // no homing for now...
           u16 target_angle;
-          memcpy(&target_angle, payload_buffer + 1, sizeof(target_angle))
+          memcpy(&target_angle, payload_buffer + 1, sizeof(target_angle));
           servo.write((float) target_angle / servo_gear_ratio);
           break;
         }
@@ -173,25 +172,24 @@ void setup1() { // runs the stepper.
 }
 
 void loop1() {
-  u8 response_buffer[stepper_response_buffer_size] = {0};
   mutex_enter_blocking(&stepper_cmd_mutex);
   if (stepper_cmd_updated) {
     StepperCommands command = (StepperCommands) stepper_cmd[0];
     switch (command) {
       case StepperCommands::disable: {
         stepper.disable();
-        response_buffer[0] = true; // ack
+        Serial.write(true);
         break;
       }
       case StepperCommands::enable: {
         stepper.enable();
-        response_buffer[0] = true; // ack
         break;
+        Serial.write(true);
       }
       case StepperCommands::reset: {
         stepper.reset();
-        response_buffer[0] = true; // ack
         break;
+        Serial.write(true);
       }
       case StepperCommands::move: {
         i32 move_pos;
@@ -201,7 +199,7 @@ void loop1() {
         u32 move_accel;
         memcpy(&move_accel, stepper_cmd + 1 + sizeof(move_pos) + sizeof(move_speed), sizeof(move_accel));
         stepper.setup_move(move_pos, move_speed, move_accel);
-        response_buffer[0] = true; // ack
+        Serial.write(true);
         break;
       }
       case StepperCommands::home: {
@@ -212,53 +210,53 @@ void loop1() {
         u32 home_speed = *(u32*)(&stepper_cmd[5]); // reintepret cast basically
         u32 home_accel = *(u32*)(&stepper_cmd[5+sizeof(home_speed)]); // reintepret cast basically
         arm::home_stepper(stepper, endstop_pin, moveforward_mm, movebackward_mm, midpoint_pos, home_speed, home_accel);
-        response_buffer[0] = true; // ack
+        Serial.write(true);
         break;
       }
 
       case StepperCommands::fault_state: {
         u8 fault_state = (u8) stepper.faulted();
-        memcpy(response_buffer, &fault_state, sizeof(fault_state));
+        Serial.write((u8*) &fault_state, sizeof(fault_state));
         break;
       }
       case StepperCommands::get_max_speed: {
         u32 max_speed = stepper.max_speed();
-        memcpy(response_buffer, &max_speed, sizeof(max_speed));
+        Serial.write((u8*) &max_speed, sizeof(max_speed));
         break;
       }
       case StepperCommands::get_max_accel: {
         u32 max_accel = stepper.max_accel();
-        memcpy(response_buffer, &max_accel, sizeof(max_accel));
+        Serial.write((u8*) &max_accel, sizeof(max_accel));
         break;
       }
       case StepperCommands::get_steps_per_rev: {
         u16 steps_per_rev = stepper.steps_per_rev();
-        memcpy(response_buffer, &steps_per_rev, sizeof(steps_per_rev));
+        Serial.write((u8*) &steps_per_rev, sizeof(steps_per_rev));
         break;
       }
       case StepperCommands::get_mm_per_rev: {
         u8 mm_per_rev = stepper.mm_per_rev();
-        memcpy(response_buffer, &mm_per_rev, sizeof(mm_per_rev));
+        Serial.write((u8*) &mm_per_rev, sizeof(mm_per_rev));
         break;
       }
       case StepperCommands::get_um_per_step: {
         u16 um_per_step = stepper.um_per_step();
-        memcpy(response_buffer, &um_per_step, sizeof(um_per_step));
+        Serial.write((u8*) &um_per_step, sizeof(um_per_step));
         break;
       }
       case StepperCommands::get_max_steps_per_second: {
         u32 max_steps_per_second = stepper.max_steps_per_second();
-        memcpy(response_buffer, &max_steps_per_second, sizeof(max_steps_per_second));
+        Serial.write((u8*) &max_steps_per_second, sizeof(max_steps_per_second));
         break;
       }
       case StepperCommands::get_max_steps_accel: {
         u32 max_steps_accel = stepper.max_steps_accel();
-        memcpy(response_buffer, &max_steps_accel, sizeof(max_steps_accel));
+        Serial.write((u8*) &max_steps_accel, sizeof(max_steps_accel));
         break;
       }
       case StepperCommands::get_microsteps: {
         u8 microsteps = stepper.microsteps();
-        memcpy(response_buffer, &microsteps, sizeof(microsteps));
+        Serial.write((u8*) &microsteps, sizeof(microsteps));
         break;
       }
 
@@ -266,65 +264,56 @@ void loop1() {
         u32 max_speed;
         memcpy(&max_speed, stepper_cmd + 1, sizeof(max_speed));
         stepper.set_max_speed(max_speed);
-        response_buffer[0] = true; // ack
         break;
       }
       case StepperCommands::set_max_accel: {
         u32 max_accel;
         memcpy(&max_accel, stepper_cmd + 1, sizeof(max_accel));
         stepper.set_max_accel(max_accel);
-        response_buffer[0] = true; // ack
         break;
       }
       case StepperCommands::set_steps_per_rev: {
         u16 steps_per_rev;
         memcpy(&steps_per_rev, stepper_cmd + 1, sizeof(steps_per_rev));
         stepper.set_steps_per_rev(steps_per_rev);
-        response_buffer[0] = true; // ack
+        Serial.write(true);
         break;
       }
       case StepperCommands::set_mm_per_rev: {
         u8 mm_per_rev;
         memcpy(&mm_per_rev, stepper_cmd + 1, sizeof(mm_per_rev));
         stepper.set_mm_per_rev(mm_per_rev);
-        response_buffer[0] = true; // ack
+        Serial.write(true);
         break;
       }
       case StepperCommands::set_microsteps: {
         u8 microsteps;
         memcpy(&microsteps, stepper_cmd + 1, sizeof(microsteps));
         stepper.set_microsteps(microsteps);
-        response_buffer[0] = true; // ack
+        Serial.write(true);
         break;
       }
 
       case StepperCommands::get_step_coord: {
         i32 step_coord = stepper.step_coord();
-        memcpy(response_buffer, &step_coord, sizeof(step_coord));
+        Serial.write((u8*) &step_coord, sizeof(step_coord));
         break;
       }
       case StepperCommands::get_um_coord: {
         i32 um_coord = stepper.um_coord();
-        memcpy(response_buffer, &um_coord, sizeof(um_coord));
+        Serial.write((u8*) &um_coord, sizeof(um_coord));
         break;
       }
       case StepperCommands::get_current_speed: {
         i32 current_speed = stepper.current_speed();
-        memcpy(response_buffer, &current_speed, sizeof(current_speed));
+        Serial.write((u8*) &current_speed, sizeof(current_speed));
         break;
       }
       case StepperCommands::set_step_coord: {
         i32 step_coord;
         memcpy(&step_coord, stepper_cmd + 1, sizeof(step_coord));
         stepper.set_step_coord(step_coord);
-        response_buffer[0] = true; // ack
-        break;
-      }
-      case StepperCommands::set_total_steps_moved: {
-        u32 total_steps_moved;
-        memcpy(&total_steps_moved, stepper_cmd + 1, sizeof(total_steps_moved));
-        stepper.set_total_steps_moved(total_steps_moved);
-        response_buffer[0] = true; // ack
+        Serial.write(true);
         break;
       }
     }
@@ -332,5 +321,9 @@ void loop1() {
     memset(stepper_cmd, 0, sizeof(stepper_cmd));
   }
   mutex_exit(&stepper_cmd_mutex);
-  mutex_enter_blocking(&stepper_response_mutex);
+  if (stepper.in_move()) {
+    if (!stepper.next_step()) {
+      Serial.write(stepper_move_complete_response);
+    }
+  }
 }

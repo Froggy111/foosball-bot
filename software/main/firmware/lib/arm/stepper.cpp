@@ -244,6 +244,10 @@ step_count: %u, step_timing: %u, step_timing_remainder: %u, current_direction: %
   return true;
 }
 
+bool Stepper::in_move(void) {
+  return _stepper_linear_accel.move_steps > 0;
+}
+
 // reset all the stepper accel move profile values to 0
 bool Stepper::clear_move(void) {
   StepperLinearAccel &sla = _stepper_linear_accel; // alias to prevent 100 long lines

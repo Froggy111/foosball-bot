@@ -60,8 +60,7 @@ public:
   bool move(types::i32 pos, types::u32 speed = 0, types::u32 accel = 0); // move and come to a stop at some position, while keeping to the max speed and accels specified.
   // non blocking
   bool setup_move(types::i32 pos, types::u32 speed = 0, types::u32 accel = 0); // will override any existing moves by default.
-  // non blocking
-  bool start_move_continous(types::u32 speed, types::u32 accel);
+  bool in_move(void);
   types::u32 next_step(void);
   types::u32 next_step_override(void);
   bool faulted(void);
@@ -86,7 +85,6 @@ public:
   types::i32 um_coord(void); // coordinate in micrometers
   types::i32 current_speed(void);
   bool set_step_coord(types::i32 step_coord);
-  bool set_total_steps_moved(types::u32 total_steps_moved);
 
 private:
   template<typename T>
