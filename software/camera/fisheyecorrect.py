@@ -15,7 +15,7 @@ mtx = np.array([[301.49190596,0.,314.35147902], [0.,301.25920544,215.49344076],[
 dist = np.array([-0.31445176,  0.10576482,  0.00376648,  0.00188659, -0.0180011 ])
 
 # Ball hsv vals
-ball_min = [0, 0.10, 0.35] #[9, 0.60, 0.10] #hex_to_hsv(hex_color_min)
+ball_min = [0, 0.10, 0.21] #[9, 0.60, 0.10] #hex_to_hsv(hex_color_min)
 ball_max = [25, 1 , 0.95] #[13, 1, 0.75] #hex_to_hsv(hex_color_max)
 
 # Scale HSV values for OpenCV (OpenCV uses 0-180 for H, 0-255 for S and V)
@@ -25,6 +25,7 @@ ball_max = np.array([ball_max[0] / 2, ball_max[1] * 255, ball_max[2] * 255], dty
 # Green hsv vals
 green_min = np.array([80, 120, 100], dtype=np.uint8)
 green_max = np.array([110, 255, 230], dtype=np.uint8)
+
 
 
 # camera = Picamera2()
@@ -61,6 +62,7 @@ picam2.start_recording(JpegEncoder(), FileOutput(output))
 
 
 def generate_frames(feed):
+    ball_pos_arr = [[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1]]
     cX = 0
     cY = 0
     temp = 0
@@ -140,10 +142,31 @@ def generate_frames(feed):
                 M = cv2.moments(c)
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])  
+                ball_pos_arr.append([t.perf_counter(),cX,cY])
         #     # draw the contour and center of the shape on the image
                 # cv2.drawContours(dst, [c], -1, (0, 255, 0), 2)
         cv2.circle(dst, (cX, cY), 7, (255, 255, 255), -1)
-        print(cX, cY)
+        latest = t.perf_counter()
+        if latest - ball_pos_arr[-10][0] < 0.50:
+            [last_time, last_x, last_y] = ball_pos_arr[-1]
+            dx = (last_x - ball_pos_arr[-10][1])/(latest-ball_pos_arr[-10][0])
+            dy = (last_y - ball_pos_arr[-10][2])/(latest-ball_pos_arr[-10][0])
+            #1st: 33
+            #2nd: 110
+            #3rd: 189
+            if (33 - last_y) * dy > 0:
+                first_x = (33 - last_y)/dy * dx + last_x
+                cv2.circle(dst, (int(first_x), 33), 7, (0, 0, 255), -1)
+            if (110 - last_y) * dy > 0:
+                second_x = (110 - last_y)/dy * dx + last_x
+                cv2.circle(dst, (int(second_x), 110), 7, (0, 0, 255), -1)
+            if (189 - last_y) * dy > 0:
+                third_x = (189 - last_y)/dy * dx + last_x
+                cv2.circle(dst, (int(third_x), 189), 7, (0, 0, 255), -1)
+            # future_secs = 0.5
+            # new_pos = (int(dx * future_secs + ball_pos_arr[-1][1]),int(dy * future_secs + ball_pos_arr[-1][2]))  
+            # print(f"cX: {cX} cY: {cY} dx: {dx} dy: {dy} new_pos: {new_pos}")
+
         
         if feed == 1:
 
