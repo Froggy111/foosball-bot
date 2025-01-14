@@ -17,15 +17,34 @@ speed = 1000 & mask_32bit
 accel = 10000 & mask_32bit
 pos2 = 0 & mask_32bit
 
-microstep_payload_size = 2
+microstep_payload_size = 2 & mask_8bit
 microstep_first_byte = (type_select | microstep_payload_size) & mask_8bit
 microstep_cmd_option = 18 & mask_8bit
 microsteps = 4 & mask_8bit
+
+homing_payload_size = 12 & mask_8bit
+homing_first_byte = (type_select | homing_payload_size) & mask_8bit
+homing_cmd_option = 4 & mask_8bit
+homing_moveforward_mm = 10 & mask_8bit
+homing_movebackward_mm = 150 & mask_8bit
+homing_target_pos = 10 & mask_8bit
+homing_speed = 50 & mask_32bit
+homing_accel = 10000 & mask_32bit
 
 microstep_packet = bytearray([
     microstep_first_byte,
     microstep_cmd_option,
     microsteps
+])
+
+homing_packet = bytearray([
+    homing_first_byte,
+    homing_cmd_option,
+    homing_moveforward_mm,
+    homing_movebackward_mm,
+    homing_target_pos,
+    homing_speed & 0xFF, (homing_speed >> 8) & 0xFF, (homing_speed >> 16) & 0xFF, (homing_speed >> 24) & 0xFF, # little endian
+    homing_accel & 0xFF, (homing_accel >> 8) & 0xFF, (homing_accel >> 16) & 0xFF, (homing_accel >> 24) & 0xFF
 ])
 
 packet = bytearray([
@@ -46,6 +65,10 @@ packet2 = bytearray([
 
 ser.write(microstep_packet)
 print(microstep_packet)
+print(ser.read(1))
+
+ser.write(homing_packet)
+print(homing_packet)
 print(ser.read(1))
 
 ser.write(packet)

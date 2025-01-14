@@ -220,13 +220,14 @@ void loop1() {
         break;
       }
       case StepperCommands::home: {
-        u8 endstop_pin = stepper_cmd[1];
-        u8 moveforward_mm = stepper_cmd[2];
-        u8 movebackward_mm = stepper_cmd[3];
-        u8 midpoint_pos = stepper_cmd[4];
-        u32 home_speed = *(u32*)(&stepper_cmd[5]); // reintepret cast basically
-        u32 home_accel = *(u32*)(&stepper_cmd[5+sizeof(home_speed)]); // reintepret cast basically
-        arm::home_stepper(stepper, endstop_pin, moveforward_mm, movebackward_mm, midpoint_pos, home_speed, home_accel);
+        u8 moveforward_mm = stepper_cmd[1];
+        u8 movebackward_mm = stepper_cmd[2];
+        u8 midpoint_pos = stepper_cmd[3];
+        u32 home_speed;
+        memcpy(&home_speed, stepper_cmd + 4, sizeof(home_speed));
+        u32 home_accel;
+        memcpy(&home_accel, stepper_cmd + 4 + sizeof(home_speed), sizeof(home_accel));
+        arm::home_stepper(stepper, ENDSTOP, moveforward_mm, movebackward_mm, midpoint_pos, home_speed, home_accel);
         Serial.write(true);
         break;
       }
