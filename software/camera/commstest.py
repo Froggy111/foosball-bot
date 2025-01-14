@@ -43,9 +43,9 @@ packet2 = bytearray([
     accel & 0xFF, (accel >> 8) & 0xFF, (accel >> 16) & 0xFF, (accel >> 24) & 0xFF
 ])
 
-ser.write(microstep_packet)
-print(microstep_packet)
-ser.read(1)
+# ser.write(microstep_packet)
+# print(microstep_packet)
+# ser.read(1)
 
 ser.write(packet)
 print(packet)
@@ -64,7 +64,7 @@ ser.read(2)
 
 ser.write(packet2)
 print(packet2)
-ser.read(2);
+ser.read(2)
 # resp = ser.readline().decode()
 # print(resp)
 # resp = ser.readline().decode()
