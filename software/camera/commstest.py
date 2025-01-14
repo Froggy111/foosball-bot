@@ -41,7 +41,7 @@ resp = ser.readline().decode()
 print(resp)
 resp = ser.readline().decode()
 print(resp)
-t.sleep(1)
+t.sleep(0.1)
 
 ser.write(packet2)
 print(packet2)
