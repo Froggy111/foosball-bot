@@ -14,7 +14,7 @@ first_byte = (type_select | payload_size) & mask_8bit
 command_option = 3 & mask_8bit # move
 pos = 100 & mask_32bit
 speed = 2000 & mask_32bit
-accel = 20000 & mask_32bit
+accel = 50000 & mask_32bit
 pos2 = 0 & mask_32bit
 
 microstep_payload_size = 2
