@@ -41,10 +41,10 @@ print(resp)
 # print(resp)
 # resp = ser.readline().decode()
 # print(resp)
-tsleep = 0.0001
-tstart = t.perf_counter()
-while (t.perf_counter() - tstart < tsleep):
-    continue
+# tsleep = 0.0001
+# tstart = t.perf_counter()
+# while (t.perf_counter() - tstart < tsleep):
+#     continue
 
 ser.write(packet2)
 print(packet2)
