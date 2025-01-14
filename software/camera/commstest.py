@@ -23,7 +23,7 @@ microsteps = 4 & mask_8bit
 
 microstep_packet = bytearray([
     microstep_first_byte,
-    command_option,
+    microstep_cmd_option,
     microsteps
 ])
 
