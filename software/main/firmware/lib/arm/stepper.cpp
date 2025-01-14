@@ -51,6 +51,12 @@ bool Stepper::begin(u32 max_speed, u32 max_accel, u8 microsteps) {
   digitalWrite(_pins.enable_pin, HIGH);
   pinMode(_pins.nfault_pin, INPUT);
 
+  pinMode(_pins.step_pin, OUTPUT);
+  pinMode(_pins.dir_pin, OUTPUT);
+  pinMode(_pins.m0_pin, OUTPUT);
+  pinMode(_pins.m1_pin, OUTPUT);
+  pinMode(_pins.m2_pin, OUTPUT);
+
   // // hardcoded set to no microstepping (M0 low, M1 low, M2 low)
   // pinMode(_pins.m0_pin, OUTPUT);
   // digitalWrite(_pins.m0_pin, LOW);

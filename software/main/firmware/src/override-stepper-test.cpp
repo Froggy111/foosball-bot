@@ -49,9 +49,13 @@ void loop() {
   #else
   debug::printf("move forward\n");
   stepper.setup_move(100);
-  while(stepper.next_step());
+  while(stepper.next_step()) {
+    delay(10);
+  }
   debug::printf("move backward with override\n");
   stepper.setup_move(0);
-  while (stepper.next_step());
+  while (stepper.next_step()) {
+    delay(10);
+  }
   #endif
 }
