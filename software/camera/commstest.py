@@ -2,6 +2,7 @@ import serial
 import time as t
 
 ser = serial.Serial('/dev/ttyACM0',115200)
+ser.set_low_latency_mode(True)
 
 mask_8bit = 0xFF
 mask_16bit = 0xFFFF
