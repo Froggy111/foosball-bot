@@ -48,7 +48,7 @@ bool Stepper::begin(u32 max_speed, u32 max_accel, u8 microsteps) {
   pinMode(_pins.nsleep_pin, OUTPUT);
   digitalWrite(_pins.nsleep_pin, HIGH);
   pinMode(_pins.enable_pin, OUTPUT);
-  digitalWrite(_pins.enable_pin, LOW);
+  digitalWrite(_pins.enable_pin, HIGH);
   pinMode(_pins.nfault_pin, INPUT);
 
   // // hardcoded set to no microstepping (M0 low, M1 low, M2 low)
@@ -64,13 +64,13 @@ bool Stepper::begin(u32 max_speed, u32 max_accel, u8 microsteps) {
 
 // will energise the coils! make sure to set current limit before this.
 bool Stepper::enable(void) {
-  digitalWrite(_pins.enable_pin, HIGH);
+  digitalWrite(_pins.enable_pin, LOW);
   return true;
 }
 
 // can also use nsleep.
 bool Stepper::disable(void) {
-  digitalWrite(_pins.enable_pin, LOW);
+  digitalWrite(_pins.enable_pin, HIGH);
   return true;
 }
 
