@@ -85,7 +85,7 @@ class Core1PayloadLengths(IntEnum):
     get_current_speed = 1 & mask8
     set_step_coord = 5 & mask8
 
-stepper_move_complete_ack_val = 0b01010101
+stepper_move_complete_ack_val = bytes(0b01010101)
 
 
 class Arm:
