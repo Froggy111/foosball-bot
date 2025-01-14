@@ -36,7 +36,6 @@ Stepper::Stepper(u8 nfault_pin, u8 nreset_pin, u8 nsleep_pin,
 bool Stepper::begin(u32 max_speed, u32 max_accel, u8 microsteps) {
   _max_speed = max_speed;
   _max_accel = max_accel;
-  set_microsteps(microsteps);
 
   _max_steps_per_second = mm_to_steps<u32>(max_speed);
   _max_steps_accel = mm_to_steps<u32>(max_accel);
@@ -56,6 +55,7 @@ bool Stepper::begin(u32 max_speed, u32 max_accel, u8 microsteps) {
   pinMode(_pins.m0_pin, OUTPUT);
   pinMode(_pins.m1_pin, OUTPUT);
   pinMode(_pins.m2_pin, OUTPUT);
+  set_microsteps(microsteps);
 
   // // hardcoded set to no microstepping (M0 low, M1 low, M2 low)
   // pinMode(_pins.m0_pin, OUTPUT);
