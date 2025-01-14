@@ -28,18 +28,44 @@ void setup() {
   #ifdef TEST_OVERRIDE
   stepper.begin(100, 1000, 16);
   #else
+  pinMode(led_pin, OUTPUT);
+  digitalWrite(led_pin, LOW);
   stepper.begin(100, 500, 4);
   debug::printf("disable stepper\n");
   stepper.disable();
+  if (stepper.faulted()) {
+    digitalWrite(led_pin, HIGH);
+  }
   delay(1000);
+  if (stepper.faulted()) {
+    digitalWrite(led_pin, HIGH);
+  }
   debug::printf("enable stepper\n");
   stepper.enable();
+  if (stepper.faulted()) {
+    digitalWrite(led_pin, HIGH);
+  }
   delay(1000);
+  if (stepper.faulted()) {
+    digitalWrite(led_pin, HIGH);
+  }
   debug::printf("disable stepper\n");
+  if (stepper.faulted()) {
+    digitalWrite(led_pin, HIGH);
+  }
   stepper.disable();
+  if (stepper.faulted()) {
+    digitalWrite(led_pin, HIGH);
+  }
   delay(1000);
   debug::printf("enable stepper\n");
+  if (stepper.faulted()) {
+    digitalWrite(led_pin, HIGH);
+  }
   stepper.enable();
+  if (stepper.faulted()) {
+    digitalWrite(led_pin, HIGH);
+  }
   delay(1000);
   #endif
   debug::printf("Completed setup\n");
