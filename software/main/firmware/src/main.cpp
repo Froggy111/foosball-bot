@@ -27,6 +27,7 @@ const u8 mm_per_rev = 40;
 const u32 default_max_speed = 1000;
 const u32 default_max_accel = 10000;
 const u8 default_microsteps = 1;
+u32 steps_moved_in_current_move = 0;
 arm::Stepper stepper(DRV_NFAULT, DRV_NRESET, DRV_NSLEEP,
                      DRV_ENABLE, DRV_STEP, DRV_DIR,
                      DRV_MODE0, DRV_MODE1, DRV_MODE2, steps_per_rev, mm_per_rev);
@@ -195,13 +196,13 @@ void loop1() {
       }
       case StepperCommands::enable: {
         stepper.enable();
-        break;
         Serial.write(true);
+        break;
       }
       case StepperCommands::reset: {
         stepper.reset();
-        break;
         Serial.write(true);
+        break;
       }
       case StepperCommands::move: {
         // Serial.println("Detected move command");
@@ -211,8 +212,10 @@ void loop1() {
         memcpy(&move_speed, stepper_cmd + 1 + sizeof(move_pos), sizeof(move_speed));
         u32 move_accel;
         memcpy(&move_accel, stepper_cmd + 1 + sizeof(move_pos) + sizeof(move_speed), sizeof(move_accel));
+        Serial.println(steps_moved_in_current_move);
         // Serial.println(move_pos); Serial.println(move_speed); Serial.println(move_accel);
         stepper.setup_move(move_pos, move_speed, move_accel);
+        steps_moved_in_current_move = 0;
         Serial.write(true);
         break;
       }
@@ -337,6 +340,7 @@ void loop1() {
   mutex_exit(&stepper_cmd_mutex);
   // Serial.println("core 1 released mutex");
   if (stepper.in_move()) {
+    steps_moved_in_current_move += 1;
     if (!stepper.next_step()) {
       Serial.write(stepper_move_complete_response);
     }
