@@ -93,7 +93,7 @@ class Arm:
         self._setup_serial(id)
     def _setup_serial(self, id: int) -> None:
         vid = "2E8A" # usb vid
-        pid = f"FFF{id+1}" # usb pid
+        pid = f"FFF{id}" # usb pid
         pattern = f"(?i)VID:PID={vid}:{pid}"
         ports_iter = serial.tools.list_ports.grep(pattern)
         self.serial_port_name, _, _ = list(ports_iter)[0]
