@@ -102,6 +102,7 @@ class Arm:
         self.serial_port.set_low_latency_mode(True)
     def _send_cmd(self, cmd: bytearray) -> None:
         self.serial_port.write(cmd)
+        print(cmd)
     def _block_until_complete_ack(self) -> None:
         complete_ack = self.serial_port.read(1)
         assert complete_ack, "complete_ack byte is false."
