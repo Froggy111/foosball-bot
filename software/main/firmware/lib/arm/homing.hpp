@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include <Servo.h>
 #include "stepper.hpp"
 #include "types.hpp"
 

@@ -129,14 +129,12 @@ void loop() {
       // Serial.println("read byte");
     }
 
-    if (estopped) {
+    if (estopped) { // ignore anything other than restart command.
       if (is_core0_cmd && (Core0Commands) payload_buffer[0] == Core0Commands::restart) {
         watchdog_reboot(0, 0, 0); // restart entire program. This is simpler.
       }
     }
-
-    // now update command
-    if (is_core0_cmd) {
+    else if (is_core0_cmd) { // now update command
       Core0Commands command = (Core0Commands) payload_buffer[0];
       switch (command) {
         case Core0Commands::estop: {
