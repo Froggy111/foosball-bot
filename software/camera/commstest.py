@@ -34,6 +34,7 @@ packet2 = bytearray([
 
 ser.write(packet)
 print(packet)
+ser.read(2);
 
 # resp = ser.readline().decode()
 # print(resp)
@@ -48,6 +49,7 @@ print(packet)
 
 ser.write(packet2)
 print(packet2)
+ser.read(2);
 # resp = ser.readline().decode()
 # print(resp)
 # resp = ser.readline().decode()
