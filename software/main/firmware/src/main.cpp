@@ -212,7 +212,7 @@ void loop1() {
         memcpy(&move_speed, stepper_cmd + 1 + sizeof(move_pos), sizeof(move_speed));
         u32 move_accel;
         memcpy(&move_accel, stepper_cmd + 1 + sizeof(move_pos) + sizeof(move_speed), sizeof(move_accel));
-        Serial.println(steps_moved_in_current_move);
+        // Serial.println(steps_moved_in_current_move);
         // Serial.println(move_pos); Serial.println(move_speed); Serial.println(move_accel);
         stepper.setup_move(move_pos, move_speed, move_accel);
         steps_moved_in_current_move = 0;
