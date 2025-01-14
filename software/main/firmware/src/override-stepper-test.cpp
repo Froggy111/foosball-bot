@@ -48,7 +48,7 @@ void loop() {
   while (stepper.next_step());
   #else
   debug::printf("move forward\n");
-  stepper.setup_move(10);
+  stepper.setup_move(100);
   while(stepper.next_step()) {
     delay(10);
   }
