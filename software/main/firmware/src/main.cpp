@@ -24,8 +24,8 @@ bool core1_ready = false;
 // stepper
 const u16 steps_per_rev = 200;
 const u8 mm_per_rev = 40;
-const u32 default_max_speed = 1000;
-const u32 default_max_accel = 10000;
+const u32 default_max_speed = 5000;
+const u32 default_max_accel = 50000;
 const u8 default_microsteps = 1;
 u32 steps_moved_in_current_move = 0;
 arm::Stepper stepper(DRV_NFAULT, DRV_NRESET, DRV_NSLEEP,
