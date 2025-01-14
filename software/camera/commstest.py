@@ -35,13 +35,13 @@ packet2 = bytearray([
 ser.write(packet)
 print(packet)
 
-resp = ser.readline().decode()
-print(resp)
-resp = ser.readline().decode()
-print(resp)
-resp = ser.readline().decode()
-print(resp)
-tsleep = 0.001
+# resp = ser.readline().decode()
+# print(resp)
+# resp = ser.readline().decode()
+# print(resp)
+# resp = ser.readline().decode()
+# print(resp)
+tsleep = 0.0001
 tstart = t.perf_counter()
 while (t.perf_counter() - tstart< tsleep):
     continue
