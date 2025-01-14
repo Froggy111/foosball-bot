@@ -29,6 +29,18 @@ void setup() {
   stepper.begin(100, 1000, 16);
   #else
   stepper.begin(100, 500, 4);
+  debug::printf("disable stepper\n");
+  stepper.disable();
+  delay(1000);
+  debug::printf("enable stepper\n");
+  stepper.enable();
+  delay(1000);
+  debug::printf("disable stepper\n");
+  stepper.disable();
+  delay(1000);
+  debug::printf("enable stepper\n");
+  stepper.enable();
+  delay(1000);
   #endif
   debug::printf("Completed setup\n");
 }
