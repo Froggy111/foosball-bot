@@ -28,7 +28,7 @@ microstep_packet = bytearray([
 ])
 
 packet = bytearray([
-    first_byte,
+    microstep_first_byte,
     command_option,
     pos & 0xFF, (pos >> 8) & 0xFF, (pos >> 16) & 0xFF, (pos >> 24) & 0xFF,
     speed & 0xFF, (speed >> 8) & 0xFF, (speed >> 16) & 0xFF, (speed >> 24) & 0xFF, # little endian
@@ -44,6 +44,7 @@ packet2 = bytearray([
 ])
 
 ser.write(microstep_packet)
+print(microstep_packet)
 ser.read(1)
 
 ser.write(packet)
