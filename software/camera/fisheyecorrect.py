@@ -8,6 +8,8 @@ from threading import Condition
 from picamera2.encoders import JpegEncoder
 from picamera2.outputs import FileOutput
 
+import serial
+
 import time as t
 app = Flask(__name__)
 
@@ -15,16 +17,16 @@ mtx = np.array([[301.49190596,0.,314.35147902], [0.,301.25920544,215.49344076],[
 dist = np.array([-0.31445176,  0.10576482,  0.00376648,  0.00188659, -0.0180011 ])
 
 # Ball hsv vals
-ball_min = [0, 0.10, 0.21] #[9, 0.60, 0.10] #hex_to_hsv(hex_color_min)
-ball_max = [25, 1 , 0.95] #[13, 1, 0.75] #hex_to_hsv(hex_color_max)
+ball_min = [7, 0.30, 0.21] #[9, 0.60, 0.10] #hex_to_hsv(hex_color_min)
+ball_max = [35, 1 , 0.95] #[13, 1, 0.75] #hex_to_hsv(hex_color_max)
 
 # Scale HSV values for OpenCV (OpenCV uses 0-180 for H, 0-255 for S and V)
 ball_min = np.array([ball_min[0] / 2, ball_min[1] * 255, ball_min[2] * 255], dtype=np.uint8)
 ball_max = np.array([ball_max[0] / 2, ball_max[1] * 255, ball_max[2] * 255], dtype=np.uint8)
 
 # Green hsv vals
-green_min = np.array([80, 120, 100], dtype=np.uint8)
-green_max = np.array([110, 255, 230], dtype=np.uint8)
+green_min = np.array([50, 100, 30], dtype=np.uint8)
+green_max = np.array([90, 230, 200], dtype=np.uint8)
 
 
 
@@ -60,16 +62,19 @@ picam2.configure(picam2.create_video_configuration(main={"format": 'XRGB8888',"s
 output = StreamingOutput()
 picam2.start_recording(JpegEncoder(), FileOutput(output))
 
+ser1 = serial.Serial('/dev/ttyACM0')  # open serial port
+ser2 = serial.Serial('/dev/ttyACM1')
+ser3 = serial.Serial('/dev/ttyACM2')
 
 def generate_frames(feed):
     ball_pos_arr = [[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1],[-1]]
     cX = 0
     cY = 0
     temp = 0
-    topleft = [96,33]
-    topright = [232,  66]
-    bottomleft = [100, 250]
-    bottomright = [229, 302]
+    topleft = [99,30]
+    topright = [222,  31]
+    bottomleft = [100, 280]
+    bottomright = [215, 280]
     while True:
         start = t.perf_counter()
         print(1/(start-temp))
@@ -83,6 +88,7 @@ def generate_frames(feed):
         # print(1/(t.perf_counter()-start))
         dst = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
         x, y, wi, he = roi
+        # dst = dst[y-50:y+he+50, x:x+wi]
         # hsv_frame = cv2.cvtColor(dst, cv2.COLOR_BGR2HSV)
         # green_mask = cv2.inRange(hsv_frame, green_min, green_max)
         # ball_mask = cv2.inRange(hsv_frame, ball_min, ball_max)
@@ -123,11 +129,11 @@ def generate_frames(feed):
         # print("bottomleft", bottomleftpt)
         # print("bottomright", bottomrightpt)
         # rect = cv2.minAreaRect(cnt)
-        # convert rect to 4 points format
+        # # convert rect to 4 points format
         # box = cv2.boxPoints(rect)
         # box = np.intp(box)
 
-        # draw the rotated rectangle box in the image
+        # # draw the rotated rectangle box in the image
         # cv2.drawContours(dst, [box], 0, (0, 0, 255), 2)
         # # dst = crop_minAreaRect(dst, rect)
         dst = dst[y-50:y+he+50, x:x+wi]
@@ -137,32 +143,34 @@ def generate_frames(feed):
         ballcontours = cv2.findContours(ball_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
         for c in ballcontours:
             # continue
-            if cv2.contourArea(c) > 15:
+            if cv2.contourArea(c) > 30:
                 # print(cv2.contourArea(c))
                 M = cv2.moments(c)
                 cX = int(M["m10"] / M["m00"])
                 cY = int(M["m01"] / M["m00"])  
+                print(cX, cY)
                 ball_pos_arr.append([t.perf_counter(),cX,cY])
         #     # draw the contour and center of the shape on the image
                 # cv2.drawContours(dst, [c], -1, (0, 255, 0), 2)
         cv2.circle(dst, (cX, cY), 7, (255, 255, 255), -1)
         latest = t.perf_counter()
-        if latest - ball_pos_arr[-10][0] < 0.50:
+        if latest - ball_pos_arr[-5][0] < 0.15:
             [last_time, last_x, last_y] = ball_pos_arr[-1]
-            dx = (last_x - ball_pos_arr[-10][1])/(latest-ball_pos_arr[-10][0])
-            dy = (last_y - ball_pos_arr[-10][2])/(latest-ball_pos_arr[-10][0])
+            dx = (last_x - ball_pos_arr[-5][1])/(latest-ball_pos_arr[-5][0])
+            dy = (last_y - ball_pos_arr[-5][2])/(latest-ball_pos_arr[-5][0])
             #1st: 33
             #2nd: 110
             #3rd: 189
             if (33 - last_y) * dy > 0:
-                first_x = (33 - last_y)/dy * dx + last_x
-                cv2.circle(dst, (int(first_x), 33), 7, (0, 0, 255), -1)
+                first_x = (80 - last_y)/dy * dx + last_x
+                cv2.circle(dst, (int(first_x), 80), 7, (0, 0, 255), -1)
+                ser1.write(b'')
             if (110 - last_y) * dy > 0:
-                second_x = (110 - last_y)/dy * dx + last_x
-                cv2.circle(dst, (int(second_x), 110), 7, (0, 0, 255), -1)
+                second_x = (160 - last_y)/dy * dx + last_x
+                cv2.circle(dst, (int(second_x), 160), 7, (0, 0, 255), -1)
             if (189 - last_y) * dy > 0:
-                third_x = (189 - last_y)/dy * dx + last_x
-                cv2.circle(dst, (int(third_x), 189), 7, (0, 0, 255), -1)
+                third_x = (240 - last_y)/dy * dx + last_x
+                cv2.circle(dst, (int(third_x), 240), 7, (0, 0, 255), -1)
             # future_secs = 0.5
             # new_pos = (int(dx * future_secs + ball_pos_arr[-1][1]),int(dy * future_secs + ball_pos_arr[-1][2]))  
             # print(f"cX: {cX} cY: {cY} dx: {dx} dy: {dy} new_pos: {new_pos}")
