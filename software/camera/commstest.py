@@ -13,6 +13,7 @@ command_option = 3 & mask_8bit # move
 pos = 100 & mask_32bit
 speed = 100 & mask_32bit
 accel = 100 & mask_32bit
+pos2 = 0 & mask_32bit
 
 packet = bytearray([
     first_byte,
@@ -22,9 +23,26 @@ packet = bytearray([
     accel & 0xFF, (accel >> 8) & 0xFF, (accel >> 16) & 0xFF, (accel >> 24) & 0xFF
 ])
 
+packet2 = bytearray([
+    first_byte,
+    command_option,
+    pos2 & 0xFF, (pos2 >> 8) & 0xFF, (pos2 >> 16) & 0xFF, (pos2 >> 24) & 0xFF,
+    speed & 0xFF, (speed >> 8) & 0xFF, (speed >> 16) & 0xFF, (speed >> 24) & 0xFF, # little endian
+    accel & 0xFF, (accel >> 8) & 0xFF, (accel >> 16) & 0xFF, (accel >> 24) & 0xFF
+])
+
 ser.write(packet)
 print(packet)
 
+resp = ser.readline().decode()
+print(resp)
+resp = ser.readline().decode()
+print(resp)
+resp = ser.readline().decode()
+print(resp)
+
+ser.write(packet2)
+print(packet2)
 resp = ser.readline().decode()
 print(resp)
 resp = ser.readline().decode()
