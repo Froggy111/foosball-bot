@@ -97,7 +97,7 @@ class Arm:
         pid = f"FFF{id+1}" # usb pid
         pattern = f"(?i)VID:PID={vid}:{pid}"
         ports_iter = serial.tools.list_ports.grep(pattern)
-        self.serial_port_name, _, _ = next(ports_iter)
+        self.serial_port_name, _, _ = list(ports_iter)[0]
         self.serial_port = Serial(self.serial_port_name)
         self.serial_port.set_low_latency_mode(True)
     def _send_cmd(self, cmd: bytearray) -> None:
