@@ -110,7 +110,7 @@ void setup() {
 }
 
 void loop() {
-  delay(100);
+  // delay(100);
   // poll if any serial sent.
   if (Serial.available()) {
     // Serial.println("Serial recieved");
@@ -182,7 +182,7 @@ void setup1() { // runs the stepper.
 }
 
 void loop1() {
-  delay(100);
+  // delay(100);
   // Serial.println("core 1 grabbed mutex");
   mutex_enter_blocking(&stepper_cmd_mutex);
   if (stepper_cmd_updated) {
