@@ -158,6 +158,8 @@ class Arm:
         self._block_until_complete_ack()
     def block_until_stepper_move_complete(self) -> None:
         stepper_move_complete_ack = self.serial_port.read(1)
+        print(stepper_move_complete_ack)
+        print(stepper_move_complete_ack_val)
         assert stepper_move_complete_ack == stepper_move_complete_ack_val, "Stepper move complete ack value mismatch."
     def stepper_home(self, moveforward_mm: int, movebackward_mm: int, target_pos: int, speed: int, accel: int) -> None:
         payload = bytearray([
