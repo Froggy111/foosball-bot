@@ -22,13 +22,13 @@ microstep_cmd_option = 18 & mask_8bit
 microsteps = 4 & mask_8bit
 
 microstep_packet = bytearray([
-    first_byte,
+    microstep_first_byte,
     command_option,
     microsteps
 ])
 
 packet = bytearray([
-    microstep_first_byte,
+    first_byte,
     command_option,
     pos & 0xFF, (pos >> 8) & 0xFF, (pos >> 16) & 0xFF, (pos >> 24) & 0xFF,
     speed & 0xFF, (speed >> 8) & 0xFF, (speed >> 16) & 0xFF, (speed >> 24) & 0xFF, # little endian
