@@ -28,7 +28,7 @@ void setup() {
   #ifdef TEST_OVERRIDE
   stepper.begin(100, 1000, 16);
   #else
-  stepper.begin(1000, 5000, 1);
+  stepper.begin(100, 500, 4);
   #endif
   debug::printf("Completed setup\n");
 }

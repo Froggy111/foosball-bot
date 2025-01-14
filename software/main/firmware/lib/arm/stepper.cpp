@@ -245,7 +245,7 @@ step_count: %u, step_timing: %u, step_timing_remainder: %u, current_direction: %
 }
 
 bool Stepper::in_move(void) {
-  return _stepper_linear_accel.move_steps > 0;
+  return _stepper_linear_accel.move_steps > _stepper_linear_accel.step_count;
 }
 
 // reset all the stepper accel move profile values to 0
@@ -342,6 +342,17 @@ void Stepper::calc_timing(void) {
     sla.current_direction = sla.final_decel_direction;
   }
   else if (sla.step_count == sla.move_steps) { // move completed.
+    debug::printf("move flagged as completed\n");
+    debug::printf("step_count: %u, move_steps: %u", sla.step_count, sla.move_steps);
+    debug::printf("speed: %u, accel: %u, direction: %u, move_steps: %u, initial_decel_steps: %u, \
+initial_decel_direction: %u, accel_steps: %u, accel_direction: %u, final_decel_steps: %u, \
+final_decel_direction: %u, cruise_step_timing: %u, from_zero_step_timing: %u, \
+step_count: %u, step_timing: %u, step_timing_remainder: %u, current_direction: %u\n",
+                  sla.speed, sla.accel, (u32) sla.direction, sla.move_steps, sla.initial_decel_steps,
+                  (u32) sla.initial_decel_direction, sla.accel_steps, (u32) sla.accel_direction,
+                  sla.final_decel_steps, (u32) sla.final_decel_direction, sla.cruise_step_timing,
+                  sla.from_zero_step_timing, sla.step_count, sla.step_timing, sla.step_timing_remainder,
+                  (u32) sla.current_direction);
     debug::printf("move completed\n");
     clear_move();
   }
