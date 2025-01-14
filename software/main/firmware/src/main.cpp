@@ -222,12 +222,12 @@ void loop1() {
       case StepperCommands::home: {
         u8 moveforward_mm = stepper_cmd[1];
         u8 movebackward_mm = stepper_cmd[2];
-        u8 midpoint_pos = stepper_cmd[3];
+        u8 target_pos = stepper_cmd[3];
         u32 home_speed;
         memcpy(&home_speed, stepper_cmd + 4, sizeof(home_speed));
         u32 home_accel;
         memcpy(&home_accel, stepper_cmd + 4 + sizeof(home_speed), sizeof(home_accel));
-        arm::home_stepper(stepper, ENDSTOP, moveforward_mm, movebackward_mm, midpoint_pos, home_speed, home_accel);
+        arm::home_stepper(stepper, ENDSTOP, moveforward_mm, movebackward_mm, target_pos, home_speed, home_accel);
         Serial.write(true);
         break;
       }
