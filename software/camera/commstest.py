@@ -16,6 +16,17 @@ speed = 100 & mask_32bit
 accel = 100 & mask_32bit
 pos2 = 0 & mask_32bit
 
+microstep_payload_size = 2
+microstep_first_byte = (type_select | microstep_payload_size) & mask_8bit
+microstep_cmd_option = 18 & mask_8bit
+microsteps = 4 & mask_8bit
+
+microstep_packet = bytearray([
+    first_byte,
+    command_option,
+    microsteps
+])
+
 packet = bytearray([
     first_byte,
     command_option,
@@ -32,9 +43,12 @@ packet2 = bytearray([
     accel & 0xFF, (accel >> 8) & 0xFF, (accel >> 16) & 0xFF, (accel >> 24) & 0xFF
 ])
 
+ser.write(microstep_packet)
+ser.read(1)
+
 ser.write(packet)
 print(packet)
-ser.read(2);
+ser.read(2)
 
 # resp = ser.readline().decode()
 # print(resp)
