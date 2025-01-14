@@ -1,4 +1,5 @@
 import serial
+import time as t
 
 ser = serial.Serial('/dev/ttyACM0',115200)
 
@@ -40,6 +41,7 @@ resp = ser.readline().decode()
 print(resp)
 resp = ser.readline().decode()
 print(resp)
+t.sleep(1)
 
 ser.write(packet2)
 print(packet2)
