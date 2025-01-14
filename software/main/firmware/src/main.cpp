@@ -26,7 +26,7 @@ const u16 steps_per_rev = 200;
 const u8 mm_per_rev = 40;
 const u32 default_max_speed = 1000;
 const u32 default_max_accel = 10000;
-const u8 default_microsteps = 1;
+const u8 default_microsteps = 4;
 arm::Stepper stepper(DRV_NFAULT, DRV_NRESET, DRV_NSLEEP,
                      DRV_ENABLE, DRV_STEP, DRV_DIR,
                      DRV_MODE0, DRV_MODE1, DRV_MODE2, steps_per_rev, mm_per_rev);
