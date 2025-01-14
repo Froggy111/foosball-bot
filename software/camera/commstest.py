@@ -25,4 +25,5 @@ packet = bytearray([
 ser.write(packet)
 print(packet)
 
-
+resp = ser.readline()
+print(resp)
