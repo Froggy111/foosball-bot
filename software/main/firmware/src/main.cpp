@@ -176,6 +176,7 @@ void setup1() { // runs the stepper.
   stepper_cmd_updated = false;
   mutex_exit(&stepper_cmd_mutex);
   stepper.begin(default_max_speed, default_max_accel, default_microsteps);
+  stepper.enable();
 
   core1_ready = true;
 }

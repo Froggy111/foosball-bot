@@ -1,6 +1,6 @@
 import serial
 
-ser = serial.Serial('/dev/ttyACM1',115200)
+ser = serial.Serial('/dev/ttyACM0',115200)
 
 mask_8bit = 0xFF
 mask_16bit = 0xFFFF

@@ -8,3 +8,6 @@ def get_serial_port(id: int) -> tuple[str, str, str]:
     ports_iter = serial.tools.list_ports.grep(pattern)
     port = next(ports_iter)
     return port
+
+def setup_serial_port(port_name: str) -> serial.Serial:
+    
