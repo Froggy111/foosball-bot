@@ -2,6 +2,8 @@ from comms import Arm
 
 arm1 = Arm(0)
 print("created arm")
+arm1.stepper_set_microsteps(4)
+print("set microsteps")
 arm1.stepper_home(10, 150, 10, 50, 10000)
 print("homed stepper")
 while (True):
