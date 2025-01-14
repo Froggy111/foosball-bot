@@ -30,7 +30,7 @@ void setup() {
   #else
   // pinMode(led_pin, OUTPUT);
   // digitalWrite(led_pin, LOW);
-  stepper.begin(100, 500, 4);
+  stepper.begin(100, 500, 1);
   stepper.enable();
   #endif
   debug::printf("Completed setup\n");
@@ -48,7 +48,7 @@ void loop() {
   while (stepper.next_step());
   #else
   debug::printf("move forward\n");
-  stepper.setup_move(100);
+  stepper.setup_move(10);
   while(stepper.next_step()) {
     delay(10);
   }
