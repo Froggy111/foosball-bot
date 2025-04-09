@@ -1,0 +1,5 @@
+to have between 2 gears facing up:
+(((#gear3_z%4==0)?(2*PI/#gear3_z*(0/4)):((#gear3_z%4==1)?(2*PI/#gear3_z*(1/4)):((#gear3_z%4==2)?(2*PI/#gear3_z*(2/4)):(2*PI/#gear3_z*(3/4)))))) rad
+
+to have gear facing down:
+(((#gear4_z%4==0)?(2*PI/#gear4_z*(2/4)):((#gear4_z%4==1)?(2*PI/#gear4_z*(1/4)):((#gear4_z%4==2)?(2*PI/#gear4_z*(0/4)):(2*PI/#gear4_z*(3/4)))))) rad
