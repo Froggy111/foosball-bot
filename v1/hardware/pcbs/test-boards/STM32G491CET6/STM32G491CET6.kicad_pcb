@@ -1237,6 +1237,7 @@
 		(property "Reference" "H2"
 			(at 0 -4.2 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "cc314bce-c9ae-47c0-b90e-caa30f8883cd")
 			(effects
 				(font
@@ -1248,6 +1249,7 @@
 		(property "Value" "MountingHole_Pad"
 			(at 0 4.2 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "f52038d6-5496-4bc3-bc34-77766d8c064b")
 			(effects
 				(font
@@ -6882,6 +6884,7 @@
 		(property "Reference" "H3"
 			(at 0 -4.2 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "14a08402-46e3-4991-a339-0528d3e6058f")
 			(effects
 				(font
@@ -6893,6 +6896,7 @@
 		(property "Value" "MountingHole_Pad"
 			(at 0 4.2 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "8dbdb3e9-cae6-44d1-bb93-7d42d4a88658")
 			(effects
 				(font
@@ -7752,6 +7756,7 @@
 		(property "Reference" "H1"
 			(at 0 -4.2 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "7738db89-28ac-4a44-9922-fda42ad3f3d3")
 			(effects
 				(font
@@ -7763,6 +7768,7 @@
 		(property "Value" "MountingHole_Pad"
 			(at 0 4.2 0)
 			(layer "F.Fab")
+			(hide yes)
 			(uuid "8b5f5c20-435c-4fb0-ab85-71d90f10d4f0")
 			(effects
 				(font
