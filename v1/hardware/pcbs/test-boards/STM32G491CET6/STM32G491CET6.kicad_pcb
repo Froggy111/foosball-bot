@@ -3829,7 +3829,7 @@
 			(net 2 "GND")
 			(pinfunction "SHELL")
 			(pintype "unspecified")
-			(uuid "627335a3-3583-42ee-9c8e-bb30a3bacc6b")
+			(uuid "6d3e1415-e44e-46d9-ae5a-876c62e31a91")
 		)
 		(pad "14" thru_hole oval
 			(at 4.32 -1.83 90)
@@ -3851,7 +3851,7 @@
 			(net 2 "GND")
 			(pinfunction "SHELL")
 			(pintype "unspecified")
-			(uuid "9c5e3614-7af5-4316-b286-5256c4aee811")
+			(uuid "34da5821-cd7f-45f9-92da-80c6d0cbca42")
 		)
 		(embedded_fonts no)
 		(model "${KICAD_3RD_PARTY}/EasyEDA.3dshapes/USB-C-SMD_TYPE-C-6PIN-2MD-073.wrl"
