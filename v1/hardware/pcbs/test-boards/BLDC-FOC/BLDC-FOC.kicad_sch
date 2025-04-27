@@ -8945,7 +8945,7 @@
 				)
 			)
 		)
-		(property "Value" "470uF 100V (C443161)"
+		(property "Value" "820uF 100V (C443165)"
 			(at 41.529 113.03 90)
 			(effects
 				(font
@@ -10030,7 +10030,7 @@
 				)
 			)
 		)
-		(property "Value" "470uF 100V (C443161)"
+		(property "Value" "820uF 100V (C443165)"
 			(at 41.529 125.73 90)
 			(effects
 				(font
@@ -10866,7 +10866,7 @@
 				)
 			)
 		)
-		(property "Value" "470uF 100V (C443161)"
+		(property "Value" "820uF 100V (C443165)"
 			(at 41.529 87.63 90)
 			(effects
 				(font
@@ -10934,7 +10934,7 @@
 				)
 			)
 		)
-		(property "Value" "470uF 100V (C443161)"
+		(property "Value" "820uF 100V (C443165)"
 			(at 41.529 100.33 90)
 			(effects
 				(font
