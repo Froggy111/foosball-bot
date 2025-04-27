@@ -8876,7 +8876,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "60"
+		(property "Value" "60.4"
 			(at 223.52 52.07 0)
 			(effects
 				(font
@@ -14572,7 +14572,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "60"
+		(property "Value" "60.4"
 			(at 223.52 31.75 0)
 			(effects
 				(font
@@ -16209,7 +16209,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 135.89 93.98 0)
 			(effects
 				(font
