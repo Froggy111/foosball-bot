@@ -1,0 +1,5 @@
+/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G491CET6/stm32g491cet6-bldc/build/Debug/CMakeFiles/stm32g491cet6-bldc.dir
+/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G491CET6/stm32g491cet6-bldc/build/Debug/CMakeFiles/edit_cache.dir
+/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G491CET6/stm32g491cet6-bldc/build/Debug/CMakeFiles/rebuild_cache.dir
+/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G491CET6/stm32g491cet6-bldc/build/Debug/cmake/stm32cubemx/CMakeFiles/edit_cache.dir
+/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G491CET6/stm32g491cet6-bldc/build/Debug/cmake/stm32cubemx/CMakeFiles/rebuild_cache.dir
