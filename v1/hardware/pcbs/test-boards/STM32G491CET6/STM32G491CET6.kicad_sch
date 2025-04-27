@@ -5427,6 +5427,12 @@
 		(uuid "80edb1cb-97d3-4fde-9bee-ed47ecad5f84")
 	)
 	(junction
+		(at 107.95 54.61)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "86460f0f-a142-4cd6-ad0e-c202b592a32c")
+	)
+	(junction
 		(at 157.48 54.61)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -14191,6 +14197,73 @@
 			(project "STM32G491CET6"
 				(path "/ca218c03-4ff0-46e7-9492-03c917b647a9"
 					(reference "#PWR022")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 107.95 54.61 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "ed2d93b5-be7d-441e-9092-5317453eb22f")
+		(property "Reference" "#PWR057"
+			(at 111.76 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 104.14 54.61 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 107.95 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 107.95 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 107.95 54.61 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b83e1147-2f3c-4c7a-85bf-0ae398db4463")
+		)
+		(instances
+			(project "STM32G491CET6"
+				(path "/ca218c03-4ff0-46e7-9492-03c917b647a9"
+					(reference "#PWR057")
 					(unit 1)
 				)
 			)

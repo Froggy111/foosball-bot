@@ -529,7 +529,7 @@
       "plot": "",
       "pos_files": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "STM32G491CET6.step",
       "svg": "",
       "vrml": ""
     },
