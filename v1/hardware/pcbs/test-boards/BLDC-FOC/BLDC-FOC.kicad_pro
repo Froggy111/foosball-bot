@@ -133,13 +133,13 @@
         "min_microvia_drill": 0.1,
         "min_resolved_spokes": 2,
         "min_silk_clearance": 0.0,
-        "min_text_height": 0.8,
-        "min_text_thickness": 0.08,
+        "min_text_height": 0.6,
+        "min_text_thickness": 0.1,
         "min_through_hole_diameter": 0.3,
         "min_track_width": 0.0,
         "min_via_annular_width": 0.1,
         "min_via_diameter": 0.5,
-        "solder_mask_to_copper_clearance": 0.0,
+        "solder_mask_to_copper_clearance": 0.005,
         "use_height_for_length_calcs": true
       },
       "teardrop_options": [
@@ -499,7 +499,7 @@
     "classes": [
       {
         "bus_width": 12,
-        "clearance": 0.2,
+        "clearance": 0.175,
         "diff_pair_gap": 0.25,
         "diff_pair_via_gap": 0.25,
         "diff_pair_width": 0.2,
@@ -678,10 +678,6 @@
       "Root"
     ],
     [
-      "f146c2e8-39a9-4769-a182-5c52491f92a1",
-      "LM5164"
-    ],
-    [
       "2c47886a-2e8e-43d6-b093-2f1b8ef930b0",
       "opamp"
     ],
@@ -700,6 +696,10 @@
     [
       "8615cb28-4d22-4283-bd0d-60d76f6326db",
       "W-power-phase"
+    ],
+    [
+      "e3b29567-c573-4131-a595-2298182404e7",
+      "power"
     ],
     [
       "2c47886a-2e8e-43d6-b093-2f1b8ef930b0",
