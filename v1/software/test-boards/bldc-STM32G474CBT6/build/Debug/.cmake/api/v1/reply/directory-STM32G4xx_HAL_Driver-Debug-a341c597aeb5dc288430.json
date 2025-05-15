@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "STM32G4xx_HAL_Driver",
+		"source" : "STM32G4xx_HAL_Driver"
+	}
+}

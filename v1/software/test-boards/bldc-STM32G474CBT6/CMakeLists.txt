@@ -12,6 +12,10 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQURIED ON)
+set(CMAKE_CXX_EXTENSIONS ON)
+
 
 # Define the build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -37,8 +41,20 @@ message("Build type: " ${CMAKE_BUILD_TYPE})
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
+# Compile flags
+target_compile_definitions(${CMAKE_PROJECT_NAME} INTERFACE
+ USE_HAL_DRIVER
+ STM32G474xx
+ STM32_THREAD_SAFE_STRATEGY=4
+    $<$<CONFIG:Debug>:DEBUG>
+)
+
 # Add STM32CubeMX generated sources
+add_subdirectory(CMSIS)
+add_subdirectory(STM32G4xx_HAL_Driver)
+add_subdirectory(FreeRTOS)
 add_subdirectory(cmake/stm32cubemx)
+add_subdirectory(src)
 
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
@@ -63,6 +79,8 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME}
     stm32cubemx
-
+    hal
+    freertos
+    CMSIS
     # Add user defined libraries
 )

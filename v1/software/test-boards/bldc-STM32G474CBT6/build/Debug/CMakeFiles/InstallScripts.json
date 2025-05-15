@@ -1,0 +1,12 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6/build/Debug/cmake_install.cmake",
+		"/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6/build/Debug/CMSIS/cmake_install.cmake",
+		"/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6/build/Debug/STM32G4xx_HAL_Driver/cmake_install.cmake",
+		"/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6/build/Debug/FreeRTOS/cmake_install.cmake",
+		"/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6/build/Debug/cmake/stm32cubemx/cmake_install.cmake",
+		"/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6/build/Debug/src/cmake_install.cmake"
+	],
+	"Parallel" : false
+}
