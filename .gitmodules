@@ -1,0 +1,3 @@
+[submodule "v1/software/toolchains/stm32-cmake"]
+	path = v1/software/toolchains/stm32-cmake
+	url = https://github.com/ObKo/stm32-cmake
