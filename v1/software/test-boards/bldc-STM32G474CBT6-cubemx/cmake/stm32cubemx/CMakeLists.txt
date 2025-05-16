@@ -15,11 +15,15 @@ target_compile_definitions(stm32cubemx INTERFACE
 
 target_include_directories(stm32cubemx INTERFACE
     ../../Core/Inc
+    ../../USB_Device/App
+    ../../USB_Device/Target
     ../../Drivers/STM32G4xx_HAL_Driver/Inc
     ../../Drivers/STM32G4xx_HAL_Driver/Inc/Legacy
     ../../Middlewares/Third_Party/FreeRTOS/Source/include
     ../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2
     ../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F
+    ../../Middlewares/ST/STM32_USB_Device_Library/Core/Inc
+    ../../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
     ../../Drivers/CMSIS/Device/ST/STM32G4xx/Include
     ../../Drivers/CMSIS/Include
 )
@@ -35,15 +39,18 @@ target_sources(stm32cubemx INTERFACE
     ../../Core/Src/spi.c
     ../../Core/Src/tim.c
     ../../Core/Src/usart.c
-    ../../Core/Src/usb.c
     ../../Core/Src/stm32g4xx_it.c
     ../../Core/Src/stm32g4xx_hal_msp.c
     ../../Core/Src/stm32g4xx_hal_timebase_tim.c
+    ../../USB_Device/App/usb_device.c
+    ../../USB_Device/App/usbd_desc.c
+    ../../USB_Device/App/usbd_cdc_if.c
+    ../../USB_Device/Target/usbd_conf.c
     ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_tim.c
     ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_tim_ex.c
-    ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_adc.c
-    ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_adc_ex.c
-    ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_ll_adc.c
+    ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_pcd.c
+    ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_pcd_ex.c
+    ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_ll_usb.c
     ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal.c
     ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_rcc.c
     ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_rcc_ex.c
@@ -57,6 +64,9 @@ target_sources(stm32cubemx INTERFACE
     ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_pwr.c
     ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_pwr_ex.c
     ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_cortex.c
+    ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_adc.c
+    ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_adc_ex.c
+    ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_ll_adc.c
     ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_fdcan.c
     ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_i2c.c
     ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_i2c_ex.c
@@ -66,9 +76,6 @@ target_sources(stm32cubemx INTERFACE
     ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_spi_ex.c
     ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_uart.c
     ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_uart_ex.c
-    ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_pcd.c
-    ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_hal_pcd_ex.c
-    ../../Drivers/STM32G4xx_HAL_Driver/Src/stm32g4xx_ll_usb.c
     ../../Core/Src/system_stm32g4xx.c
     ../../Middlewares/Third_Party/FreeRTOS/Source/croutine.c
     ../../Middlewares/Third_Party/FreeRTOS/Source/event_groups.c
@@ -80,6 +87,10 @@ target_sources(stm32cubemx INTERFACE
     ../../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c
     ../../Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c
     ../../Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
+    ../../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c
+    ../../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c
+    ../../Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c
+    ../../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c
     ../../Core/Src/sysmem.c
     ../../Core/Src/syscalls.c
     ../../startup_stm32g474xx.s

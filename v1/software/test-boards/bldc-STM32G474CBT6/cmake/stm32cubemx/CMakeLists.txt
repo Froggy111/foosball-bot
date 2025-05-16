@@ -15,8 +15,6 @@ target_compile_definitions(stm32cubemx INTERFACE
 
 target_include_directories(stm32cubemx INTERFACE
     ../../Core/Inc
-    ../../Drivers/CMSIS/Device/ST/STM32G4xx/Include
-    ../../Drivers/CMSIS/Include
 )
 
 target_sources(stm32cubemx INTERFACE

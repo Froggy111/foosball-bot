@@ -1,0 +1,170 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4
+					],
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "CMSIS",
+					"jsonFile" : "directory-CMSIS-Debug-de49fd7b1231387ed663.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 1,
+					"source" : "CMSIS"
+				},
+				{
+					"build" : "STM32G4xx_HAL_Driver",
+					"jsonFile" : "directory-STM32G4xx_HAL_Driver-Debug-a341c597aeb5dc288430.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 2,
+					"source" : "STM32G4xx_HAL_Driver"
+				},
+				{
+					"build" : "FreeRTOS",
+					"jsonFile" : "directory-FreeRTOS-Debug-b7fbe72bc94798a5d648.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 3,
+					"source" : "FreeRTOS"
+				},
+				{
+					"build" : "src",
+					"childIndexes" : 
+					[
+						5
+					],
+					"jsonFile" : "directory-src-Debug-b6cf2213fc5053b67c22.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "src"
+				},
+				{
+					"build" : "src/init",
+					"jsonFile" : "directory-src.init-Debug-b6bff9f53f628b05c18b.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.22"
+					},
+					"parentIndex" : 4,
+					"projectIndex" : 0,
+					"source" : "src/init",
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3
+					],
+					"directoryIndexes" : 
+					[
+						0,
+						4,
+						5
+					],
+					"name" : "bldc-STM32G474CTB6",
+					"targetIndexes" : 
+					[
+						0,
+						1
+					]
+				},
+				{
+					"directoryIndexes" : 
+					[
+						1
+					],
+					"name" : "CMSIS",
+					"parentIndex" : 0
+				},
+				{
+					"directoryIndexes" : 
+					[
+						2
+					],
+					"name" : "STM32G4xx_HAL_Driver",
+					"parentIndex" : 0
+				},
+				{
+					"directoryIndexes" : 
+					[
+						3
+					],
+					"name" : "freertos",
+					"parentIndex" : 0
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "bldc-STM32G474CTB6::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-bldc-STM32G474CTB6-Debug-4f28e433b61e9372dc70.json",
+					"name" : "bldc-STM32G474CTB6",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "init::@cb32bd8338fc6aac38ff",
+					"jsonFile" : "target-init-Debug-69aec1e03bacc96943d5.json",
+					"name" : "init",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6/build/Debug",
+		"source" : "/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 8
+	}
+}

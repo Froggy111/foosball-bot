@@ -51,10 +51,9 @@ extern "C" {
 
 /* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
-void test_pwm_task(void *args);
 
 /* USER CODE BEGIN EFP */
-
+void test_pwm_task(void *args);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

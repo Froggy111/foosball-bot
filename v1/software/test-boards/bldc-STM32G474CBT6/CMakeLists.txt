@@ -34,14 +34,11 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 # Enable CMake support for ASM and C languages
 enable_language(C ASM)
 
-# Core project settings
 project(${CMAKE_PROJECT_NAME})
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
-# Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
-# Compile flags
 target_compile_definitions(${CMAKE_PROJECT_NAME} INTERFACE
  USE_HAL_DRIVER
  STM32G474xx
@@ -49,38 +46,13 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} INTERFACE
     $<$<CONFIG:Debug>:DEBUG>
 )
 
-# Add STM32CubeMX generated sources
 add_subdirectory(CMSIS)
 add_subdirectory(STM32G4xx_HAL_Driver)
 add_subdirectory(FreeRTOS)
-add_subdirectory(cmake/stm32cubemx)
 add_subdirectory(src)
 
-# Link directories setup
-target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined library search paths
-)
-
-# Add sources to executable
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user sources here
-)
-
-# Add include paths
-target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined include paths
-)
-
-# Add project symbols (macros)
-target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
-    # Add user defined symbols
-)
-
-# Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME}
-    stm32cubemx
     hal
     freertos
     CMSIS
-    # Add user defined libraries
 )

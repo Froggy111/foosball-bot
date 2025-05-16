@@ -7,7 +7,8 @@
 /home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6/build/Debug/STM32G4xx_HAL_Driver/CMakeFiles/rebuild_cache.dir
 /home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6/build/Debug/FreeRTOS/CMakeFiles/edit_cache.dir
 /home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6/build/Debug/FreeRTOS/CMakeFiles/rebuild_cache.dir
-/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6/build/Debug/cmake/stm32cubemx/CMakeFiles/edit_cache.dir
-/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6/build/Debug/cmake/stm32cubemx/CMakeFiles/rebuild_cache.dir
 /home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6/build/Debug/src/CMakeFiles/edit_cache.dir
 /home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6/build/Debug/src/CMakeFiles/rebuild_cache.dir
+/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6/build/Debug/src/init/CMakeFiles/init.dir
+/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6/build/Debug/src/init/CMakeFiles/edit_cache.dir
+/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6/build/Debug/src/init/CMakeFiles/rebuild_cache.dir
