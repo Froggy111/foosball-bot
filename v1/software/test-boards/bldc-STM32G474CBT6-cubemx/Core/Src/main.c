@@ -180,46 +180,46 @@ void SystemClock_Config(void) {
 void test_pwm_task(void *args) {
   uint32_t pwm_period = htim1.Init.Period;
 
-  // // U phase
-  // if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1) != HAL_OK) {
-  //   Error_Handler();
-  // }
-  // if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1) != HAL_OK) {
-  //   Error_Handler();
-  // }
-  //
-  // // V phase
-  // if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2) != HAL_OK) {
-  //   Error_Handler();
-  // }
-  // if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2) != HAL_OK) {
-  //   Error_Handler();
-  // }
-  //
-  // // W phase
-  // if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3) != HAL_OK) {
-  //   Error_Handler();
-  // }
-  // if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3) != HAL_OK) {
-  //   Error_Handler();
-  // }
+  // U phase
+  if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1) != HAL_OK) {
+    Error_Handler();
+  }
+  if (HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1) != HAL_OK) {
+    Error_Handler();
+  }
+
+  // V phase
+  if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2) != HAL_OK) {
+    Error_Handler();
+  }
+  if (HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_2) != HAL_OK) {
+    Error_Handler();
+  }
+
+  // W phase
+  if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3) != HAL_OK) {
+    Error_Handler();
+  }
+  if (HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_3) != HAL_OK) {
+    Error_Handler();
+  }
 
   for (;;) {
+    // V phase
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, pwm_period * 20 / 100);
+    // W phase
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
+    osDelay(pdMS_TO_TICKS(2000));
     // // V phase
-    // __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, pwm_period / 16);
+    // __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
     // // W phase
-    // __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
-    // // osDelay(pdMS_TO_TICKS(2000));
-    // // // V phase
-    // // __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
-    // // // W phase
-    // // __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, pwm_period / 16);
-    // // osDelay(pdMS_TO_TICKS(2000));
+    // __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, pwm_period / 16);
+    // osDelay(pdMS_TO_TICKS(2000));
 
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-    osDelay(pdMS_TO_TICKS(2000));
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_RESET);
-    osDelay(pdMS_TO_TICKS(2000));
+    // HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, GPIO_PIN_SET);
+    // osDelay(pdMS_TO_TICKS(2000));
+    // HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, GPIO_PIN_RESET);
+    // osDelay(pdMS_TO_TICKS(2000));
   }
 }
 
