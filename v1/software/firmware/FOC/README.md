@@ -18,4 +18,7 @@ Select a build preset (defined in CMakePresets.json)
 CMake >= 4.0
 Ninja
 stm32-cmake
+CMSIS-V2
+FreeRTOS (CMSIS-V2)
+STM32G4 HAL
 ```
