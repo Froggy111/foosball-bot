@@ -9,3 +9,5 @@ stm32_fetch_cube(G4)
 find_package(CMSIS COMPONENTS STM32G4 REQUIRED)
 find_package(HAL COMPONENTS STM32G4 REQUIRED)
 find_package(FreeRTOS COMPONENTS STM32G4 REQUIRED)
+
+add_subdirectory(src)
