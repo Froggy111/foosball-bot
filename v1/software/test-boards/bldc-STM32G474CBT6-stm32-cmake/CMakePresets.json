@@ -1,0 +1,42 @@
+{
+    "version": 4,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 20,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "debug",
+            "displayName": "Debug Build (Ninja)",
+            "description": "Configures for Debug build, using Ninja generator by default.",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "release",
+            "displayName": "Release Build (Ninja)",
+            "description": "Configures for Release build, using Ninja generator by default.",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "debug",
+            "configurePreset": "debug",
+            "displayName": "Build Debug (Ninja)"
+        },
+        {
+            "name": "release",
+            "configurePreset": "release",
+            "displayName": "Build Release (Ninja)"
+        }
+    ]
+}
