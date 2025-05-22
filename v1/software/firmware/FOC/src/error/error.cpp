@@ -1,5 +1,4 @@
 #include "error.hpp"
-#include "timing.hpp"
 
 void error::handler(void) {
   while (1) {

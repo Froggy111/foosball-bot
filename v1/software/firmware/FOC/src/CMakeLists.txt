@@ -1,5 +1,6 @@
 add_subdirectory(error)
 add_subdirectory(clock)
+add_subdirectory(peripherals)
 
 set(CUSTOM_LIBS
 error

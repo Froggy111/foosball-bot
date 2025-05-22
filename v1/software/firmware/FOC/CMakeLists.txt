@@ -13,6 +13,9 @@ set(MCU_SUBSERIES G474CB)
 
 project(${PROJECT_NAME} C CXX ASM)
 
+# RWX error suppression
+add_link_options("-Wl,--no-warn-rwx-segments")
+
 # HAL config
 add_compile_definitions(
     USE_CMSIS_RTOS_V2
@@ -51,6 +54,9 @@ HAL::STM32::${MCU_SERIES}
 HAL::STM32::${MCU_SERIES}::RCC
 HAL::STM32::${MCU_SERIES}::GPIO
 HAL::STM32::${MCU_SERIES}::CORTEX
+HAL::STM32::${MCU_SERIES}::PWR
+HAL::STM32::${MCU_SERIES}::PWREx
+HAL::STM32::${MCU_SERIES}::FLASH
 ${FREERTOS_NAMESPACE}::Timers
 ${FREERTOS_NAMESPACE}::Heap::1
 ${FREERTOS_NAMESPACE}::ARM_C${MCU_CORE}

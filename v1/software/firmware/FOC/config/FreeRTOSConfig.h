@@ -1,6 +1,9 @@
 #ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
 
+#if (__cplusplus)
+extern "C" {
+#endif
 #if defined(__ICCARM__) || defined(__CC_ARM) || defined(__GNUC__)
 #include <stdint.h>
 extern uint32_t SystemCoreClock;
@@ -121,5 +124,9 @@ standard names. */
 
 /* Section where parameter definitions can be added (for instance, to override
  * default ones in FreeRTOS.h) */
+
+#if (__cplusplus)
+}
+#endif
 
 #endif /* FREERTOS_CONFIG_H */
