@@ -1,0 +1,2 @@
+CompileFlags:
+  Add: [-D_LIBCPP_HAS_NO_THREADS=1]
