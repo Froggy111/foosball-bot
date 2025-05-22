@@ -220,7 +220,7 @@ CMAKE_STRIP:FILEPATH=/usr/bin/arm-none-eabi-strip
 //Path to a program.
 CMAKE_TAPI:FILEPATH=CMAKE_TAPI-NOTFOUND
 
-//No help, variable specified on the command line.
+//The CMake toolchain file
 CMAKE_TOOLCHAIN_FILE:FILEPATH=/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6-cubemx/cmake/gcc-arm-none-eabi.cmake
 
 //If this value is on, makefiles will be generated without the

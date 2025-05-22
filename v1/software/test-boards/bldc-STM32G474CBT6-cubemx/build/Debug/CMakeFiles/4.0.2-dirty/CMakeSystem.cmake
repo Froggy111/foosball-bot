@@ -1,6 +1,6 @@
-set(CMAKE_HOST_SYSTEM "Linux-6.14.5-arch1-1")
+set(CMAKE_HOST_SYSTEM "Linux-6.14.7-arch1-1")
 set(CMAKE_HOST_SYSTEM_NAME "Linux")
-set(CMAKE_HOST_SYSTEM_VERSION "6.14.5-arch1-1")
+set(CMAKE_HOST_SYSTEM_VERSION "6.14.7-arch1-1")
 set(CMAKE_HOST_SYSTEM_PROCESSOR "x86_64")
 
 include("/home/ljy/repos/foosball-bot/v1/software/test-boards/bldc-STM32G474CBT6-cubemx/cmake/gcc-arm-none-eabi.cmake")

@@ -8,7 +8,7 @@ events:
       - "CMakeLists.txt:31 (enable_language)"
     message: |
       The target system is: Generic -  - arm
-      The host system is: Linux - 6.14.5-arch1-1 - x86_64
+      The host system is: Linux - 6.14.7-arch1-1 - x86_64
   -
     kind: "message-v1"
     backtrace:

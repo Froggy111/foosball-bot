@@ -205,20 +205,42 @@ void test_pwm_task(void *args) {
   }
 
   for (;;) {
-    // V phase
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, pwm_period * 20 / 100);
-    // W phase
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
-    osDelay(pdMS_TO_TICKS(2000));
+    for (int i = 0; i <= 1000; i++) {
+      // V phase
+      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1,
+                            (float)pwm_period * 95 / 100 * ((float)i / 1000));
+      // W phase
+      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
+      osDelay(pdMS_TO_TICKS(1));
+    }
+    for (int i = 1000; i >= 0; i--) {
+      // V phase
+      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1,
+                            (float)pwm_period * 95 / 100 * ((float)i / 1000));
+      // W phase
+      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
+      osDelay(pdMS_TO_TICKS(1));
+    }
+    for (int i = 0; i <= 1000; i++) {
+      // V phase
+      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
+      // W phase
+      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3,
+                            (float)pwm_period * 95 / 100 * ((float)i / 1000));
+      osDelay(pdMS_TO_TICKS(1));
+    }
+    for (int i = 1000; i >= 0; i--) {
+      // V phase
+      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
+      // W phase
+      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3,
+                            (float)pwm_period * 95 / 100 * ((float)i / 1000));
+      osDelay(pdMS_TO_TICKS(1));
+    }
     // // V phase
     // __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
     // // W phase
-    // __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, pwm_period / 16);
-    // osDelay(pdMS_TO_TICKS(2000));
-
-    // HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, GPIO_PIN_SET);
-    // osDelay(pdMS_TO_TICKS(2000));
-    // HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, GPIO_PIN_RESET);
+    // __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, pwm_period * 95 / 100);
     // osDelay(pdMS_TO_TICKS(2000));
   }
 }
