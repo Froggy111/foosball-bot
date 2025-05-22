@@ -22,3 +22,9 @@ CMSIS-V2
 FreeRTOS (CMSIS-V2)
 STM32G4 HAL
 ```
+
+## Directories
+
+```config/``` is for configuration headers of external libraries\
+```middlewares/``` is for STM32 middlewares (e.g. USB)\
+```src/``` is FOC firmware
