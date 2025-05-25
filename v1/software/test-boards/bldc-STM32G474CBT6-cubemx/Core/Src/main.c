@@ -28,6 +28,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "usb_device.h"
+#include "usbd_cdc_if.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -95,18 +96,18 @@ int main(void) {
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_ADC1_Init();
-  MX_ADC2_Init();
-  MX_FDCAN2_Init();
-  MX_I2C1_Init();
-  MX_OPAMP1_Init();
-  MX_OPAMP2_Init();
-  MX_OPAMP3_Init();
-  MX_SPI1_Init();
-  MX_TIM1_Init();
-  MX_USART1_UART_Init();
-  MX_USART2_UART_Init();
+  // MX_GPIO_Init();
+  // MX_ADC1_Init();
+  // MX_ADC2_Init();
+  // MX_FDCAN2_Init();
+  // MX_I2C1_Init();
+  // MX_OPAMP1_Init();
+  // MX_OPAMP2_Init();
+  // MX_OPAMP3_Init();
+  // MX_SPI1_Init();
+  // MX_TIM1_Init();
+  // MX_USART1_UART_Init();
+  // MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -142,18 +143,19 @@ void SystemClock_Config(void) {
 
   /** Configure the main internal regulator output voltage
    */
-  HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1);
+  HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1_BOOST);
 
   /** Initializes the RCC Oscillators according to the specified parameters
    * in the RCC_OscInitTypeDef structure.
    */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+  RCC_OscInitStruct.OscillatorType =
+      RCC_OSCILLATORTYPE_HSI48 | RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.HSI48State = RCC_HSI48_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = RCC_PLLM_DIV1;
-  RCC_OscInitStruct.PLL.PLLN = 12;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = RCC_PLLM_DIV6;
+  RCC_OscInitStruct.PLL.PLLN = 80;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = RCC_PLLQ_DIV4;
   RCC_OscInitStruct.PLL.PLLR = RCC_PLLR_DIV2;
@@ -165,12 +167,12 @@ void SystemClock_Config(void) {
    */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
                                 RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK) {
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK) {
     Error_Handler();
   }
 }
@@ -180,68 +182,76 @@ void SystemClock_Config(void) {
 void test_pwm_task(void *args) {
   uint32_t pwm_period = htim1.Init.Period;
 
-  // U phase
-  if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1) != HAL_OK) {
-    Error_Handler();
-  }
-  if (HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1) != HAL_OK) {
-    Error_Handler();
-  }
-
-  // V phase
-  if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2) != HAL_OK) {
-    Error_Handler();
-  }
-  if (HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_2) != HAL_OK) {
-    Error_Handler();
-  }
-
-  // W phase
-  if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3) != HAL_OK) {
-    Error_Handler();
-  }
-  if (HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_3) != HAL_OK) {
-    Error_Handler();
-  }
+  // // U phase
+  // if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1) != HAL_OK) {
+  //   Error_Handler();
+  // }
+  // if (HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1) != HAL_OK) {
+  //   Error_Handler();
+  // }
+  //
+  // // V phase
+  // if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2) != HAL_OK) {
+  //   Error_Handler();
+  // }
+  // if (HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_2) != HAL_OK) {
+  //   Error_Handler();
+  // }
+  //
+  // // W phase
+  // if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3) != HAL_OK) {
+  //   Error_Handler();
+  // }
+  // if (HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_3) != HAL_OK) {
+  //   Error_Handler();
+  // }
+  //
+  uint8_t data[] = "hello world";
 
   for (;;) {
-    for (int i = 0; i <= 1000; i++) {
-      // V phase
-      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1,
-                            (float)pwm_period * 95 / 100 * ((float)i / 1000));
-      // W phase
-      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
-      osDelay(pdMS_TO_TICKS(1));
-    }
-    for (int i = 1000; i >= 0; i--) {
-      // V phase
-      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1,
-                            (float)pwm_period * 95 / 100 * ((float)i / 1000));
-      // W phase
-      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
-      osDelay(pdMS_TO_TICKS(1));
-    }
-    for (int i = 0; i <= 1000; i++) {
-      // V phase
-      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
-      // W phase
-      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3,
-                            (float)pwm_period * 95 / 100 * ((float)i / 1000));
-      osDelay(pdMS_TO_TICKS(1));
-    }
-    for (int i = 1000; i >= 0; i--) {
-      // V phase
-      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
-      // W phase
-      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3,
-                            (float)pwm_period * 95 / 100 * ((float)i / 1000));
-      osDelay(pdMS_TO_TICKS(1));
-    }
-    // // V phase
-    // __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
-    // // W phase
-    // __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, pwm_period * 95 / 100);
-    // osDelay(pdMS_TO_TICKS(2000));
+    CDC_Transmit_FS(data, sizeof(data));
+    osDelay(1000);
+    // for (int i = 0; i <= 1000; i++) {
+    //   // V phase
+    //   __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1,
+    //                         (float)pwm_period * 95 / 100 * ((float)i /
+    //                         1000));
+    //   // W phase
+    //   __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
+    //   osDelay(pdMS_TO_TICKS(1));
+    // }
+    // for (int i = 1000; i >= 0; i--) {
+    //   // V phase
+    //   __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1,
+    //                         (float)pwm_period * 95 / 100 * ((float)i /
+    //                         1000));
+    //   // W phase
+    //   __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 0);
+    //   osDelay(pdMS_TO_TICKS(1));
+    // }
+    // for (int i = 0; i <= 1000; i++) {
+    //   // V phase
+    //   __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
+    //   // W phase
+    //   __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3,
+    //                         (float)pwm_period * 95 / 100 * ((float)i /
+    //                         1000));
+    //   osDelay(pdMS_TO_TICKS(1));
+    // }
+    // for (int i = 1000; i >= 0; i--) {
+    //   // V phase
+    //   __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
+    //   // W phase
+    //   __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3,
+    //                         (float)pwm_period * 95 / 100 * ((float)i /
+    //                         1000));
+    //   osDelay(pdMS_TO_TICKS(1));
+    // }
+    // // // V phase
+    // // __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
+    // // // W phase
+    // // __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, pwm_period * 95 / 100);
+    // // osDelay(pdMS_TO_TICKS(2000));
   }
 }
 
