@@ -16,11 +16,14 @@ void clock::init() {
   }
 
   // HSE (using)
-  osc_init.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  osc_init.OscillatorType = RCC_OSCILLATORTYPE_HSI48 | RCC_OSCILLATORTYPE_HSE;
   osc_init.HSEState = RCC_HSE_ON;
 
+  // HSI48
+  osc_init.HSI48State = RCC_HSI48_ON;
+
   // HSI (not using)
-  osc_init.HSIState = RCC_HSI_OFF;
+  osc_init.HSIState = RCC_HSI_ON;
   osc_init.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
 
   // PLL
@@ -63,4 +66,9 @@ void clock::init() {
   if (HAL_RCC_ClockConfig(&clk_init, FLASH_LATENCY_4) != HAL_OK) {
     error::handler();
   }
+}
+
+extern "C" {
+
+void SystemClock_Config(void) { clock::init(); }
 }

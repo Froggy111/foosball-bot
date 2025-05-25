@@ -6,3 +6,7 @@ void error::handler(void) {
     __asm__ __volatile__("nop");
   }
 }
+
+extern "C" {
+void Error_Handler(void) { error::handler(); }
+}

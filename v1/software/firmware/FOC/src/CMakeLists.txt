@@ -5,6 +5,7 @@ add_subdirectory(peripherals)
 set(CUSTOM_LIBS
 error
 clock
+usb
 )
 
 set(TARGET_NAME "${PROJECT_NAME}-${MCU_SERIES}")
@@ -12,14 +13,17 @@ add_executable(${TARGET_NAME})
 
 target_sources(${TARGET_NAME}
 PUBLIC
-    main.hpp
+    include/main.hpp
+    include/core_interrupts.hpp
 PRIVATE
     main.cpp
+    core_interrupts.cpp
 )
 
 target_include_directories(${TARGET_NAME}
 PRIVATE
     ${INCLUDE_DIRS}
+    include/
 )
 
 

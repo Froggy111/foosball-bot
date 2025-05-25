@@ -2,6 +2,10 @@
 
 #include <stm32g4xx_hal.h>
 
-void usb::init(void) {
-    if (USBD_In)
-}
+#include "error.hpp"
+
+#if PRINTF_USB == 1
+
+extern "C" {}
+
+#endif
