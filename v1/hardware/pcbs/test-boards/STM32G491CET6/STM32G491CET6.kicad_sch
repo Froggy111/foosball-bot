@@ -11512,15 +11512,15 @@
 		(fields_autoplaced yes)
 		(uuid "7d217c38-18a5-4071-9872-0062e80d9891")
 		(property "Reference" "Y1"
-			(at 52.07 53.9339 0)
+			(at 50.8 53.9339 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "Crystal_GND24"
-			(at 52.07 56.4739 0)
+		(property "Value" "C19674287"
+			(at 50.8 56.4739 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -15130,7 +15130,7 @@
 				)
 			)
 		)
-		(property "Value" "Crystal"
+		(property "Value" "C48615"
 			(at 41.91 77.47 0)
 			(effects
 				(font
