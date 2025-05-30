@@ -1,12 +1,23 @@
-add_subdirectory(error)
-add_subdirectory(clock)
-add_subdirectory(peripherals)
-
 set(CUSTOM_LIBS
 error
 clock
 usb
+msp
 )
+
+get_filename_component(CONFIG_DIR "include/" ABSOLUTE)
+set(INCLUDE_DIRS
+${INCLUDE_DIRS}
+${CONFIG_DIR}
+)
+
+message(STATUS "COMMON_LIBS: ${COMMON_LIBS}")
+message(STATUS "INCLUDE_DIRS: ${INCLUDE_DIRS}")
+message(STATUS "CUSTOM_LIBS: ${CUSTOM_LIBS}")
+
+add_subdirectory(error)
+add_subdirectory(clock)
+add_subdirectory(peripherals)
 
 set(TARGET_NAME "${PROJECT_NAME}-${MCU_SERIES}")
 add_executable(${TARGET_NAME})
@@ -26,6 +37,7 @@ PRIVATE
     include/
 )
 
+message(STATUS "COMMON_LIBS: ${COMMON_LIBS}")
 
 target_link_libraries(${TARGET_NAME}
 PRIVATE
