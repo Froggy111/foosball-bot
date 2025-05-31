@@ -1,5 +1,6 @@
 #include "usb.hpp"
 
+#include <stdio.h>
 #include <stm32g4xx_hal.h>
 
 #include "config.hpp"

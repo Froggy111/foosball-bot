@@ -2,10 +2,10 @@ add_library(usb)
 
 target_sources(usb
 PRIVATE
-    usb.cpp
     usb_device.c
     usbd_cdc_if.c
     usbd_desc.c
+    usb.cpp
 PUBLIC
     include/usb.hpp
     include/usb_device.h
