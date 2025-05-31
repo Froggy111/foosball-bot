@@ -1,31 +1,86 @@
 {
     "version": 4,
     "cmakeMinimumRequired": {
-        "major": 3,
-        "minor": 20,
+        "major": 4,
+        "minor": 0,
         "patch": 0
     },
     "configurePresets": [
         {
-            "name": "debug",
-            "displayName": "Debug Build (Ninja)",
-            "description": "Configures for Debug build, using Ninja generator by default.",
+            "name": "common-settings",
+            "hidden": true,
             "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_C_FLAGS": "-Wall -Wextra -Wpedantic",
+                "CMAKE_CXX_FLAGS": "-Wall -Wextra -Wpedantic"
+            }
+        },
+        {
+            "name": "debug",
+            "inherits": "common-settings",
+            "displayName": "Debug Build",
+            "description": "Configures for Debug build.",
             "binaryDir": "${sourceDir}/build/debug",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_C_FLAGS_DEBUG": "-Og -g3 -Wall -Wextra -Wpedantic",
-                "CMAKE_CXX_FLAGS_DEBUG": "-Og -g3 -Wall -Wextra -Wpedantic"
+                "CMAKE_C_FLAGS_DEBUG": "-Og -g3",
+                "CMAKE_CXX_FLAGS_DEBUG": "-Og -g3"
             }
         },
         {
             "name": "release",
-            "displayName": "Release Build (Ninja)",
-            "description": "Configures for Release build, using Ninja generator by default.",
-            "generator": "Ninja",
+            "inherits": "common-settings",
+            "displayName": "Release Build (Optimized for Speed)",
+            "description": "Configures for Release build, optimized for speed.",
             "binaryDir": "${sourceDir}/build/release",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_C_FLAGS_RELEASE": "-O3 -DNDEBUG",
+                "CMAKE_CXX_FLAGS_RELEASE": "-O3 -DNDEBUG"
+            }
+        },
+        {
+            "name": "minsizerel",
+            "inherits": "common-settings",
+            "displayName": "Release Build (Optimized for Size)",
+            "description": "Configures for Release build, optimized for smallest binary size.",
+            "binaryDir": "${sourceDir}/build/minsizerel",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "MinSizeRel",
+                "CMAKE_C_FLAGS_MINSIZEREL": "-Os -DNDEBUG",
+                "CMAKE_CXX_FLAGS_MINSIZEREL": "-Os -DNDEBUG"
+            }
+        },
+        {
+            "name": "relwithdebinfo",
+            "inherits": "common-settings",
+            "displayName": "Release Build with Debug Info",
+            "description": "Configures for Release build with debug information included.",
+            "binaryDir": "${sourceDir}/build/relwithdebinfo",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "CMAKE_C_FLAGS_RELWITHDEBINFO": "-O2 -g -DNDEBUG",
+                "CMAKE_CXX_FLAGS_RELWITHDEBINFO": "-O2 -g -DNDEBUG"
+            }
+        },
+        {
+            "name": "release-lto",
+            "inherits": "release",
+            "displayName": "Release Build (Optimized for Speed + LTO)",
+            "description": "Configures for Release build with Link-Time Optimization enabled.",
+            "binaryDir": "${sourceDir}/build/release-lto",
+            "cacheVariables": {
+                "CMAKE_INTERPROCEDURAL_OPTIMIZATION": true
+            }
+        },
+        {
+            "name": "minsizerel-lto",
+            "inherits": "minsizerel",
+            "displayName": "Release Build (Optimized for Size + LTO)",
+            "description": "Configures for MinSizeRel build with Link-Time Optimization enabled.",
+            "binaryDir": "${sourceDir}/build/minsizerel-lto",
+            "cacheVariables": {
+                "CMAKE_INTERPROCEDURAL_OPTIMIZATION": true
             }
         }
     ],
@@ -33,12 +88,33 @@
         {
             "name": "debug",
             "configurePreset": "debug",
-            "displayName": "Build Debug (Ninja)"
+            "displayName": "Build Debug"
         },
         {
             "name": "release",
             "configurePreset": "release",
-            "displayName": "Build Release (Ninja)"
+            "displayName": "Build Release (Speed)"
+        },
+        {
+            "name": "minsizerel",
+            "configurePreset": "minsizerel",
+            "displayName": "Build Release (Size)"
+        },
+        {
+            "name": "relwithdebinfo",
+            "configurePreset": "relwithdebinfo",
+            "displayName": "Build Release with Debug Info"
+        },
+        {
+            "name": "release-lto",
+            "configurePreset": "release-lto",
+            "displayName": "Build Release (Speed + LTO)"
+        },
+        {
+            "name": "minsizerel-lto",
+            "configurePreset": "minsizerel-lto",
+            "displayName": "Build Release (Size + LTO)"
         }
-    ]
+    ],
+    "testPresets": []
 }
