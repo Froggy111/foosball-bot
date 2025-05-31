@@ -4,7 +4,7 @@ target_sources(debug
 PRIVATE
     debug.cpp
 PUBLIC
-    debug.hpp
+    include/debug.hpp
 )
 
 target_include_directories(debug
