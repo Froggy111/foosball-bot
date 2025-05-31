@@ -12,6 +12,10 @@ set(MCU_CORE M4F)
 set(MCU_SUBSERIES G474CB)
 
 project(${PROJECT_NAME} C CXX ASM)
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # RWX error suppression
 add_link_options("-Wl,--no-warn-rwx-segments")
