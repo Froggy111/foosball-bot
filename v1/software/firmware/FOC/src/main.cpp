@@ -13,7 +13,7 @@ int main(void) {
   HAL_Init();
   clock::init();
 
-  osThreadId_t usb_write_task_handle;
+  [[maybe_unused]] osThreadId_t usb_write_task_handle;
   const osThreadAttr_t usb_write_task_attr = {
       .name = (char *)"USB write",
       .stack_size = 1024,
@@ -31,11 +31,12 @@ int main(void) {
   }
 }
 
-void usb_write_task(void *args) {
+void usb_write_task([[maybe_unused]] void *args) {
   usb::init();
   uint8_t str[] = "Hello World!\r\n";
   for (;;) {
-    usb::write(str, sizeof(str));
+    // usb::write(str, sizeof(str));
+    printf("%s", (char *)str);
     osDelay(1000);
   }
 }

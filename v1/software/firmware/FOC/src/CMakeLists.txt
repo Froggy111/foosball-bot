@@ -15,8 +15,9 @@ message(STATUS "COMMON_LIBS: ${COMMON_LIBS}")
 message(STATUS "INCLUDE_DIRS: ${INCLUDE_DIRS}")
 message(STATUS "CUSTOM_LIBS: ${CUSTOM_LIBS}")
 
-add_subdirectory(error)
 add_subdirectory(clock)
+add_subdirectory(debug)
+add_subdirectory(error)
 add_subdirectory(peripherals)
 
 set(TARGET_NAME "${PROJECT_NAME}-${MCU_SERIES}")
@@ -29,6 +30,7 @@ PUBLIC
 PRIVATE
     main.cpp
     core_interrupts.cpp
+    syscalls.cpp
 )
 
 target_include_directories(${TARGET_NAME}
