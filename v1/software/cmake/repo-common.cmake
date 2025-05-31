@@ -22,7 +22,7 @@ message(STATUS "repo-common.cmake: Adding ${STM32_CMAKE_MODULES_PATH} to CMAKE_M
 list(PREPEND CMAKE_MODULE_PATH "${STM32_CMAKE_MODULES_PATH}")
 message(STATUS "repo-common.cmake: CMAKE_MODULE_PATH is ${CMAKE_MODULE_PATH}")
 
-# make sure to generate compile_commands.jso
+# make sure to generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 message(STATUS "repo-common.cmake: Shared configurations applied.")
