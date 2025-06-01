@@ -43,4 +43,4 @@ void fatal(const char *str, ...);
 #else
 inline void fatal([[maybe_unused]] const char *str, ...) {}
 #endif
-} // namespace debug
+}  // namespace debug

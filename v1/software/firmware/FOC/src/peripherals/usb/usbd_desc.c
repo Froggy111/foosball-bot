@@ -1,4 +1,5 @@
 #include "usbd_desc.h"
+
 #include "usbd_conf.h"
 #include "usbd_core.h"
 
@@ -87,9 +88,9 @@ __ALIGN_BEGIN uint8_t USBD_StringSerial[USB_SIZ_STRING_SERIAL] __ALIGN_END = {
  * @retval Pointer to descriptor buffer
  */
 uint8_t *USBD_CDC_DeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length) {
-  UNUSED(speed);
-  *length = sizeof(USBD_CDC_DeviceDesc);
-  return USBD_CDC_DeviceDesc;
+    UNUSED(speed);
+    *length = sizeof(USBD_CDC_DeviceDesc);
+    return USBD_CDC_DeviceDesc;
 }
 
 /**
@@ -100,9 +101,9 @@ uint8_t *USBD_CDC_DeviceDescriptor(USBD_SpeedTypeDef speed, uint16_t *length) {
  */
 uint8_t *USBD_CDC_LangIDStrDescriptor(USBD_SpeedTypeDef speed,
                                       uint16_t *length) {
-  UNUSED(speed);
-  *length = sizeof(USBD_LangIDDesc);
-  return USBD_LangIDDesc;
+    UNUSED(speed);
+    *length = sizeof(USBD_LangIDDesc);
+    return USBD_LangIDDesc;
 }
 
 /**
@@ -113,12 +114,12 @@ uint8_t *USBD_CDC_LangIDStrDescriptor(USBD_SpeedTypeDef speed,
  */
 uint8_t *USBD_CDC_ProductStrDescriptor(USBD_SpeedTypeDef speed,
                                        uint16_t *length) {
-  if (speed == 0) {
-    USBD_GetString((uint8_t *)USBD_PRODUCT_STRING, USBD_StrDesc, length);
-  } else {
-    USBD_GetString((uint8_t *)USBD_PRODUCT_STRING, USBD_StrDesc, length);
-  }
-  return USBD_StrDesc;
+    if (speed == 0) {
+        USBD_GetString((uint8_t *)USBD_PRODUCT_STRING, USBD_StrDesc, length);
+    } else {
+        USBD_GetString((uint8_t *)USBD_PRODUCT_STRING, USBD_StrDesc, length);
+    }
+    return USBD_StrDesc;
 }
 
 /**
@@ -129,9 +130,9 @@ uint8_t *USBD_CDC_ProductStrDescriptor(USBD_SpeedTypeDef speed,
  */
 uint8_t *USBD_CDC_ManufacturerStrDescriptor(USBD_SpeedTypeDef speed,
                                             uint16_t *length) {
-  UNUSED(speed);
-  USBD_GetString((uint8_t *)USBD_MANUFACTURER_STRING, USBD_StrDesc, length);
-  return USBD_StrDesc;
+    UNUSED(speed);
+    USBD_GetString((uint8_t *)USBD_MANUFACTURER_STRING, USBD_StrDesc, length);
+    return USBD_StrDesc;
 }
 
 /**
@@ -142,14 +143,14 @@ uint8_t *USBD_CDC_ManufacturerStrDescriptor(USBD_SpeedTypeDef speed,
  */
 uint8_t *USBD_CDC_SerialStrDescriptor(USBD_SpeedTypeDef speed,
                                       uint16_t *length) {
-  UNUSED(speed);
-  *length = USB_SIZ_STRING_SERIAL;
+    UNUSED(speed);
+    *length = USB_SIZ_STRING_SERIAL;
 
-  /* Update the serial number string descriptor with the data from the unique
-   * ID */
-  Get_SerialNum();
+    /* Update the serial number string descriptor with the data from the unique
+     * ID */
+    Get_SerialNum();
 
-  return (uint8_t *)USBD_StringSerial;
+    return (uint8_t *)USBD_StringSerial;
 }
 
 /**
@@ -160,12 +161,14 @@ uint8_t *USBD_CDC_SerialStrDescriptor(USBD_SpeedTypeDef speed,
  */
 uint8_t *USBD_CDC_ConfigStrDescriptor(USBD_SpeedTypeDef speed,
                                       uint16_t *length) {
-  if (speed == USBD_SPEED_HIGH) {
-    USBD_GetString((uint8_t *)USBD_CONFIGURATION_STRING, USBD_StrDesc, length);
-  } else {
-    USBD_GetString((uint8_t *)USBD_CONFIGURATION_STRING, USBD_StrDesc, length);
-  }
-  return USBD_StrDesc;
+    if (speed == USBD_SPEED_HIGH) {
+        USBD_GetString((uint8_t *)USBD_CONFIGURATION_STRING, USBD_StrDesc,
+                       length);
+    } else {
+        USBD_GetString((uint8_t *)USBD_CONFIGURATION_STRING, USBD_StrDesc,
+                       length);
+    }
+    return USBD_StrDesc;
 }
 
 /**
@@ -176,12 +179,12 @@ uint8_t *USBD_CDC_ConfigStrDescriptor(USBD_SpeedTypeDef speed,
  */
 uint8_t *USBD_CDC_InterfaceStrDescriptor(USBD_SpeedTypeDef speed,
                                          uint16_t *length) {
-  if (speed == 0) {
-    USBD_GetString((uint8_t *)USBD_INTERFACE_STRING, USBD_StrDesc, length);
-  } else {
-    USBD_GetString((uint8_t *)USBD_INTERFACE_STRING, USBD_StrDesc, length);
-  }
-  return USBD_StrDesc;
+    if (speed == 0) {
+        USBD_GetString((uint8_t *)USBD_INTERFACE_STRING, USBD_StrDesc, length);
+    } else {
+        USBD_GetString((uint8_t *)USBD_INTERFACE_STRING, USBD_StrDesc, length);
+    }
+    return USBD_StrDesc;
 }
 
 /**
@@ -190,20 +193,20 @@ uint8_t *USBD_CDC_InterfaceStrDescriptor(USBD_SpeedTypeDef speed,
  * @retval None
  */
 static void Get_SerialNum(void) {
-  uint32_t deviceserial0;
-  uint32_t deviceserial1;
-  uint32_t deviceserial2;
+    uint32_t deviceserial0;
+    uint32_t deviceserial1;
+    uint32_t deviceserial2;
 
-  deviceserial0 = *(uint32_t *)DEVICE_ID1;
-  deviceserial1 = *(uint32_t *)DEVICE_ID2;
-  deviceserial2 = *(uint32_t *)DEVICE_ID3;
+    deviceserial0 = *(uint32_t *)DEVICE_ID1;
+    deviceserial1 = *(uint32_t *)DEVICE_ID2;
+    deviceserial2 = *(uint32_t *)DEVICE_ID3;
 
-  deviceserial0 += deviceserial2;
+    deviceserial0 += deviceserial2;
 
-  if (deviceserial0 != 0) {
-    IntToUnicode(deviceserial0, &USBD_StringSerial[2], 8);
-    IntToUnicode(deviceserial1, &USBD_StringSerial[18], 4);
-  }
+    if (deviceserial0 != 0) {
+        IntToUnicode(deviceserial0, &USBD_StringSerial[2], 8);
+        IntToUnicode(deviceserial1, &USBD_StringSerial[18], 4);
+    }
 }
 
 /**
@@ -214,17 +217,17 @@ static void Get_SerialNum(void) {
  * @retval None
  */
 static void IntToUnicode(uint32_t value, uint8_t *pbuf, uint8_t len) {
-  uint8_t idx = 0;
+    uint8_t idx = 0;
 
-  for (idx = 0; idx < len; idx++) {
-    if (((value >> 28)) < 0xA) {
-      pbuf[2 * idx] = (value >> 28) + '0';
-    } else {
-      pbuf[2 * idx] = (value >> 28) + 'A' - 10;
+    for (idx = 0; idx < len; idx++) {
+        if (((value >> 28)) < 0xA) {
+            pbuf[2 * idx] = (value >> 28) + '0';
+        } else {
+            pbuf[2 * idx] = (value >> 28) + 'A' - 10;
+        }
+
+        value = value << 4;
+
+        pbuf[2 * idx + 1] = 0;
     }
-
-    value = value << 4;
-
-    pbuf[2 * idx + 1] = 0;
-  }
 }

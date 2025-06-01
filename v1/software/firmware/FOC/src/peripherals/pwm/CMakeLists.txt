@@ -18,4 +18,5 @@ target_link_libraries(pwm
 PUBLIC
     ${COMMON_LIBS}
     error
+    debug_
 )

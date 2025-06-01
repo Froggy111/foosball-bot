@@ -3,13 +3,11 @@ error
 clock
 usb
 msp
+debug_
 )
 
 get_filename_component(CONFIG_DIR "include/" ABSOLUTE)
-set(INCLUDE_DIRS
-${INCLUDE_DIRS}
-${CONFIG_DIR}
-)
+list(APPEND INCLUDE_DIRS "${CONFIG_DIR}")
 
 message(STATUS "COMMON_LIBS: ${COMMON_LIBS}")
 message(STATUS "INCLUDE_DIRS: ${INCLUDE_DIRS}")

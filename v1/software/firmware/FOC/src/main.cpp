@@ -10,33 +10,33 @@
 void usb_write_task(void *args);
 
 int main(void) {
-  HAL_Init();
-  clock::init();
+    HAL_Init();
+    clock::init();
 
-  [[maybe_unused]] osThreadId_t usb_write_task_handle;
-  const osThreadAttr_t usb_write_task_attr = {
-      .name = (char *)"USB write",
-      .stack_size = 1024,
-      .priority = (osPriority_t)osPriorityNormal,
-  };
+    [[maybe_unused]] osThreadId_t usb_write_task_handle;
+    const osThreadAttr_t usb_write_task_attr = {
+        .name = (char *)"USB write",
+        .stack_size = 1024,
+        .priority = (osPriority_t)osPriorityNormal,
+    };
 
-  osKernelInitialize();
-  osThreadNew(usb_write_task, NULL, &usb_write_task_attr);
-  osKernelStart();
+    osKernelInitialize();
+    osThreadNew(usb_write_task, NULL, &usb_write_task_attr);
+    osKernelStart();
 
-  // should never reach here
-  __disable_irq();
-  while (1) {
     // should never reach here
-  }
+    __disable_irq();
+    while (1) {
+        // should never reach here
+    }
 }
 
 void usb_write_task([[maybe_unused]] void *args) {
-  usb::init();
-  uint8_t str[] = "Hello World!\r\n";
-  for (;;) {
-    // usb::write(str, sizeof(str));
-    printf("%s", (char *)str);
-    osDelay(1000);
-  }
+    usb::init();
+    uint8_t str[] = "Hello World!\r\n";
+    for (;;) {
+        // usb::write(str, sizeof(str));
+        printf("%s", (char *)str);
+        osDelay(1000);
+    }
 }

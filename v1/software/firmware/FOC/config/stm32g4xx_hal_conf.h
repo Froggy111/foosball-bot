@@ -89,31 +89,31 @@ extern "C" {
 /* ########################## Oscillator Values adaptation
  * ####################*/
 #if !defined(HSE_VALUE)
-#define HSE_VALUE (24000000UL) // 24MHz
-#endif                         /* HSE_VALUE */
+#define HSE_VALUE (24000000UL)  // 24MHz
+#endif                          /* HSE_VALUE */
 
 #if !defined(HSE_STARTUP_TIMEOUT)
-#define HSE_STARTUP_TIMEOUT (100UL) // 100ms
-#endif                              /* HSE_STARTUP_TIMEOUT */
+#define HSE_STARTUP_TIMEOUT (100UL)  // 100ms
+#endif                               /* HSE_STARTUP_TIMEOUT */
 
 #if !defined(HSI_VALUE)
-#define HSI_VALUE (16000000UL) // 16MHz
-#endif                         /* HSI_VALUE */
+#define HSI_VALUE (16000000UL)  // 16MHz
+#endif                          /* HSI_VALUE */
 
 #if !defined(HSI48_VALUE)
-#define HSI48_VALUE (48000000UL) // 48MHz
-#endif                           /* HSI48_VALUE */
+#define HSI48_VALUE (48000000UL)  // 48MHz
+#endif                            /* HSI48_VALUE */
 
 #if !defined(LSI_VALUE)
-#define LSI_VALUE (32000UL) // 32KHz
-#endif                      /* LSI_VALUE */
+#define LSI_VALUE (32000UL)  // 32KHz
+#endif                       /* LSI_VALUE */
 #if !defined(LSE_VALUE)
-#define LSE_VALUE (32768UL) // 32.768KHz
-#endif                      /* LSE_VALUE */
+#define LSE_VALUE (32768UL)  // 32.768KHz
+#endif                       /* LSE_VALUE */
 
 #if !defined(LSE_STARTUP_TIMEOUT)
-#define LSE_STARTUP_TIMEOUT (5000UL) // 5000ms
-#endif                               /* LSE_STARTUP_TIMEOUT */
+#define LSE_STARTUP_TIMEOUT (5000UL)  // 5000ms
+#endif                                /* LSE_STARTUP_TIMEOUT */
 
 /**
  * @brief External clock source for I2S and SAI peripherals
@@ -122,9 +122,9 @@ extern "C" {
  * I2S_CKIN pad.
  */
 #if !defined(EXTERNAL_CLOCK_VALUE)
-#define EXTERNAL_CLOCK_VALUE                                                   \
-  (12288000UL) /*!< Value of the External oscillator in Hz*/
-#endif         /* EXTERNAL_CLOCK_VALUE */
+#define EXTERNAL_CLOCK_VALUE \
+    (12288000UL) /*!< Value of the External oscillator in Hz*/
+#endif           /* EXTERNAL_CLOCK_VALUE */
 
 /* Tip: To avoid modifying this file each time you need to use different HSE,
    ===  you can define the HSE value in your toolchain compiler preprocessor. */
@@ -135,8 +135,8 @@ extern "C" {
  */
 
 #define VDD_VALUE (3300UL) /*!< Value of VDD in mv */
-#define TICK_INT_PRIORITY                                                      \
-  (15UL) /*!< tick interrupt priority (lowest by default)  */
+#define TICK_INT_PRIORITY \
+    (15UL) /*!< tick interrupt priority (lowest by default)  */
 #define USE_RTOS 0U
 #define PREFETCH_ENABLE 0U
 #define INSTRUCTION_CACHE_ENABLE 1U
@@ -321,8 +321,8 @@ extern "C" {
  *         If expr is true, it returns no value.
  * @retval None
  */
-#define assert_param(expr)                                                     \
-  ((expr) ? (void)0U : assert_failed((uint8_t *)__FILE__, __LINE__))
+#define assert_param(expr) \
+    ((expr) ? (void)0U : assert_failed((uint8_t *)__FILE__, __LINE__))
 /* Exported functions ------------------------------------------------------- */
 void assert_failed(uint8_t *file, uint32_t line);
 #else
