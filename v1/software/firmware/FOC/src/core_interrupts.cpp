@@ -1,5 +1,3 @@
-#include "core_interrupts.hpp"
-
 #include <stm32g4xx_hal.h>
 
 extern "C" {

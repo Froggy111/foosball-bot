@@ -24,7 +24,6 @@ add_executable(${TARGET_NAME})
 target_sources(${TARGET_NAME}
 PUBLIC
     include/main.hpp
-    include/core_interrupts.hpp
 PRIVATE
     main.cpp
     core_interrupts.cpp
