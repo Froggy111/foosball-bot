@@ -17,7 +17,7 @@ int main(void) {
     [[maybe_unused]] osThreadId_t usb_write_task_handle;
     const osThreadAttr_t usb_write_task_attr = {
         .name = (char *)"USB write",
-        .stack_size = 1024,
+        .stack_size = 2048,
         .priority = osPriorityNormal,
     };
 
@@ -36,7 +36,19 @@ void usb_write_task([[maybe_unused]] void *args) {
     usb::init();
     osDelay(2000);
     pwm::init(20000);
-    uint8_t str[] = "Hello World!\r\n";
+    uint8_t str[] =
+        "Hello World! This is a very long buffer. This is a very long buffer. "
+        "This is a very long buffer. This is a very long buffer. This is a "
+        "very long buffer. This is a very long buffer. This is a very long "
+        "buffer. This is a very long buffer. This is a very long buffer. This "
+        "is a very long buffer. This is a very long buffer. This is a very "
+        "long buffer. This is a very long buffer. This is a very long buffer. "
+        "This is a very long buffer. This is a very long buffer. This is a "
+        "very long buffer. This is a very long buffer. This is a very long "
+        "buffer. This is a very long buffer. This is a very long buffer. This "
+        "is a very long buffer. This is a very long buffer. This is a very "
+        "long buffer. This is a very long buffer. This is a very long "
+        "buffer.\r\n";
     for (;;) {
         // usb::write(str, sizeof(str));
         printf("%s", (char *)str);

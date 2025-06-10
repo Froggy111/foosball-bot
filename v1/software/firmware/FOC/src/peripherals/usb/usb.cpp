@@ -43,12 +43,17 @@ void transmit_complete_callback(void) {
 }
 
 void usb::write(uint8_t *buf, uint16_t length) {
-    if (USB_TX_BUFFER_SIZE - write_buffer_idx >= length) {
+    uint16_t written = 0;
+    while (written != length) {
         osMutexAcquire(write_buffer_mutex, osWaitForever);
-        memcpy(&write_buffer[write_buffer_idx], buf, length);
-        write_buffer_idx += length;
+        uint16_t free_space = USB_TX_BUFFER_SIZE - write_buffer_idx;
+        uint16_t write_len = MIN(free_space, length - written);
+        memcpy(&write_buffer[write_buffer_idx], &buf[written], write_len);
+        write_buffer_idx += write_len;
         osMutexRelease(write_buffer_mutex);
         osThreadFlagsSet(usb_flush_task_id, WRITE_REQUEST);
+        written += write_len;
+        osDelay(1);
     }
 }
 
