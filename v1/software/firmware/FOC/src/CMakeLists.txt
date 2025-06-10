@@ -49,3 +49,8 @@ PRIVATE
 stm32_print_size_of_target(${TARGET_NAME})
 stm32_generate_binary_file(${TARGET_NAME})
 stm32_generate_hex_file(${TARGET_NAME})
+generate_flash_target(
+    TARGET ${TARGET_NAME}
+    INTERFACE ${OPENOCD_INTERFACE_CFG}
+    MCU ${OPENOCD_MCU_CFG}
+)

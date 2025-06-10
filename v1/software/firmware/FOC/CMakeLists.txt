@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 4.0)
 include(../../cmake/repo-common.cmake)
+include(../../cmake/generate-flash-target.cmake)
 
 set(CMAKE_TOOLCHAIN_FILE "${STM32_CMAKE_PATH}/cmake/stm32_gcc.cmake")
 
@@ -10,6 +11,9 @@ set(MCU_SERIES G4)
 string(TOLOWER "${MCU_SERIES}" MCU_SERIES_LOWER)
 set(MCU_CORE M4F)
 set(MCU_SUBSERIES G474CB)
+# flashing and debugging
+set(OPENOCD_INTERFACE_CFG "interface/stlink.cfg")
+set(OPENOCD_MCU_CFG "target/stm32${MCU_SERIES_LOWER}x.cfg")
 
 project(${PROJECT_NAME} C CXX ASM)
 set(CMAKE_C_STANDARD 17)
