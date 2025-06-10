@@ -1,34 +1,67 @@
 #include "usb.hpp"
 
+#include <cmsis_os2.h>
 #include <stdio.h>
 #include <stm32g4xx_hal.h>
 
 #include "config.hpp"
 #include "error.hpp"
+#include "usb_device.h"
+#include "usbd_cdc_if.h"
 
-#if STDIO_TARGET == STDIO_USB
+uint8_t write_buffer[USB_TX_BUFFER_SIZE] = {0};
+osMutexId_t write_buffer_mutex;
+uint16_t write_buffer_idx = 0;
+uint8_t transmit_buffer[USB_TX_BUFFER_SIZE] = {0};
+osThreadId_t usb_flush_task_id = NULL;
 
-extern "C" {
+const uint32_t TRANSMIT_COMPLETE = 1 << 0;
+const uint32_t WRITE_REQUEST = 1 << 1;
 
-#ifdef __GNUC__
+void usb_flush_task(void *args);
 
-int _write(int file, char *ptr, int len) {
-    if (file != 1 && file != 2) {
-        return -1;
+void usb::init(void) {
+    if (MX_USB_Device_Init() != USBD_OK) {
+        error::handler();
     }
-
-    usb::write((uint8_t *)ptr, len);
-    return len;
+    const osMutexAttr_t write_buffer_mutex_attributes = {
+        .name = "write buffer mutex"};
+    write_buffer_mutex = osMutexNew(&write_buffer_mutex_attributes);
+    const osThreadAttr_t usb_flush_task_attributes = {
+        .name = "usb flush task",
+        .stack_size = 256,
+        .priority = osPriorityHigh};
+    usb_flush_task_id =
+        osThreadNew(usb_flush_task, NULL, &usb_flush_task_attributes);
+    osThreadFlagsSet(usb_flush_task_id, TRANSMIT_COMPLETE);
 }
 
-#else
-
-int fputc(int ch, FILE *f) {
-    usb::write((uint8_t *)&ch, 1);
-    return ch;
+void transmit_complete_callback(void) {
+    if (usb_flush_task_id != NULL) {
+        osThreadFlagsSet(usb_flush_task_id, TRANSMIT_COMPLETE);
+    }
 }
 
-#endif
+void usb::write(uint8_t *buf, uint16_t length) {
+    if (USB_TX_BUFFER_SIZE - write_buffer_idx >= length) {
+        osMutexAcquire(write_buffer_mutex, osWaitForever);
+        memcpy(&write_buffer[write_buffer_idx], buf, length);
+        write_buffer_idx += length;
+        osMutexRelease(write_buffer_mutex);
+        osThreadFlagsSet(usb_flush_task_id, WRITE_REQUEST);
+    }
 }
 
-#endif
+void usb_flush_task([[maybe_unused]] void *args) {
+    osDelay(1);
+    for (;;) {
+        osThreadFlagsWait(WRITE_REQUEST, osFlagsWaitAny, osWaitForever);
+        osThreadFlagsWait(TRANSMIT_COMPLETE, osFlagsWaitAny, osWaitForever);
+        osMutexAcquire(write_buffer_mutex, osWaitForever);
+        memcpy(transmit_buffer, write_buffer, write_buffer_idx);
+        CDC_Transmit_FS((uint8_t *)transmit_buffer, write_buffer_idx);
+        memset(write_buffer, 0, USB_TX_BUFFER_SIZE);
+        write_buffer_idx = 0;
+        osMutexRelease(write_buffer_mutex);
+    }
+}

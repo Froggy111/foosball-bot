@@ -15,6 +15,8 @@ extern USBD_CDC_ItfTypeDef USBD_Interface_fops_FS;
 
 uint8_t CDC_Transmit_FS(uint8_t *Buf, uint16_t Len);
 
+void transmit_complete_callback(void);
+
 #ifdef __cplusplus
 }
 #endif

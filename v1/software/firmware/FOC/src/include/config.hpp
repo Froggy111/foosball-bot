@@ -31,6 +31,11 @@
 #endif
 
 /**
+ * @brief USB CDC settings
+ */
+#define USB_TX_BUFFER_SIZE 256  // number of bytes for TX buffer
+
+/**
  * @brief PWM peripheral settings.
  */
 // PWM resolution must be above 1 << PWM_MIN_RESOLUTION. This is prioritised

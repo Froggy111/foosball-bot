@@ -170,9 +170,7 @@ uint8_t CDC_Transmit_FS(uint8_t *Buf, uint16_t Len) {
  */
 static int8_t CDC_TransmitCplt_FS(uint8_t *Buf, uint32_t *Len, uint8_t epnum) {
     uint8_t result = USBD_OK;
-    UNUSED(Buf);
-    UNUSED(Len);
-    UNUSED(epnum);
+    transmit_complete_callback();
     return result;
 }
 

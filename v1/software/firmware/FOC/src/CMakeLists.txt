@@ -4,6 +4,7 @@ clock
 usb
 msp
 debug_
+pwm
 )
 
 get_filename_component(CONFIG_DIR "include/" ABSOLUTE)

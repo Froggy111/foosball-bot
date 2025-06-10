@@ -5,6 +5,7 @@
 #include <stm32g4xx_hal.h>
 
 #include "clock.hpp"
+#include "pwm.hpp"
 #include "usb.hpp"
 
 void usb_write_task(void *args);
@@ -17,7 +18,7 @@ int main(void) {
     const osThreadAttr_t usb_write_task_attr = {
         .name = (char *)"USB write",
         .stack_size = 1024,
-        .priority = (osPriority_t)osPriorityNormal,
+        .priority = osPriorityNormal,
     };
 
     osKernelInitialize();
@@ -33,6 +34,8 @@ int main(void) {
 
 void usb_write_task([[maybe_unused]] void *args) {
     usb::init();
+    osDelay(2000);
+    pwm::init(20000);
     uint8_t str[] = "Hello World!\r\n";
     for (;;) {
         // usb::write(str, sizeof(str));

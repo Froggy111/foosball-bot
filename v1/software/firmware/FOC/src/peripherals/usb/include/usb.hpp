@@ -9,13 +9,7 @@
 #endif
 
 namespace usb {
-inline void init(void) {
-    if (MX_USB_Device_Init() != USBD_OK) {
-        error::handler();
-    }
-}
-
-inline void write(uint8_t *buf, uint16_t length) {
-    CDC_Transmit_FS(buf, length);
-};
+// must be called after RTOS is initialised
+void init(void);
+void write(uint8_t *buf, uint16_t length);
 }  // namespace usb
