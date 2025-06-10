@@ -28,7 +28,8 @@ void pwm::init(uint32_t drive_phase_pwm_frequency) {
 /**
  * @brief Initialises motor PWM timer hardware.
  * @param motor_pwm_frequency: Target PWM frequency of
- * @note Modify as needed to suit hardware.
+ * @note Modify as needed to suit hardware. Configurations are in
+ * src/include/config
  */
 void pwm::init_drive_phase(uint32_t pwm_freq) {
     // init drive timer
@@ -130,7 +131,7 @@ PWMFreqParams calculate_frequency_parameters(uint32_t target_frequency,
     PWMFreqParams params = {0, 0, 0};
     // maximum resolution is 16 bits
     // check from highest resolution down
-    for (uint32_t i = 16; i <= PWM_MIN_RESOLUTION; i--) {
+    for (uint32_t i = 16; i >= PWM_MIN_RESOLUTION; i--) {
         uint32_t period = 1 << i;
         // compute prescaler
         uint32_t prescaler = divisor / period;
@@ -138,13 +139,17 @@ PWMFreqParams calculate_frequency_parameters(uint32_t target_frequency,
         uint32_t actual_frequency =
             clock_source_frequency / (period * prescaler);
         float deviation =
-            fabsf(((float)actual_frequency - (float)target_frequency) /
-                  target_frequency);
-
+            fabsf(((float)actual_frequency - (float)target_frequency)) /
+            target_frequency;
         // set the current match
         params.period = period - 1;
         params.prescaler = prescaler - 1;
         params.frequency = actual_frequency;
+        debug::debug(
+            "PWM frequency calculation: Trying %u bits of resolution, obtained "
+            "prescaler %u, and actual frequency %uHz deviating %f from target "
+            "%uHz",
+            i, prescaler, actual_frequency, deviation, target_frequency);
 
         // accept this combination
         if (deviation < PWM_MAX_FREQ_DEVIATION) {
