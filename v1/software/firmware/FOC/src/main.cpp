@@ -5,6 +5,7 @@
 #include <stm32g4xx_hal.h>
 
 #include "clock.hpp"
+#include "debug.hpp"
 #include "pwm.hpp"
 #include "usb.hpp"
 
@@ -36,22 +37,8 @@ void usb_write_task([[maybe_unused]] void *args) {
     usb::init();
     osDelay(2000);
     pwm::init(20000);
-    uint8_t str[] =
-        "Hello World! This is a very long buffer. This is a very long buffer. "
-        "This is a very long buffer. This is a very long buffer. This is a "
-        "very long buffer. This is a very long buffer. This is a very long "
-        "buffer. This is a very long buffer. This is a very long buffer. This "
-        "is a very long buffer. This is a very long buffer. This is a very "
-        "long buffer. This is a very long buffer. This is a very long buffer. "
-        "This is a very long buffer. This is a very long buffer. This is a "
-        "very long buffer. This is a very long buffer. This is a very long "
-        "buffer. This is a very long buffer. This is a very long buffer. This "
-        "is a very long buffer. This is a very long buffer. This is a very "
-        "long buffer. This is a very long buffer. This is a very long "
-        "buffer.\r\n";
     for (;;) {
-        // usb::write(str, sizeof(str));
-        printf("%s", (char *)str);
+        debug::log("Hello World!");
         osDelay(1000);
     }
 }
