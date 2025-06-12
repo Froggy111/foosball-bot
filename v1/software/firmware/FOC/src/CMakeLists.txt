@@ -7,8 +7,8 @@ debug_
 pwm
 )
 
-get_filename_component(CONFIG_DIR "include/" ABSOLUTE)
-list(APPEND INCLUDE_DIRS "${CONFIG_DIR}")
+add_subdirectory(configs)
+list(APPEND COMMON_LIBS configs)
 
 message(STATUS "COMMON_LIBS: ${COMMON_LIBS}")
 message(STATUS "INCLUDE_DIRS: ${INCLUDE_DIRS}")
@@ -46,8 +46,8 @@ PRIVATE
     ${CUSTOM_LIBS}
 )
 
+target_print_size(${TARGET_NAME})
 
-stm32_print_size_of_target(${TARGET_NAME})
 stm32_generate_binary_file(${TARGET_NAME})
 stm32_generate_hex_file(${TARGET_NAME})
 generate_flash_target(

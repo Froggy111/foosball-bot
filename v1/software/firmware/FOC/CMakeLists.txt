@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 4.0)
 include(../../cmake/repo-common.cmake)
 include(../../cmake/generate-flash-target.cmake)
+include(../../cmake/print-size.cmake)
 
 set(CMAKE_TOOLCHAIN_FILE "${STM32_CMAKE_PATH}/cmake/stm32_gcc.cmake")
 
