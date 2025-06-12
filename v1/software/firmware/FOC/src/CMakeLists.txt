@@ -18,6 +18,7 @@ add_subdirectory(clock)
 add_subdirectory(debug)
 add_subdirectory(error)
 add_subdirectory(peripherals)
+add_subdirectory(encoder)
 
 set(TARGET_NAME "${PROJECT_NAME}-${MCU_SERIES}")
 add_executable(${TARGET_NAME})
