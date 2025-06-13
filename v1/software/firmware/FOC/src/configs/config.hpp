@@ -6,5 +6,5 @@
 #include <stm32g474xx.h>
 
 #include "configs/debug.hpp"
-#include "configs/peripherals/pwm.hpp"
-#include "configs/peripherals/usb.hpp"
+#include "configs/encoder.hpp"
+#include "configs/peripherals.hpp"

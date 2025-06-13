@@ -5,6 +5,7 @@ usb
 msp
 debug_
 pwm
+encoder
 )
 
 add_subdirectory(configs)
