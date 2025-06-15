@@ -4,8 +4,9 @@ clock
 usb
 msp
 debug_
-pwm
+gpio
 encoder
+inverter
 )
 
 add_subdirectory(configs)
@@ -20,6 +21,7 @@ add_subdirectory(debug)
 add_subdirectory(error)
 add_subdirectory(peripherals)
 add_subdirectory(encoder)
+add_subdirectory(inverter)
 
 set(TARGET_NAME "${PROJECT_NAME}-${MCU_SERIES}")
 add_executable(${TARGET_NAME})

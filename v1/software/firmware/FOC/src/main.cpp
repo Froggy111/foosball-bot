@@ -6,7 +6,7 @@
 
 #include "clock.hpp"
 #include "debug.hpp"
-#include "pwm.hpp"
+#include "inverter.hpp"
 #include "usb.hpp"
 
 void usb_write_task(void *args);
@@ -36,7 +36,7 @@ int main(void) {
 void usb_write_task([[maybe_unused]] void *args) {
     usb::init();
     osDelay(2000);
-    pwm::init(20000);
+    inverter::init(20000);
     for (;;) {
         debug::log("Hello World!");
         osDelay(1000);
