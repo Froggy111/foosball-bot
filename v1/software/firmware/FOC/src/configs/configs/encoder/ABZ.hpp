@@ -1,7 +1,5 @@
 #pragma once
 
-#include <stm32g4xx_hal.h>
-
 // port, pin, alternate function
 #define ENCODER_A_PORT GPIOB
 #define ENCODER_A_PIN GPIO_PIN_7

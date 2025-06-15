@@ -7,4 +7,5 @@
 
 #include "configs/debug.hpp"
 #include "configs/encoder.hpp"
+#include "configs/inverter.hpp"
 #include "configs/peripherals.hpp"
