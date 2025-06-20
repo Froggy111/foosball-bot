@@ -13,26 +13,132 @@
 
 TIM_HandleTypeDef timer;
 
+static uint16_t resolution = 0;
+
+static bool direction_reversed = false;
+
 struct PWMFreqParams {
     uint16_t prescaler = 0;
     uint16_t period = 0;
     uint32_t frequency = 0;
 };
 
+enum class TargetSector : uint8_t {
+    U_UV = 0,
+    UV_V = 1,
+    V_VW = 2,
+    VW_W = 3,
+    W_WU = 4,
+    WU_U = 5,
+};
+
 void timer_init(uint32_t pwm_freq);
 void gpio_init(void);
 PWMFreqParams calculate_frequency_parameters(uint32_t target_frequency,
                                              uint32_t clock_source_frequency);
-
-/**
- * @brief Initialises inverter PWM timer hardware.
- * @param motor_pwm_frequency: Target PWM frequency of
- * @note Modify as needed to suit hardware. Configurations are in
- * src/include/config
- */
 void inverter::init(uint32_t pwm_freq) {
     timer_init(pwm_freq);
     gpio_init();
+}
+
+void inverter::reverse_direction(void) {
+    direction_reversed = !direction_reversed;
+}
+
+void inverter::set(float u, float v, float w) {
+    // clamp amplitudes
+    u = std::fmax(0.0f, std::fmin(MAX_PWM_ONTIME, u));
+    v = std::fmax(0.0f, std::fmin(MAX_PWM_ONTIME, v));
+    w = std::fmax(0.0f, std::fmin(MAX_PWM_ONTIME, w));
+
+    // reverse direction if needed
+    if (direction_reversed) {
+        float tmp_v = v;
+        v = w;
+        w = tmp_v;
+    }
+
+    // convert amplitudes to duty cycles
+    uint16_t u_count = u * resolution;
+    uint16_t v_count = v * resolution;
+    uint16_t w_count = w * resolution;
+
+    // set duty cycles
+    __HAL_TIM_SET_COMPARE(&timer, U_PHASE_CHANNEL, u_count);
+    __HAL_TIM_SET_COMPARE(&timer, V_PHASE_CHANNEL, v_count);
+    __HAL_TIM_SET_COMPARE(&timer, W_PHASE_CHANNEL, w_count);
+}
+
+void inverter::svpwm_set(float theta, float V_target, float V_dc) {
+    // clamp V_target
+    V_target =
+        std::fmax(0.0f, std::fmin(V_target, V_dc * std::cosf(M_PI / 6.0f)));
+    debug::trace("Inverter SVPWM: V_target: %f", V_target);
+
+    TargetSector sector = (TargetSector)std::floorf(theta / (M_PI / 3.0f));
+    float sector_theta = theta - (float)(uint8_t)sector * (M_PI / 3.0f);
+    debug::trace("Inverter SVPWM: sector_theta: %f", sector_theta);
+
+    float V_x = V_target * std::cosf(sector_theta);
+    float V_y = V_target * std::sinf(sector_theta);
+    debug::trace("Inverter SVPWM: V_x: %f, V_y: %f", V_x, V_y);
+
+    // V_2_y = V_y
+    // V_2_x / V_2_y = tan(30deg)
+    float V_2_x = V_y * std::tanf(M_PI / 6.0f);
+    // V_2_y / V_2 = cos(30deg)
+    // V_2 = V_2_y / cos(30deg)
+    float V_2 = V_y / std::cosf(M_PI / 6.0f);
+    // V_1 = V_1_x = V_x - V_2_x
+    float V_1 = V_x - V_2_x;
+
+    float duty_1 = V_1 / V_dc;
+    float duty_2 = V_2 / V_dc;
+    float duty_zero = (1.0f - duty_1 - duty_2) / 2;
+
+    float duty_U = 0, duty_V = 0, duty_W = 0;
+
+    switch (sector) {
+        case TargetSector::U_UV:
+            duty_U = duty_zero + duty_1 + duty_2;
+            duty_V = duty_zero + duty_2;
+            duty_W = duty_zero;
+            debug::trace("Inverter SVPWM: Sector U_UV");
+            break;
+        case TargetSector::UV_V:
+            duty_U = duty_zero + duty_1;
+            duty_V = duty_zero + duty_1 + duty_2;
+            duty_W = duty_zero;
+            debug::trace("Inverter SVPWM: Sector UV_V");
+            break;
+        case TargetSector::V_VW:
+            duty_U = duty_zero;
+            duty_V = duty_zero + duty_1 + duty_2;
+            duty_W = duty_zero + duty_2;
+            debug::trace("Inverter SVPWM: Sector V_VW");
+            break;
+        case TargetSector::VW_W:
+            duty_U = duty_zero;
+            duty_V = duty_zero + duty_1;
+            duty_W = duty_zero + duty_1 + duty_2;
+            debug::trace("Inverter SVPWM: Sector VW_W");
+            break;
+        case TargetSector::W_WU:
+            duty_U = duty_zero + duty_2;
+            duty_V = duty_zero;
+            duty_W = duty_zero + duty_1 + duty_2;
+            debug::trace("Inverter SVPWM: Sector W_WU");
+            break;
+        case TargetSector::WU_U:
+            duty_U = duty_zero + duty_1 + duty_2;
+            duty_V = duty_zero;
+            duty_W = duty_zero + duty_1;
+            debug::trace("Inverter SVPWM: Sector WU_U");
+            break;
+    }
+
+    debug::trace("duty_U: %f, duty_V: %f, duty_W: %f", duty_U, duty_V, duty_W);
+    set(duty_U, duty_V, duty_W);
 }
 
 void timer_init(uint32_t pwm_freq) {
@@ -55,9 +161,10 @@ void timer_init(uint32_t pwm_freq) {
     timer.Init.RepetitionCounter = 0;  // interrupt every PWM cycle
     // changes to duty cycle will only apply after the current cycle completes
     timer.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+    resolution = freq_params.period;
 
     if (HAL_TIM_PWM_Init(&timer) != HAL_OK) {
-        debug::fatal("drive timer PWM init failed.");
+        debug::fatal("Inverter: drive timer PWM init failed.");
         error::handler();
     }
 
@@ -71,15 +178,15 @@ void timer_init(uint32_t pwm_freq) {
     oc_config.OCIdleState = TIM_OCIDLESTATE_RESET;  // high side off by default
     oc_config.OCNIdleState = TIM_OCNIDLESTATE_RESET;  // low side off by default
     if (HAL_TIM_PWM_ConfigChannel(&timer, &oc_config, U_PHASE_CHANNEL)) {
-        debug::fatal("U phase PWM channel config failed.");
+        debug::fatal("Inverter: U phase PWM channel config failed.");
         error::handler();
     }
     if (HAL_TIM_PWM_ConfigChannel(&timer, &oc_config, V_PHASE_CHANNEL)) {
-        debug::fatal("V phase PWM channel config failed.");
+        debug::fatal("Inverter: V phase PWM channel config failed.");
         error::handler();
     }
     if (HAL_TIM_PWM_ConfigChannel(&timer, &oc_config, W_PHASE_CHANNEL)) {
-        debug::fatal("W phase PWM channel config failed.");
+        debug::fatal("Inverter: W phase PWM channel config failed.");
         error::handler();
     }
     // enable preload for changing duty cycle
@@ -111,7 +218,33 @@ void timer_init(uint32_t pwm_freq) {
     // dont automatically restart output on break
     break_deadtime_config.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
     if (HAL_TIMEx_ConfigBreakDeadTime(&timer, &break_deadtime_config)) {
-        debug::fatal("drive timer break and deadtime config failed.");
+        debug::fatal("Inverter: drive timer break and deadtime config failed.");
+        error::handler();
+    }
+
+    // start PWM
+    if (HAL_TIM_PWM_Start(&timer, U_PHASE_CHANNEL) != HAL_OK) {
+        debug::fatal("Inverter: failed to start U phase PWM");
+        error::handler();
+    }
+    if (HAL_TIMEx_PWMN_Start(&timer, U_PHASE_CHANNEL) != HAL_OK) {
+        debug::fatal("Inverter: failed to start U_N phase PWM");
+        error::handler();
+    }
+    if (HAL_TIM_PWM_Start(&timer, V_PHASE_CHANNEL) != HAL_OK) {
+        debug::fatal("Inverter: failed to start V phase PWM");
+        error::handler();
+    }
+    if (HAL_TIMEx_PWMN_Start(&timer, V_PHASE_CHANNEL) != HAL_OK) {
+        debug::fatal("Inverter: failed to start V_N phase PWM");
+        error::handler();
+    }
+    if (HAL_TIM_PWM_Start(&timer, W_PHASE_CHANNEL) != HAL_OK) {
+        debug::fatal("Inverter: failed to start W phase PWM");
+        error::handler();
+    }
+    if (HAL_TIMEx_PWMN_Start(&timer, W_PHASE_CHANNEL) != HAL_OK) {
+        debug::fatal("Inverter: failed to start W_N phase PWM");
         error::handler();
     }
 }

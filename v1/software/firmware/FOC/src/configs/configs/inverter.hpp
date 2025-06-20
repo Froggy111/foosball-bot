@@ -53,3 +53,6 @@ const gpio::PinConfig INVERTER_W_N = {GPIOB, gpio::GPIOPin::PIN1,
                                       gpio::GPIOAF::AF6_TIM1};
 
 const uint32_t DRIVE_BREAKTIME = 500;  // in ns
+
+// maximum high-side on-time, due to bootstrap circuit used
+const float MAX_PWM_ONTIME = 0.95;  // 95% should be safe

@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+
 #include "adc.h"
 #include "cmsis_os.h"
 #include "fdcan.h"
@@ -73,7 +74,6 @@ void MX_FREERTOS_Init(void);
  * @retval int
  */
 int main(void) {
-
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -182,34 +182,34 @@ void SystemClock_Config(void) {
 void test_pwm_task(void *args) {
   uint32_t pwm_period = htim1.Init.Period;
 
-  // // U phase
-  // if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1) != HAL_OK) {
-  //   Error_Handler();
-  // }
-  // if (HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1) != HAL_OK) {
-  //   Error_Handler();
-  // }
-  //
-  // // V phase
-  // if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2) != HAL_OK) {
-  //   Error_Handler();
-  // }
-  // if (HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_2) != HAL_OK) {
-  //   Error_Handler();
-  // }
-  //
-  // // W phase
-  // if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3) != HAL_OK) {
-  //   Error_Handler();
-  // }
-  // if (HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_3) != HAL_OK) {
-  //   Error_Handler();
-  // }
-  //
-  uint8_t data[] = "hello world";
+  // U phase
+  if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1) != HAL_OK) {
+    Error_Handler();
+  }
+  if (HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1) != HAL_OK) {
+    Error_Handler();
+  }
+
+  // V phase
+  if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2) != HAL_OK) {
+    Error_Handler();
+  }
+  if (HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_2) != HAL_OK) {
+    Error_Handler();
+  }
+
+  // W phase
+  if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3) != HAL_OK) {
+    Error_Handler();
+  }
+  if (HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_3) != HAL_OK) {
+    Error_Handler();
+  }
+
+  // uint8_t data[] = "hello world";
 
   for (;;) {
-    CDC_Transmit_FS(data, sizeof(data));
+    // CDC_Transmit_FS(data, sizeof(data));
     osDelay(1000);
     // for (int i = 0; i <= 1000; i++) {
     //   // V phase
@@ -247,11 +247,11 @@ void test_pwm_task(void *args) {
     //                         1000));
     //   osDelay(pdMS_TO_TICKS(1));
     // }
-    // // // V phase
-    // // __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
-    // // // W phase
-    // // __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, pwm_period * 95 / 100);
-    // // osDelay(pdMS_TO_TICKS(2000));
+    // V phase
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
+    // W phase
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, pwm_period * 10 / 100);
+    osDelay(pdMS_TO_TICKS(2000));
   }
 }
 

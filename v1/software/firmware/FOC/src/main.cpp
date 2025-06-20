@@ -4,6 +4,8 @@
 #include <cmsis_os2.h>
 #include <stm32g4xx_hal.h>
 
+#include <cmath>
+
 #include "clock.hpp"
 #include "debug.hpp"
 #include "inverter.hpp"
@@ -37,8 +39,14 @@ void usb_write_task([[maybe_unused]] void *args) {
     usb::init();
     osDelay(2000);
     inverter::init(20000);
+    float theta = 0;
     for (;;) {
-        debug::log("Hello World!");
-        osDelay(1000);
+        theta += M_PI / 180;
+        debug::log("Theta: %f", theta);
+        if (theta > M_PI * 2) {
+            theta -= M_PI * 2;
+        }
+        inverter::svpwm_set(theta, 2.0f, 24.0f);
+        osDelay(1);
     }
 }
