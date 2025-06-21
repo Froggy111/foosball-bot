@@ -36,6 +36,10 @@ int main(void) {
 }
 
 void usb_write_task([[maybe_unused]] void *args) {
+    gpio::PinConfig led_config = {GPIOB, gpio::GPIOPin::PIN10,
+                                  gpio::GPIOAF::NONE};
+    gpio::init(led_config, gpio::GPIOMode::OUTPUT_PP, gpio::GPIOPull::NOPULL,
+               gpio::GPIOSpeed::LOW);
     usb::init();
     osDelay(2000);
     inverter::init(20000);
@@ -46,7 +50,11 @@ void usb_write_task([[maybe_unused]] void *args) {
         if (theta > M_PI * 2) {
             theta -= M_PI * 2;
         }
-        inverter::svpwm_set(theta, 2.0f, 24.0f);
-        osDelay(1);
+        inverter::svpwm_set(theta, 4.0f, 24.0f);
+        for (int i = 0; i < 16000; i++) {
+            asm volatile("nop");
+        }
+        // osDelay(1);
+        HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_10);
     }
 }

@@ -63,6 +63,10 @@ void inverter::set(float u, float v, float w) {
     uint16_t v_count = v * resolution;
     uint16_t w_count = w * resolution;
 
+    debug::trace(
+        "Inverter PWM: u_count: %u, v_count: %u, w_count: %u, resolution: %u",
+        u_count, v_count, w_count, resolution);
+
     // set duty cycles
     __HAL_TIM_SET_COMPARE(&timer, U_PHASE_CHANNEL, u_count);
     __HAL_TIM_SET_COMPARE(&timer, V_PHASE_CHANNEL, v_count);
@@ -142,16 +146,26 @@ void inverter::svpwm_set(float theta, float V_target, float V_dc) {
 }
 
 void timer_init(uint32_t pwm_freq) {
-    // init drive timer
-    timer.Instance = DRIVE_PHASE_TIMER;
+    // init timer
+    timer.Instance = INVERTER_TIMER;
     // assuming APB prescaler = 1
-#if DRIVE_PHASE_CLOCK == PCLK1
+#if INVERTER_CLOCK == PCLK1
     uint32_t clk_freq = HAL_RCC_GetPCLK1Freq();
-#elif DRIVE_PHASE_CLOCK == PCLK2
+#elif INVERTER_CLOCK == PCLK2
     uint32_t clk_freq = HAL_RCC_GetPCLK2Freq();
 #else
-#error "Invalid clock source for drive phase timer"
+#error "Invalid clock source for inverter timer"
 #endif
+    debug::trace("Inverter: Timer PLL frequency: %u", clk_freq);
+    // enable timer
+    if (INVERTER_TIMER == TIM1) {
+        __HAL_RCC_TIM1_CLK_ENABLE();
+    } else if (INVERTER_TIMER == TIM8) {
+        __HAL_RCC_TIM8_CLK_ENABLE();
+    } else if (INVERTER_TIMER == TIM15) {
+        __HAL_RCC_TIM15_CLK_ENABLE();
+    }
+
     PWMFreqParams freq_params =
         calculate_frequency_parameters(pwm_freq, clk_freq);
     timer.Init.Prescaler = freq_params.prescaler;
@@ -159,12 +173,12 @@ void timer_init(uint32_t pwm_freq) {
     timer.Init.Period = freq_params.period;
     timer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
     timer.Init.RepetitionCounter = 0;  // interrupt every PWM cycle
-    // changes to duty cycle will only apply after the current cycle completes
-    timer.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+    // changes to period will only apply after the current cycle completes
+    timer.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
     resolution = freq_params.period;
 
     if (HAL_TIM_PWM_Init(&timer) != HAL_OK) {
-        debug::fatal("Inverter: drive timer PWM init failed.");
+        debug::fatal("Inverter: Timer PWM init failed.");
         error::handler();
     }
 
@@ -200,10 +214,10 @@ void timer_init(uint32_t pwm_freq) {
     break_deadtime_config.OffStateIDLEMode =
         TIM_OSSI_DISABLE;                                 // off by default
     break_deadtime_config.LockLevel = TIM_LOCKLEVEL_OFF;  // dont lock registers
-    break_deadtime_config.DeadTime =
-        (uint32_t)ceilf((float)DRIVE_BREAKTIME / (float)1e9 /
-                        (float)clk_freq);  // number of cycles to achieve
-                                           // deadtime, rounded up for safety
+    break_deadtime_config.DeadTime = (uint32_t)ceilf(
+        (float)INVERTER_BREAKTIME *
+        ((float)1e9 / (float)clk_freq));  // number of cycles to achieve
+                                          // deadtime, rounded up for safety
     // break settings
     break_deadtime_config.BreakState = TIM_BREAK_DISABLE;  // off on break fault
     break_deadtime_config.BreakPolarity = TIM_BREAKPOLARITY_HIGH;  // high == on
@@ -218,33 +232,33 @@ void timer_init(uint32_t pwm_freq) {
     // dont automatically restart output on break
     break_deadtime_config.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
     if (HAL_TIMEx_ConfigBreakDeadTime(&timer, &break_deadtime_config)) {
-        debug::fatal("Inverter: drive timer break and deadtime config failed.");
+        debug::fatal("Inverter: Timer break and deadtime config failed.");
         error::handler();
     }
 
     // start PWM
     if (HAL_TIM_PWM_Start(&timer, U_PHASE_CHANNEL) != HAL_OK) {
-        debug::fatal("Inverter: failed to start U phase PWM");
+        debug::fatal("Inverter: Failed to start U phase PWM");
         error::handler();
     }
     if (HAL_TIMEx_PWMN_Start(&timer, U_PHASE_CHANNEL) != HAL_OK) {
-        debug::fatal("Inverter: failed to start U_N phase PWM");
+        debug::fatal("Inverter: Failed to start U_N phase PWM");
         error::handler();
     }
     if (HAL_TIM_PWM_Start(&timer, V_PHASE_CHANNEL) != HAL_OK) {
-        debug::fatal("Inverter: failed to start V phase PWM");
+        debug::fatal("Inverter: Failed to start V phase PWM");
         error::handler();
     }
     if (HAL_TIMEx_PWMN_Start(&timer, V_PHASE_CHANNEL) != HAL_OK) {
-        debug::fatal("Inverter: failed to start V_N phase PWM");
+        debug::fatal("Inverter: Failed to start V_N phase PWM");
         error::handler();
     }
     if (HAL_TIM_PWM_Start(&timer, W_PHASE_CHANNEL) != HAL_OK) {
-        debug::fatal("Inverter: failed to start W phase PWM");
+        debug::fatal("Inverter: Failed to start W phase PWM");
         error::handler();
     }
     if (HAL_TIMEx_PWMN_Start(&timer, W_PHASE_CHANNEL) != HAL_OK) {
-        debug::fatal("Inverter: failed to start W_N phase PWM");
+        debug::fatal("Inverter: Failed to start W_N phase PWM");
         error::handler();
     }
 }
@@ -266,7 +280,7 @@ void gpio_init(void) {
 
 /**
  * @brief Calculate the prescaler and period parameters for achieving a
- * target PWM frequency. Maximises ARR for resolution
+ * target PWM frequency for center-aligned PWM. Maximises ARR for resolution
  * @param target_frequency: Target frequency that will be achieved as closely as
  * possible
  * @param clock_source_frequency: Frequency of the clock source, either PCLK1 or
@@ -286,10 +300,10 @@ PWMFreqParams calculate_frequency_parameters(uint32_t target_frequency,
     for (uint32_t i = 16; i >= PWM_MIN_RESOLUTION; i--) {
         uint32_t period = 1 << i;
         // compute prescaler
-        uint32_t prescaler = divisor / period;
+        uint32_t prescaler = divisor / (period * 2);
         // compute actual frequency
         uint32_t actual_frequency =
-            clock_source_frequency / (period * prescaler);
+            clock_source_frequency / (period * 2 * prescaler);
         float deviation =
             fabsf(((float)actual_frequency - (float)target_frequency)) /
             target_frequency;

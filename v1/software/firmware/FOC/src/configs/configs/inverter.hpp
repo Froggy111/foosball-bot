@@ -16,8 +16,8 @@ const uint32_t PWM_MIN_RESOLUTION = 6;  // 6 bits of resolution at minimum
 const float PWM_MAX_FREQ_DEVIATION = 0.05;  // 5% max deviation
 
 // Configuration for drive phase
-#define DRIVE_PHASE_TIMER TIM1  // U, V, W phases on TIM1
-#define DRIVE_PHASE_CLOCK PCLK2
+#define INVERTER_TIMER TIM1  // U, V, W phases on TIM1
+#define INVERTER_CLOCK PCLK2
 #define PCLK1 1
 #define PCLK2 2
 
@@ -52,7 +52,7 @@ const gpio::PinConfig INVERTER_W = {GPIOA, gpio::GPIOPin::PIN10,
 const gpio::PinConfig INVERTER_W_N = {GPIOB, gpio::GPIOPin::PIN1,
                                       gpio::GPIOAF::AF6_TIM1};
 
-const uint32_t DRIVE_BREAKTIME = 500;  // in ns
+const uint32_t INVERTER_BREAKTIME = 500;  // in ns
 
 // maximum high-side on-time, due to bootstrap circuit used
 const float MAX_PWM_ONTIME = 0.95;  // 95% should be safe

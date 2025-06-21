@@ -84,6 +84,7 @@ enum class GPIOSpeed : uint32_t {
 // STM32G4xx specific Alternate Function mappings
 #ifdef STM32G4
 enum class GPIOAF : uint8_t {
+    NONE = 0xFF,
     /**
      * @brief   AF 0 selection
      */
