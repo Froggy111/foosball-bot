@@ -17,7 +17,12 @@ struct PinConfig {
     GPIOAF alternate_function;
 };
 
+using InterruptFn = void (*)(void*);
+
 void init(PinConfig pin_config, GPIOMode mode, GPIOPull pull, GPIOSpeed speed);
+
+void attach_interrupt(PinConfig pin_config, GPIOMode mode, GPIOPull pull,
+                      GPIOSpeed speed, InterruptFn callback, void* args);
 
 enum class GPIOPin : uint16_t {
     PIN0 = GPIO_PIN_0,

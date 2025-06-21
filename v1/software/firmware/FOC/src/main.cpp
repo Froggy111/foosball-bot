@@ -46,6 +46,32 @@ void usb_write_task([[maybe_unused]] void *args) {
     gpio::init(shifter_OE_config, gpio::GPIOMode::OUTPUT_PP,
                gpio::GPIOPull::NOPULL, gpio::GPIOSpeed::LOW);
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET);
+
+    gpio::PinConfig SPI1_SCS_config = {GPIOA, gpio::GPIOPin::PIN4,
+                                       gpio::GPIOAF::NONE};
+    gpio::PinConfig SPI1_MISO_config = {GPIOB, gpio::GPIOPin::PIN4,
+                                        gpio::GPIOAF::NONE};
+    gpio::PinConfig SPI1_MOSI_config = {GPIOB, gpio::GPIOPin::PIN5,
+                                        gpio::GPIOAF::NONE};
+    gpio::PinConfig I2C1_SDA_config = {GPIOB, gpio::GPIOPin::PIN9,
+                                       gpio::GPIOAF::NONE};
+    gpio::PinConfig I2C1_SCL_config = {GPIOA, gpio::GPIOPin::PIN15,
+                                       gpio::GPIOAF::NONE};
+    gpio::init(SPI1_SCS_config, gpio::GPIOMode::OUTPUT_PP,
+               gpio::GPIOPull::NOPULL, gpio::GPIOSpeed::LOW);
+    gpio::init(SPI1_MISO_config, gpio::GPIOMode::OUTPUT_PP,
+               gpio::GPIOPull::NOPULL, gpio::GPIOSpeed::LOW);
+    gpio::init(SPI1_MOSI_config, gpio::GPIOMode::OUTPUT_PP,
+               gpio::GPIOPull::NOPULL, gpio::GPIOSpeed::LOW);
+    gpio::init(I2C1_SDA_config, gpio::GPIOMode::OUTPUT_PP,
+               gpio::GPIOPull::NOPULL, gpio::GPIOSpeed::LOW);
+    gpio::init(I2C1_SCL_config, gpio::GPIOMode::OUTPUT_PP,
+               gpio::GPIOPull::NOPULL, gpio::GPIOSpeed::LOW);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);
     usb::init();
     osDelay(2000);
     inverter::init(20000);
@@ -56,9 +82,11 @@ void usb_write_task([[maybe_unused]] void *args) {
         if (theta > M_PI * 2) {
             theta -= M_PI * 2;
         }
-        // debug::log("Theta: %f", theta);
-        // uint16_t encoder_count = encoder::get_count();
-        // debug::log("Encoder count: %u", encoder_count);
+        debug::log("Theta: %f", theta);
+        uint16_t encoder_count = encoder::get_count();
+        debug::log("Encoder count: %u", encoder_count);
+        debug::log("Z pulses: %u", encoder::get_z_pulses());
+        debug::log("Delta: %d", encoder::get_delta());
         inverter::svpwm_set(theta, 0.0f, 24.0f);
         osDelay(1);
         HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_10);
