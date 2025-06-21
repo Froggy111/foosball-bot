@@ -8,6 +8,7 @@
 
 #include "clock.hpp"
 #include "debug.hpp"
+#include "encoder.hpp"
 #include "inverter.hpp"
 #include "usb.hpp"
 
@@ -40,21 +41,26 @@ void usb_write_task([[maybe_unused]] void *args) {
                                   gpio::GPIOAF::NONE};
     gpio::init(led_config, gpio::GPIOMode::OUTPUT_PP, gpio::GPIOPull::NOPULL,
                gpio::GPIOSpeed::LOW);
+    gpio::PinConfig shifter_OE_config = {GPIOB, gpio::GPIOPin::PIN11,
+                                         gpio::GPIOAF::NONE};
+    gpio::init(shifter_OE_config, gpio::GPIOMode::OUTPUT_PP,
+               gpio::GPIOPull::NOPULL, gpio::GPIOSpeed::LOW);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET);
     usb::init();
     osDelay(2000);
     inverter::init(20000);
+    encoder::init();
     float theta = 0;
     for (;;) {
-        theta += M_PI / 180;
-        debug::log("Theta: %f", theta);
+        theta += M_PI / 45;
         if (theta > M_PI * 2) {
             theta -= M_PI * 2;
         }
-        inverter::svpwm_set(theta, 4.0f, 24.0f);
-        for (int i = 0; i < 16000; i++) {
-            asm volatile("nop");
-        }
-        // osDelay(1);
+        // debug::log("Theta: %f", theta);
+        // uint16_t encoder_count = encoder::get_count();
+        // debug::log("Encoder count: %u", encoder_count);
+        inverter::svpwm_set(theta, 0.0f, 24.0f);
+        osDelay(1);
         HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_10);
     }
 }

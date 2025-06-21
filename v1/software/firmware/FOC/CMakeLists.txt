@@ -43,6 +43,9 @@ set(HAL_COMPONENTS
     PCD
     LL_USB
     TIM
+    ADC
+    OPAMP
+    LL_OPAMP
 )
 set(HAL_EXTENSIONS
     RCCEx

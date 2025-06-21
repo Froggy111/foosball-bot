@@ -4,32 +4,72 @@
 #include <stm32g4xx_hal_gpio.h>
 
 #include "config.hpp"
+#include "debug.hpp"
+#include "error.hpp"
 
-void gpio_init(void);
+static TIM_HandleTypeDef timer;
 
-void encoder::init(void) { gpio_init(); }
+static void gpio_init(void);
+static void timer_init(void);
 
-void gpio_init(void) {
-    if (ENCODER_A_PORT == GPIOA || ENCODER_B_PORT == GPIOA) {
-        __HAL_RCC_GPIOA_CLK_ENABLE();
+uint16_t encoder::get_count(void) { return __HAL_TIM_GetCounter(&timer); }
+
+void encoder::init(void) {
+    debug::trace("Encoder ABZ: Initialising encoder timer.");
+    timer_init();
+    debug::trace("Encoder ABZ: Initialising encoder GPIO.");
+    gpio_init();
+    debug::trace("Encoder ABZ: Initialised encoder.");
+}
+
+static void gpio_init(void) {
+    gpio::init(ENCODER_A, gpio::GPIOMode::AF_PP, gpio::GPIOPull::UP,
+               gpio::GPIOSpeed::MEDIUM);
+    gpio::init(ENCODER_B, gpio::GPIOMode::AF_PP, gpio::GPIOPull::UP,
+               gpio::GPIOSpeed::MEDIUM);
+}
+
+static void timer_init(void) {
+    if (ENCODER_TIMER == TIM4) {
+        __HAL_RCC_TIM4_CLK_ENABLE();
     }
-    if (ENCODER_A_PORT == GPIOB || ENCODER_B_PORT == GPIOB) {
-        __HAL_RCC_GPIOB_CLK_ENABLE();
+
+    timer.Instance = ENCODER_TIMER;
+    timer.Init.Prescaler = 0;  // count every edge
+    timer.Init.CounterMode = TIM_COUNTERMODE_UP;
+    // 16 bit timer, count to 65535
+    timer.Init.Period = 0xFFFF;
+    timer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+    timer.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+
+    TIM_Encoder_InitTypeDef encoder_config = {};
+    // count on both edges (4x resolution)
+    encoder_config.EncoderMode = TIM_ENCODERMODE_TI12;
+
+    encoder_config.IC1Polarity = ENCODER_POLARITY;
+    encoder_config.IC1Selection = TIM_ICSELECTION_DIRECTTI;
+    encoder_config.IC1Prescaler = TIM_ICPSC_DIV1;
+    encoder_config.IC1Filter = ENCODER_FILTER;
+
+    encoder_config.IC2Polarity = ENCODER_POLARITY;
+    encoder_config.IC2Selection = TIM_ICSELECTION_DIRECTTI;
+    encoder_config.IC2Prescaler = TIM_ICPSC_DIV1;
+    encoder_config.IC2Filter = ENCODER_FILTER;
+
+    if (HAL_TIM_Encoder_Init(&timer, &encoder_config) != HAL_OK) {
+        debug::fatal("Encoder ABZ: Timer initialisation failed.");
+        error::handler();
     }
 
-    GPIO_InitTypeDef A_gpio_init = {};
-    A_gpio_init.Pin = ENCODER_A_PIN;
-    A_gpio_init.Mode = GPIO_MODE_AF_PP;  // push pull
-    A_gpio_init.Pull = GPIO_PULLUP;      // pull up
-    A_gpio_init.Speed = GPIO_SPEED_FREQ_HIGH;
-    A_gpio_init.Alternate = ENCODER_A_AF;
-    HAL_GPIO_Init(ENCODER_A_PORT, &A_gpio_init);
+    TIM_MasterConfigTypeDef master_config = {};
+    master_config.MasterOutputTrigger = TIM_TRGO_RESET;
+    master_config.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+    if (HAL_TIMEx_MasterConfigSynchronization(&timer, &master_config) !=
+        HAL_OK) {
+        debug::fatal(
+            "Encoder ABZ: Timer master config synchronisation failed.");
+        error::handler();
+    }
 
-    GPIO_InitTypeDef B_gpio_init = {};
-    B_gpio_init.Pin = ENCODER_B_PIN;
-    B_gpio_init.Mode = GPIO_MODE_AF_PP;  // push pull
-    B_gpio_init.Pull = GPIO_PULLUP;      // pull up
-    B_gpio_init.Speed = GPIO_SPEED_FREQ_HIGH;
-    B_gpio_init.Alternate = ENCODER_B_AF;
-    HAL_GPIO_Init(ENCODER_B_PORT, &B_gpio_init);
+    HAL_TIM_Encoder_Start(&timer, ENCODER_A_CHANNEL | ENCODER_B_CHANNEL);
 }

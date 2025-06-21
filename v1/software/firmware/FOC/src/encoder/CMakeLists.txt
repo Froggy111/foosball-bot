@@ -19,4 +19,8 @@ PUBLIC
 target_link_libraries(encoder
 PUBLIC
     ${COMMON_LIBS}
+    gpio
+    error
+    debug_
+    ABZ
 )

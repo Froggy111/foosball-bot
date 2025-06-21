@@ -17,4 +17,7 @@ PUBLIC
 target_link_libraries(ABZ
 PUBLIC
     ${COMMON_LIBS}
+    gpio
+    error
+    debug_
 )

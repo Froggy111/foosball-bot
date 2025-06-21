@@ -6,4 +6,6 @@ namespace encoder {
 
 void init(void);
 
-}
+uint16_t get_count(void);
+
+}  // namespace encoder

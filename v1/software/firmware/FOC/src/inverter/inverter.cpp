@@ -11,7 +11,7 @@
 #include "error.hpp"
 #include "gpio.hpp"
 
-TIM_HandleTypeDef timer;
+static TIM_HandleTypeDef timer;
 
 static uint16_t resolution = 0;
 
@@ -32,10 +32,10 @@ enum class TargetSector : uint8_t {
     WU_U = 5,
 };
 
-void timer_init(uint32_t pwm_freq);
-void gpio_init(void);
-PWMFreqParams calculate_frequency_parameters(uint32_t target_frequency,
-                                             uint32_t clock_source_frequency);
+static void timer_init(uint32_t pwm_freq);
+static void gpio_init(void);
+static PWMFreqParams calculate_frequency_parameters(
+    uint32_t target_frequency, uint32_t clock_source_frequency);
 void inverter::init(uint32_t pwm_freq) {
     timer_init(pwm_freq);
     gpio_init();
@@ -145,7 +145,7 @@ void inverter::svpwm_set(float theta, float V_target, float V_dc) {
     set(duty_U, duty_V, duty_W);
 }
 
-void timer_init(uint32_t pwm_freq) {
+static void timer_init(uint32_t pwm_freq) {
     // init timer
     timer.Instance = INVERTER_TIMER;
     // assuming APB prescaler = 1
@@ -274,7 +274,7 @@ void timer_init(uint32_t pwm_freq) {
     }
 }
 
-void gpio_init(void) {
+static void gpio_init(void) {
     gpio::init(INVERTER_U, gpio::GPIOMode::AF_PP, gpio::GPIOPull::NOPULL,
                gpio::GPIOSpeed::HIGH);
     gpio::init(INVERTER_U_N, gpio::GPIOMode::AF_PP, gpio::GPIOPull::NOPULL,
@@ -299,8 +299,8 @@ void gpio_init(void) {
  * on PCLK2
  * @returns prescaler, period and real frequency values
  */
-PWMFreqParams calculate_frequency_parameters(uint32_t target_frequency,
-                                             uint32_t clock_source_frequency) {
+static PWMFreqParams calculate_frequency_parameters(
+    uint32_t target_frequency, uint32_t clock_source_frequency) {
     // Formula: Freq = Clk / ((PSC + 1) * (ARR + 1))
     // (PSC + 1) * (ARR + 1) = Clk / Freq
     // PSC is the prescaler, ARR is the period (autoreload)
