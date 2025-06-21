@@ -182,6 +182,17 @@ void timer_init(uint32_t pwm_freq) {
         error::handler();
     }
 
+    TIM_MasterConfigTypeDef master_config = {};
+
+    master_config.MasterOutputTrigger = TIM_TRGO_RESET;
+    master_config.MasterOutputTrigger2 = TIM_TRGO2_RESET;
+    master_config.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+    if (HAL_TIMEx_MasterConfigSynchronization(&timer, &master_config) !=
+        HAL_OK) {
+        debug::fatal("Inverter: Master config synchronization failed.");
+        error::handler();
+    }
+
     // configure U, V, W channels
     TIM_OC_InitTypeDef oc_config = {};
     oc_config.OCMode = TIM_OCMODE_PWM1;          // duty cycle = pulse / period
