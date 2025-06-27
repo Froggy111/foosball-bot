@@ -4,6 +4,7 @@
 #include <stm32g4xx_hal_gpio.h>
 
 #include "config.hpp"
+#include "configs/encoder.hpp"
 #include "debug.hpp"
 #include "error.hpp"
 
@@ -70,22 +71,32 @@ static void z_irq([[maybe_unused]] void* args) {
 }
 
 static void gpio_init(void) {
-    gpio::init(ENCODER_A, gpio::GPIOMode::AF_PP, gpio::GPIOPull::UP,
-               gpio::GPIOSpeed::MEDIUM);
-    gpio::init(ENCODER_B, gpio::GPIOMode::AF_PP, gpio::GPIOPull::UP,
-               gpio::GPIOSpeed::MEDIUM);
-    // gpio::attach_interrupt(ENCODER_Z, gpio::GPIOMode::INT_RISING,
-    //                        gpio::GPIOPull::DOWN, gpio::GPIOSpeed::LOW, z_irq,
-    //                        NULL);
+    // configure A, B and Z (optionally) channels
+    gpio::init(ENCODER_A, gpio::Mode::AF_PP, gpio::Pull::UP,
+               gpio::Speed::MEDIUM);
+    gpio::init(ENCODER_B, gpio::Mode::AF_PP, gpio::Pull::UP,
+               gpio::Speed::MEDIUM);
+#ifdef USE_ENCODER_Z
+    gpio::attach_interrupt(ENCODER_Z, gpio::Mode::INT_RISING, gpio::Pull::DOWN,
+                           gpio::Speed::LOW, z_irq, NULL);
+#endif
+
+    // enable level shifter
+    gpio::init(ENCODER_SHIFTER_OE, gpio::Mode::OUTPUT_PP, gpio::Pull::NOPULL,
+               gpio::Speed::LOW);
+    gpio::write(ENCODER_SHIFTER_OE, gpio::HIGH);
 }
 
 static void timer_init(void) {
+    // WARN : If using other timers than TIM4, will break!
+    // TODO : Use macro substitution instead to do this (and many others)
+    // enable timer
     if (ENCODER_TIMER == TIM4) {
         __HAL_RCC_TIM4_CLK_ENABLE();
     }
 
-    timer.Instance = ENCODER_TIMER;
-    timer.Init.Prescaler = 0;  // count every edge
+    timer.Instance = ENCODER_TIMER;  // encoder mode
+    timer.Init.Prescaler = 0;        // count every edge
     timer.Init.CounterMode = TIM_COUNTERMODE_UP;
     timer.Init.Period = ENCODER_TIMER_PERIOD;
     timer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -110,6 +121,7 @@ static void timer_init(void) {
         error::handler();
     }
 
+    // not necessary, but good practice
     TIM_MasterConfigTypeDef master_config = {};
     master_config.MasterOutputTrigger = TIM_TRGO_RESET;
     master_config.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;

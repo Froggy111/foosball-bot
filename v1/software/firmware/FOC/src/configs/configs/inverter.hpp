@@ -35,22 +35,20 @@ const float PWM_MAX_FREQ_DEVIATION = 0.05;  // 5% max deviation
  */
 
 // --- Inverter Leg U (High and Low Side) ---
-const gpio::PinConfig INVERTER_U = {GPIOA, gpio::GPIOPin::PIN8,
-                                    gpio::GPIOAF::AF6_TIM1};
-const gpio::PinConfig INVERTER_U_N = {GPIOC, gpio::GPIOPin::PIN13,
-                                      gpio::GPIOAF::AF4_TIM1};
+const gpio::PinConfig INVERTER_U = {GPIOA, gpio::Pin::PIN8, gpio::AF::AF6_TIM1};
+const gpio::PinConfig INVERTER_U_N = {GPIOC, gpio::Pin::PIN13,
+                                      gpio::AF::AF4_TIM1};
 
 // --- Inverter Leg V (High and Low Side) ---
-const gpio::PinConfig INVERTER_V = {GPIOA, gpio::GPIOPin::PIN9,
-                                    gpio::GPIOAF::AF6_TIM1};
-const gpio::PinConfig INVERTER_V_N = {GPIOB, gpio::GPIOPin::PIN14,
-                                      gpio::GPIOAF::AF6_TIM1};
+const gpio::PinConfig INVERTER_V = {GPIOA, gpio::Pin::PIN9, gpio::AF::AF6_TIM1};
+const gpio::PinConfig INVERTER_V_N = {GPIOB, gpio::Pin::PIN14,
+                                      gpio::AF::AF6_TIM1};
 
 // --- Inverter Leg W (High and Low Side) ---
-const gpio::PinConfig INVERTER_W = {GPIOA, gpio::GPIOPin::PIN10,
-                                    gpio::GPIOAF::AF6_TIM1};
-const gpio::PinConfig INVERTER_W_N = {GPIOB, gpio::GPIOPin::PIN1,
-                                      gpio::GPIOAF::AF6_TIM1};
+const gpio::PinConfig INVERTER_W = {GPIOA, gpio::Pin::PIN10,
+                                    gpio::AF::AF6_TIM1};
+const gpio::PinConfig INVERTER_W_N = {GPIOB, gpio::Pin::PIN1,
+                                      gpio::AF::AF6_TIM1};
 
 const uint32_t INVERTER_BREAKTIME = 500;  // in ns
 

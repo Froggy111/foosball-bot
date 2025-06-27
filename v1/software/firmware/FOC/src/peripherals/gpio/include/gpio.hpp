@@ -5,26 +5,37 @@
 
 namespace gpio {
 
-enum class GPIOPin : uint16_t;
-enum class GPIOMode : uint32_t;
-enum class GPIOPull : uint32_t;
-enum class GPIOSpeed : uint32_t;
-enum class GPIOAF : uint8_t;
+enum class Pin : uint16_t;
+enum class Mode : uint32_t;
+enum class Pull : uint32_t;
+enum class Speed : uint32_t;
+enum class AF : uint8_t;
+
+constexpr bool LOW = false;
+constexpr bool HIGH = true;
 
 struct PinConfig {
-    GPIO_TypeDef* port;
-    GPIOPin pin;
-    GPIOAF alternate_function;
+    GPIO_TypeDef *port;
+    Pin pin;
+    AF alternate_function;
 };
 
-using InterruptFn = void (*)(void*);
+using InterruptFn = void (*)(void *);
 
-void init(PinConfig pin_config, GPIOMode mode, GPIOPull pull, GPIOSpeed speed);
+void init(const PinConfig &pin_config, Mode mode, Pull pull, Speed speed);
 
-void attach_interrupt(PinConfig pin_config, GPIOMode mode, GPIOPull pull,
-                      GPIOSpeed speed, InterruptFn callback, void* args);
+void attach_interrupt(const PinConfig &pin_config, Mode mode, Pull pull,
+                      Speed speed, InterruptFn callback, void *args);
 
-enum class GPIOPin : uint16_t {
+inline bool read(const PinConfig &pin_config) {
+    HAL_GPIO_ReadPin(pin_config.port, (uint16_t)pin_config.pin);
+}
+inline void write(const PinConfig &pin_config, bool state) {
+    HAL_GPIO_WritePin(pin_config.port, (uint16_t)pin_config.pin,
+                      (GPIO_PinState)state);
+}
+
+enum class Pin : uint16_t {
     PIN0 = GPIO_PIN_0,
     PIN1 = GPIO_PIN_1,
     PIN2 = GPIO_PIN_2,
@@ -44,7 +55,7 @@ enum class GPIOPin : uint16_t {
     ALL = GPIO_PIN_All
 };
 
-enum class GPIOMode : uint32_t {
+enum class Mode : uint32_t {
     INPUT = GPIO_MODE_INPUT, /*!< Input Floating Mode                   */
     OUTPUT_PP = GPIO_MODE_OUTPUT_PP, /*!< Output Push Pull Mode */
     OUTPUT_OD = GPIO_MODE_OUTPUT_OD, /*!< Output Open Drain Mode */
@@ -69,13 +80,13 @@ enum class GPIOMode : uint32_t {
                                         detection */
 };
 
-enum class GPIOPull : uint32_t {
+enum class Pull : uint32_t {
     DOWN = GPIO_PULLDOWN,
     UP = GPIO_PULLUP,
     NOPULL = GPIO_NOPULL
 };
 
-enum class GPIOSpeed : uint32_t {
+enum class Speed : uint32_t {
     LOW = GPIO_SPEED_FREQ_LOW,
     MEDIUM = GPIO_SPEED_FREQ_MEDIUM,
     HIGH = GPIO_SPEED_FREQ_HIGH,
@@ -88,7 +99,7 @@ enum class GPIOSpeed : uint32_t {
 
 // STM32G4xx specific Alternate Function mappings
 #ifdef STM32G4
-enum class GPIOAF : uint8_t {
+enum class AF : uint8_t {
     NONE = 0xFF,
     /**
      * @brief   AF 0 selection

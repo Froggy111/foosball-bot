@@ -9,6 +9,7 @@
 #include "clock.hpp"
 #include "debug.hpp"
 #include "encoder.hpp"
+#include "gpio.hpp"
 #include "inverter.hpp"
 #include "usb.hpp"
 
@@ -37,41 +38,30 @@ int main(void) {
 }
 
 void usb_write_task([[maybe_unused]] void *args) {
-    gpio::PinConfig led_config = {GPIOB, gpio::GPIOPin::PIN10,
-                                  gpio::GPIOAF::NONE};
-    gpio::init(led_config, gpio::GPIOMode::OUTPUT_PP, gpio::GPIOPull::NOPULL,
-               gpio::GPIOSpeed::LOW);
-    gpio::PinConfig shifter_OE_config = {GPIOB, gpio::GPIOPin::PIN11,
-                                         gpio::GPIOAF::NONE};
-    gpio::init(shifter_OE_config, gpio::GPIOMode::OUTPUT_PP,
-               gpio::GPIOPull::NOPULL, gpio::GPIOSpeed::LOW);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_11, GPIO_PIN_SET);
+    gpio::PinConfig LED = {GPIOB, gpio::Pin::PIN10, gpio::AF::NONE};
+    gpio::init(LED, gpio::Mode::OUTPUT_PP, gpio::Pull::NOPULL,
+               gpio::Speed::LOW);
 
-    gpio::PinConfig SPI1_SCS_config = {GPIOA, gpio::GPIOPin::PIN4,
-                                       gpio::GPIOAF::NONE};
-    gpio::PinConfig SPI1_MISO_config = {GPIOB, gpio::GPIOPin::PIN4,
-                                        gpio::GPIOAF::NONE};
-    gpio::PinConfig SPI1_MOSI_config = {GPIOB, gpio::GPIOPin::PIN5,
-                                        gpio::GPIOAF::NONE};
-    gpio::PinConfig I2C1_SDA_config = {GPIOB, gpio::GPIOPin::PIN9,
-                                       gpio::GPIOAF::NONE};
-    gpio::PinConfig I2C1_SCL_config = {GPIOA, gpio::GPIOPin::PIN15,
-                                       gpio::GPIOAF::NONE};
-    gpio::init(SPI1_SCS_config, gpio::GPIOMode::OUTPUT_PP,
-               gpio::GPIOPull::NOPULL, gpio::GPIOSpeed::LOW);
-    gpio::init(SPI1_MISO_config, gpio::GPIOMode::OUTPUT_PP,
-               gpio::GPIOPull::NOPULL, gpio::GPIOSpeed::LOW);
-    gpio::init(SPI1_MOSI_config, gpio::GPIOMode::OUTPUT_PP,
-               gpio::GPIOPull::NOPULL, gpio::GPIOSpeed::LOW);
-    gpio::init(I2C1_SDA_config, gpio::GPIOMode::OUTPUT_PP,
-               gpio::GPIOPull::NOPULL, gpio::GPIOSpeed::LOW);
-    gpio::init(I2C1_SCL_config, gpio::GPIOMode::OUTPUT_PP,
-               gpio::GPIOPull::NOPULL, gpio::GPIOSpeed::LOW);
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
-    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_15, GPIO_PIN_SET);
+    gpio::PinConfig SPI1_SCS = {GPIOA, gpio::Pin::PIN4, gpio::AF::NONE};
+    gpio::PinConfig SPI1_MISO = {GPIOB, gpio::Pin::PIN4, gpio::AF::NONE};
+    gpio::PinConfig SPI1_MOSI = {GPIOB, gpio::Pin::PIN5, gpio::AF::NONE};
+    gpio::PinConfig I2C1_SDA = {GPIOB, gpio::Pin::PIN9, gpio::AF::NONE};
+    gpio::PinConfig I2C1_SCL = {GPIOA, gpio::Pin::PIN15, gpio::AF::NONE};
+    gpio::init(SPI1_SCS, gpio::Mode::OUTPUT_PP, gpio::Pull::NOPULL,
+               gpio::Speed::LOW);
+    gpio::init(SPI1_MISO, gpio::Mode::OUTPUT_PP, gpio::Pull::NOPULL,
+               gpio::Speed::LOW);
+    gpio::init(SPI1_MOSI, gpio::Mode::OUTPUT_PP, gpio::Pull::NOPULL,
+               gpio::Speed::LOW);
+    gpio::init(I2C1_SDA, gpio::Mode::OUTPUT_PP, gpio::Pull::NOPULL,
+               gpio::Speed::LOW);
+    gpio::init(I2C1_SCL, gpio::Mode::OUTPUT_PP, gpio::Pull::NOPULL,
+               gpio::Speed::LOW);
+    gpio::write(SPI1_SCS, gpio::HIGH);
+    gpio::write(SPI1_MISO, gpio::HIGH);
+    gpio::write(SPI1_MOSI, gpio::HIGH);
+    gpio::write(I2C1_SDA, gpio::HIGH);
+    gpio::write(I2C1_SCL, gpio::HIGH);
     usb::init();
     osDelay(2000);
     inverter::init(20000);
@@ -88,7 +78,7 @@ void usb_write_task([[maybe_unused]] void *args) {
         debug::log("Z pulses: %u", encoder::get_z_pulses());
         debug::log("Delta: %d", encoder::get_delta());
         inverter::svpwm_set(theta, 0.0f, 24.0f);
+        gpio::write(LED, !read(LED));
         osDelay(1);
-        HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_10);
     }
 }

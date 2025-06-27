@@ -5,10 +5,10 @@
 static gpio::InterruptFn callback_table[16] = {NULL};
 static void* args_table[16] = {NULL};
 
-uint8_t pin_to_line_number(gpio::GPIOPin pin);
+uint8_t pin_to_line_number(gpio::Pin pin);
 
-void gpio::init(PinConfig pin_config, GPIOMode mode, GPIOPull pull,
-                GPIOSpeed speed) {
+void gpio::init(const PinConfig& pin_config, Mode mode, Pull pull,
+                Speed speed) {
     if (pin_config.port == GPIOA) {
         __HAL_RCC_GPIOA_CLK_ENABLE();
     } else if (pin_config.port == GPIOB) {
@@ -31,11 +31,11 @@ void gpio::init(PinConfig pin_config, GPIOMode mode, GPIOPull pull,
     return;
 }
 
-void gpio::attach_interrupt(PinConfig pin_config, GPIOMode mode, GPIOPull pull,
-                            GPIOSpeed speed, InterruptFn callback, void* args) {
+void gpio::attach_interrupt(const PinConfig& pin_config, Mode mode, Pull pull,
+                            Speed speed, InterruptFn callback, void* args) {
     // not interrupt mode
-    if (mode != GPIOMode::INT_RISING && mode != GPIOMode::INT_FALLING &&
-        mode != GPIOMode::INT_RISING_FALLING) {
+    if (mode != Mode::INT_RISING && mode != Mode::INT_FALLING &&
+        mode != Mode::INT_RISING_FALLING) {
         return;
     }
 
@@ -61,41 +61,41 @@ void gpio::attach_interrupt(PinConfig pin_config, GPIOMode mode, GPIOPull pull,
     HAL_NVIC_EnableIRQ(irq_number);
 }
 
-uint8_t pin_to_line_number(gpio::GPIOPin pin) {
+uint8_t pin_to_line_number(gpio::Pin pin) {
     switch (pin) {
-        case gpio::GPIOPin::PIN0:
+        case gpio::Pin::PIN0:
             return 0;
-        case gpio::GPIOPin::PIN1:
+        case gpio::Pin::PIN1:
             return 1;
-        case gpio::GPIOPin::PIN2:
+        case gpio::Pin::PIN2:
             return 2;
-        case gpio::GPIOPin::PIN3:
+        case gpio::Pin::PIN3:
             return 3;
-        case gpio::GPIOPin::PIN4:
+        case gpio::Pin::PIN4:
             return 4;
-        case gpio::GPIOPin::PIN5:
+        case gpio::Pin::PIN5:
             return 5;
-        case gpio::GPIOPin::PIN6:
+        case gpio::Pin::PIN6:
             return 6;
-        case gpio::GPIOPin::PIN7:
+        case gpio::Pin::PIN7:
             return 7;
-        case gpio::GPIOPin::PIN8:
+        case gpio::Pin::PIN8:
             return 8;
-        case gpio::GPIOPin::PIN9:
+        case gpio::Pin::PIN9:
             return 9;
-        case gpio::GPIOPin::PIN10:
+        case gpio::Pin::PIN10:
             return 10;
-        case gpio::GPIOPin::PIN11:
+        case gpio::Pin::PIN11:
             return 11;
-        case gpio::GPIOPin::PIN12:
+        case gpio::Pin::PIN12:
             return 12;
-        case gpio::GPIOPin::PIN13:
+        case gpio::Pin::PIN13:
             return 13;
-        case gpio::GPIOPin::PIN14:
+        case gpio::Pin::PIN14:
             return 14;
-        case gpio::GPIOPin::PIN15:
+        case gpio::Pin::PIN15:
             return 15;
-        case gpio::GPIOPin::ALL:  // this is invalid
+        case gpio::Pin::ALL:  // this is invalid
             return 255;
     }
 }
@@ -103,7 +103,7 @@ uint8_t pin_to_line_number(gpio::GPIOPin pin) {
 extern "C" {
 
 void HAL_GPIO_EXTI_Callback(uint16_t pin) {
-    uint8_t line_number = pin_to_line_number((gpio::GPIOPin)pin);
+    uint8_t line_number = pin_to_line_number((gpio::Pin)pin);
     if (line_number > 15) {
         return;
     }

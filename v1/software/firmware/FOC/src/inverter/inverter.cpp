@@ -275,18 +275,18 @@ static void timer_init(uint32_t pwm_freq) {
 }
 
 static void gpio_init(void) {
-    gpio::init(INVERTER_U, gpio::GPIOMode::AF_PP, gpio::GPIOPull::NOPULL,
-               gpio::GPIOSpeed::LOW);
-    gpio::init(INVERTER_U_N, gpio::GPIOMode::AF_PP, gpio::GPIOPull::NOPULL,
-               gpio::GPIOSpeed::LOW);
-    gpio::init(INVERTER_V, gpio::GPIOMode::AF_PP, gpio::GPIOPull::NOPULL,
-               gpio::GPIOSpeed::LOW);
-    gpio::init(INVERTER_V_N, gpio::GPIOMode::AF_PP, gpio::GPIOPull::NOPULL,
-               gpio::GPIOSpeed::LOW);
-    gpio::init(INVERTER_W, gpio::GPIOMode::AF_PP, gpio::GPIOPull::NOPULL,
-               gpio::GPIOSpeed::LOW);
-    gpio::init(INVERTER_W_N, gpio::GPIOMode::AF_PP, gpio::GPIOPull::NOPULL,
-               gpio::GPIOSpeed::LOW);
+    gpio::init(INVERTER_U, gpio::Mode::AF_PP, gpio::Pull::NOPULL,
+               gpio::Speed::LOW);
+    gpio::init(INVERTER_U_N, gpio::Mode::AF_PP, gpio::Pull::NOPULL,
+               gpio::Speed::LOW);
+    gpio::init(INVERTER_V, gpio::Mode::AF_PP, gpio::Pull::NOPULL,
+               gpio::Speed::LOW);
+    gpio::init(INVERTER_V_N, gpio::Mode::AF_PP, gpio::Pull::NOPULL,
+               gpio::Speed::LOW);
+    gpio::init(INVERTER_W, gpio::Mode::AF_PP, gpio::Pull::NOPULL,
+               gpio::Speed::LOW);
+    gpio::init(INVERTER_W_N, gpio::Mode::AF_PP, gpio::Pull::NOPULL,
+               gpio::Speed::LOW);
 }
 
 /**
