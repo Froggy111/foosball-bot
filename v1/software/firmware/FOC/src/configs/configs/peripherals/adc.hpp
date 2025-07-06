@@ -26,6 +26,8 @@
  * 247.5, 4.125us, 6.188us: 12k, 10k
  * 640.5, 10.675us, 16.013us: 39k, 33k
  */
+const uint8_t ADC_POLL_TIMEOUT = 1;        // should never ever exceed 1ms
+const uint16_t ADC_RANGE = (1 << 12) - 1;  // 12 bit ADC
 
 // INFO : VOLTAGE SENSING CONFIGS
 // PA0, 490K-1K divider
@@ -78,6 +80,7 @@ const gpio::PinConfig ISENSE_U_PHASE_PIN = {GPIOA, gpio::Pin::PIN1,
 #define ISENSE_U_PHASE_ADC ADC1
 #define ISENSE_U_PHASE_CHANNEL ADC_CHANNEL_12
 #define ISENSE_U_PHASE_SAMPLETIME ADC_SAMPLETIME_6CYCLES_5
+#define ISENSE_U_PHASE_OPAMP_POWERMODE OPAMP_POWERMODE_HIGHSPEED
 
 const gpio::PinConfig ISENSE_V_PHASE_PIN = {GPIOB, gpio::Pin::PIN0,
                                             gpio::AF::NONE};
@@ -85,6 +88,7 @@ const gpio::PinConfig ISENSE_V_PHASE_PIN = {GPIOB, gpio::Pin::PIN0,
 #define ISENSE_V_PHASE_ADC ADC2
 #define ISENSE_V_PHASE_CHANNEL ADC_CHANNEL_16
 #define ISENSE_V_PHASE_SAMPLETIME ADC_SAMPLETIME_6CYCLES_5
+#define ISENSE_V_PHASE_OPAMP_POWERMODE OPAMP_POWERMODE_HIGHSPEED
 
 const gpio::PinConfig ISENSE_W_PHASE_PIN = {GPIOA, gpio::Pin::PIN7,
                                             gpio::AF::NONE};
@@ -92,3 +96,4 @@ const gpio::PinConfig ISENSE_W_PHASE_PIN = {GPIOA, gpio::Pin::PIN7,
 #define ISENSE_W_PHASE_ADC ADC1
 #define ISENSE_W_PHASE_CHANNEL ADC_CHANNEL_13
 #define ISENSE_W_PHASE_SAMPLETIME ADC_SAMPLETIME_6CYCLES_5
+#define ISENSE_W_PHASE_OPAMP_POWERMODE OPAMP_POWERMODE_HIGHSPEED

@@ -1,0 +1,268 @@
+#include "adc.hpp"
+
+#include <stm32g4xx.h>
+
+#include "config.hpp"
+#include "debug.hpp"
+#include "error.hpp"
+#include "gpio.hpp"
+
+void opamp_init(void);
+void adc_init(void);
+void gpio_init(void);
+
+void start_ADC_read(ADC_HandleTypeDef* handle, ADC_ChannelConfTypeDef* channel);
+uint32_t read_ADC(ADC_HandleTypeDef* handle, uint32_t timeout);
+
+void opamp_instance_init(OPAMP_HandleTypeDef* handle, OPAMP_TypeDef* instance,
+                         uint32_t power_mode);
+
+uint8_t adc_instance_to_idx(ADC_TypeDef* instance);
+ADC_HandleTypeDef* adc_instance_init(ADC_TypeDef* instance);
+
+OPAMP_HandleTypeDef U_phase_opamp;
+OPAMP_HandleTypeDef V_phase_opamp;
+OPAMP_HandleTypeDef W_phase_opamp;
+
+ADC_HandleTypeDef ADC_1;
+ADC_HandleTypeDef ADC_2;
+ADC_HandleTypeDef ADC_3;
+ADC_HandleTypeDef ADC_4;
+ADC_HandleTypeDef ADC_5;
+
+ADC_HandleTypeDef* VSENSE_VMOT_ADC_handle = NULL;
+ADC_HandleTypeDef* VSENSE_12V_ADC_handle = NULL;
+ADC_HandleTypeDef* VSENSE_5V_ADC_handle = NULL;
+ADC_HandleTypeDef* ISENSE_U_PHASE_ADC_handle = NULL;
+ADC_HandleTypeDef* ISENSE_V_PHASE_ADC_handle = NULL;
+ADC_HandleTypeDef* ISENSE_W_PHASE_ADC_handle = NULL;
+
+ADC_ChannelConfTypeDef VSENSE_VMOT_ADC_channel_config = {
+    VSENSE_VMOT_CHANNEL,      ADC_REGULAR_RANK_1,
+    VSENSE_VMOT_SAMPLETIME,   ADC_SINGLE_ENDED,
+    ADC_OFFSET_NONE,          0,
+    ADC_OFFSET_SIGN_POSITIVE, DISABLE};
+ADC_ChannelConfTypeDef VSENSE_12V_ADC_channel_config = {
+    VSENSE_12V_CHANNEL,       ADC_REGULAR_RANK_1,
+    VSENSE_12V_SAMPLETIME,    ADC_SINGLE_ENDED,
+    ADC_OFFSET_NONE,          0,
+    ADC_OFFSET_SIGN_POSITIVE, DISABLE};
+ADC_ChannelConfTypeDef VSENSE_5V_ADC_channel_config = {
+    VSENSE_5V_CHANNEL,        ADC_REGULAR_RANK_1,
+    VSENSE_5V_SAMPLETIME,     ADC_SINGLE_ENDED,
+    ADC_OFFSET_NONE,          0,
+    ADC_OFFSET_SIGN_POSITIVE, DISABLE};
+ADC_ChannelConfTypeDef ISENSE_U_PHASE_ADC_channel_config = {
+    ISENSE_U_PHASE_CHANNEL,    ADC_REGULAR_RANK_1,
+    ISENSE_U_PHASE_SAMPLETIME, ADC_SINGLE_ENDED,
+    ADC_OFFSET_NONE,           0,
+    ADC_OFFSET_SIGN_POSITIVE,  DISABLE};
+ADC_ChannelConfTypeDef ISENSE_V_PHASE_ADC_channel_config = {
+    ISENSE_V_PHASE_CHANNEL,    ADC_REGULAR_RANK_1,
+    ISENSE_V_PHASE_SAMPLETIME, ADC_SINGLE_ENDED,
+    ADC_OFFSET_NONE,           0,
+    ADC_OFFSET_SIGN_POSITIVE,  DISABLE};
+ADC_ChannelConfTypeDef ISENSE_W_PHASE_ADC_channel_config = {
+    ISENSE_W_PHASE_CHANNEL,    ADC_REGULAR_RANK_1,
+    ISENSE_W_PHASE_SAMPLETIME, ADC_SINGLE_ENDED,
+    ADC_OFFSET_NONE,           0,
+    ADC_OFFSET_SIGN_POSITIVE,  DISABLE};
+
+struct ADCData {
+    ADC_HandleTypeDef handle;
+    bool inited = false;
+};
+
+static ADCData adc_data[5];
+
+void adc::init(void) {
+    opamp_init();
+    adc_init();
+    gpio_init();
+}
+
+void adc::start_VMOT_read(void) {
+    start_ADC_read(VSENSE_VMOT_ADC_handle, &VSENSE_VMOT_ADC_channel_config);
+    return;
+}
+float adc::read_VMOT(void) {
+    uint32_t val = read_ADC(VSENSE_VMOT_ADC_handle, ADC_POLL_TIMEOUT);
+    float voltage = (float)val / (float)ADC_RANGE * VSENSE_VMOT_MULTIPLIER;
+    return voltage;
+}
+
+void adc::start_12V_read(void) {
+    start_ADC_read(VSENSE_12V_ADC_handle, &VSENSE_12V_ADC_channel_config);
+    return;
+}
+float adc::read_12V(void) {
+    uint32_t val = read_ADC(VSENSE_12V_ADC_handle, ADC_POLL_TIMEOUT);
+    float voltage = (float)val / (float)ADC_RANGE * VSENSE_12V_MULTIPLIER;
+    return voltage;
+}
+
+void adc::start_5V_read(void) {
+    start_ADC_read(VSENSE_5V_ADC_handle, &VSENSE_5V_ADC_channel_config);
+    return;
+}
+float adc::read_5V(void) {
+    uint32_t val = read_ADC(VSENSE_5V_ADC_handle, ADC_POLL_TIMEOUT);
+    float voltage = (float)val / (float)ADC_RANGE * VSENSE_5V_MULTIPLIER;
+    return voltage;
+}
+
+void start_ADC_read(ADC_HandleTypeDef* handle,
+                    ADC_ChannelConfTypeDef* channel) {
+    if (HAL_ADC_ConfigChannel(handle, channel) != HAL_OK) {
+        debug::error("Failed to configure ADC channel");
+        error::handler();
+    }
+    if (HAL_ADC_Start(handle) != HAL_OK) {
+        debug::error("Failed to start ADC");
+        error::handler();
+    }
+    return;
+}
+
+uint32_t read_ADC(ADC_HandleTypeDef* handle, uint32_t timeout) {
+    if (HAL_ADC_PollForConversion(handle, timeout) != HAL_OK) {
+        debug::error("Failed to poll for conversion for ADC");
+        error::handler();
+    }
+    uint32_t val = HAL_ADC_GetValue(handle);
+    if (HAL_ADC_Stop(handle) != HAL_OK) {
+        debug::error("Failed to stop ADC");
+        error::handler();
+    }
+    return val;
+}
+
+void opamp_init(void) {
+    opamp_instance_init(&U_phase_opamp, ISENSE_U_PHASE_OPAMP,
+                        ISENSE_U_PHASE_OPAMP_POWERMODE);
+    opamp_instance_init(&V_phase_opamp, ISENSE_V_PHASE_OPAMP,
+                        ISENSE_V_PHASE_OPAMP_POWERMODE);
+    opamp_instance_init(&W_phase_opamp, ISENSE_W_PHASE_OPAMP,
+                        ISENSE_W_PHASE_OPAMP_POWERMODE);
+    return;
+}
+
+void adc_init(void) {
+    VSENSE_VMOT_ADC_handle = adc_instance_init(VSENSE_VMOT_ADC);
+    VSENSE_12V_ADC_handle = adc_instance_init(VSENSE_12V_ADC);
+    VSENSE_5V_ADC_handle = adc_instance_init(VSENSE_5V_ADC);
+
+    ISENSE_U_PHASE_ADC_handle = adc_instance_init(ISENSE_U_PHASE_ADC);
+    ISENSE_V_PHASE_ADC_handle = adc_instance_init(ISENSE_V_PHASE_ADC);
+    ISENSE_W_PHASE_ADC_handle = adc_instance_init(ISENSE_W_PHASE_ADC);
+    return;
+}
+
+void opamp_instance_init(OPAMP_HandleTypeDef* handle, OPAMP_TypeDef* instance,
+                         uint32_t power_mode) {
+    handle->Instance = instance;
+    handle->Init.PowerMode = power_mode;
+    handle->Init.Mode = OPAMP_PGA_MODE;
+    handle->Init.NonInvertingInput = OPAMP_NONINVERTINGINPUT_IO2;
+    handle->Init.InternalOutput = ENABLE;
+    handle->Init.TimerControlledMuxmode = OPAMP_TIMERCONTROLLEDMUXMODE_DISABLE;
+    handle->Init.PgaConnect = OPAMP_PGA_CONNECT_INVERTINGINPUT_NO;
+    handle->Init.PgaGain = OPAMP_PGA_GAIN_2_OR_MINUS_1;
+    handle->Init.UserTrimming = OPAMP_TRIMMING_FACTORY;
+
+    if (HAL_OPAMP_Init(handle) != HAL_OK) {
+        uint8_t instance_num = 0;
+        if (instance == OPAMP1) {
+            instance_num = 0;
+        } else if (instance == OPAMP2) {
+            instance_num = 1;
+        } else if (instance == OPAMP3) {
+            instance_num = 2;
+        } else if (instance == OPAMP4) {
+            instance_num = 3;
+        } else if (instance == OPAMP5) {
+            instance_num = 4;
+        } else if (instance == OPAMP6) {
+            instance_num = 5;
+        }
+
+        debug::error("Failed to initialise OPAMP %u", instance_num + 1);
+        error::handler();
+    }
+    return;
+}
+
+void gpio_init(void) {
+    gpio::init(VSENSE_VMOT_PIN, gpio::Mode::ANALOG, gpio::Pull::NOPULL,
+               gpio::Speed::MEDIUM);
+    gpio::init(VSENSE_12V_PIN, gpio::Mode::ANALOG, gpio::Pull::NOPULL,
+               gpio::Speed::MEDIUM);
+    gpio::init(VSENSE_5V_PIN, gpio::Mode::ANALOG, gpio::Pull::NOPULL,
+               gpio::Speed::MEDIUM);
+    gpio::init(ISENSE_U_PHASE_PIN, gpio::Mode::ANALOG, gpio::Pull::NOPULL,
+               gpio::Speed::MEDIUM);
+    gpio::init(ISENSE_V_PHASE_PIN, gpio::Mode::ANALOG, gpio::Pull::NOPULL,
+               gpio::Speed::MEDIUM);
+    gpio::init(ISENSE_W_PHASE_PIN, gpio::Mode::ANALOG, gpio::Pull::NOPULL,
+               gpio::Speed::MEDIUM);
+    return;
+}
+
+ADC_HandleTypeDef* adc_instance_init(ADC_TypeDef* instance) {
+    uint8_t instance_idx = adc_instance_to_idx(instance);
+    ADC_HandleTypeDef* handle = &(adc_data[instance_idx].handle);
+    if (adc_data[instance_idx].inited) {
+        return handle;
+    }
+
+    if (instance_idx == 0 || instance_idx == 1) {
+        __HAL_RCC_ADC12_CLK_ENABLE();
+    } else if (instance_idx == 3 || instance_idx == 4 || instance_idx == 5) {
+        __HAL_RCC_ADC345_CLK_ENABLE();
+    }
+
+    handle->Instance = instance;
+    handle->Init.ClockPrescaler = ADC_CLK_PRESCALER;
+    handle->Init.Resolution = ADC_RESOLUTION_12B;
+    handle->Init.DataAlign = ADC_DATAALIGN_RIGHT;  // little endian
+    handle->Init.GainCompensation = 0;  // no way to calibrate for now
+    handle->Init.ScanConvMode = ADC_SCAN_DISABLE;
+    handle->Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+    handle->Init.LowPowerAutoWait = DISABLE;
+    handle->Init.ContinuousConvMode = DISABLE;
+    handle->Init.NbrOfConversion = 1;
+    handle->Init.DiscontinuousConvMode = DISABLE;
+    handle->Init.ExternalTrigConv = ADC_SOFTWARE_START;
+    handle->Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+    handle->Init.DMAContinuousRequests = DISABLE;
+    handle->Init.Overrun = ADC_OVR_DATA_PRESERVED;
+    handle->Init.OversamplingMode = DISABLE;
+    if (HAL_ADC_Init(handle) != HAL_OK) {
+        debug::error("Failed to initialise ADC %u", instance_idx + 1);
+        error::handler();
+    }
+
+    if (HAL_ADCEx_Calibration_Start(handle, ADC_SINGLE_ENDED) != HAL_OK) {
+        debug::error("Failed to calibrate ADC %u", instance_idx + 1);
+        error::handler();
+    }
+
+    adc_data[instance_idx].inited = true;
+    return handle;
+}
+
+uint8_t adc_instance_to_idx(ADC_TypeDef* instance) {
+    if (instance == ADC1) {
+        return 0;
+    } else if (instance == ADC2) {
+        return 1;
+    } else if (instance == ADC3) {
+        return 2;
+    } else if (instance == ADC4) {
+        return 3;
+    } else if (instance == ADC5) {
+        return 4;
+    }
+
+    return 255;
+}

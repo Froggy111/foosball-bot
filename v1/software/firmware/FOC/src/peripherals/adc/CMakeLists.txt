@@ -17,4 +17,7 @@ PUBLIC
 target_link_libraries(adc
 PUBLIC
     ${COMMON_LIBS}
+    debug_
+    error
+    gpio
 )

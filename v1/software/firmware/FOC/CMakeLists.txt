@@ -52,6 +52,7 @@ set(HAL_EXTENSIONS
     PWREx
     PCDEx
     TIMEx
+    ADCEx
 )
 
 set(HAL_FINDPACKAGE_COMPONENTS
