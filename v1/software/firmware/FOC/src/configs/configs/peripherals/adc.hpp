@@ -27,6 +27,7 @@
  * 640.5, 10.675us, 16.013us: 39k, 33k
  */
 
+// INFO : VOLTAGE SENSING CONFIGS
 // PA0, 490K-1K divider
 // source impedance = 490K // 1K = 998Ohm
 // minimum sampling cycle: 24.5, 612.50ns @40MHz
@@ -35,6 +36,9 @@ const gpio::PinConfig VSENSE_VMOT_PIN = {GPIOA, gpio::Pin::PIN0,
 #define VSENSE_VMOT_ADC ADC1
 #define VSENSE_VMOT_CHANNEL ADC_CHANNEL_1
 #define VSENSE_VMOT_SAMPLETIME ADC_SAMPLETIME_24CYCLES_5
+// this is stupid, should have been 49k...
+// dont use VMOT sensing yet i suppose...
+const float VSENSE_VMOT_MULTIPLIER = (490.0f + 1.0f) / 1.0f;
 
 // PA6, 32.4K-10K divider
 // source impedance = 32.4K // 10K = 7.7kOhm
@@ -43,6 +47,7 @@ const gpio::PinConfig VSENSE_12V_PIN = {GPIOA, gpio::Pin::PIN6, gpio::AF::NONE};
 #define VSENSE_12V_ADC ADC2
 #define VSENSE_12V_CHANNEL ADC_CHANNEL_3
 #define VSENSE_12V_SAMPLETIME ADC_SAMPLETIME_247CYCLES_5
+const float VSENSE_12V_MULTIPLIER = (32.4f + 10.0f) / 10.0f;
 
 // PA5, 32.4K-10K divider
 // source impedance = 32.4K // 10K = 7.7kOhm
@@ -51,6 +56,21 @@ const gpio::PinConfig VSENSE_5V_PIN = {GPIOA, gpio::Pin::PIN5, gpio::AF::NONE};
 #define VSENSE_5V_ADC ADC2
 #define VSENSE_5V_CHANNEL ADC_CHANNEL_13
 #define VSENSE_5V_SAMPLETIME ADC_SAMPLETIME_247CYCLES_5
+const float VSENSE_5V_MULTIPLIER = (32.4f + 10.0f) / 10.0f;
+
+// INFO : CURRENT SENSING CONFIGS
+
+const float ISENSE_SHUNT = 1e-3f;
+const float ISENSE_GAIN = 60.4f;
+const float ISENSE_CURRENT_PER_VOLT = 1.0f / (ISENSE_SHUNT * ISENSE_GAIN);
+// if read voltage is more than ISENSE_HALF_GAIN_THRESHOLD * max_voltage, half
+// PGA gain
+// WARN : ISENSE_HALF_GAIN_THRESHOLD / 2 > ISENSE_DOUBLE_GAIN_THRESHOLD
+const float ISENSE_HALF_GAIN_THRESHOLD = 0.8f;
+// if read voltage is less than ISENSE_DOUBLE_GAIN_THRESHOLD * max_voltage,
+// double PGA gain
+// WARN : ISENSE_DOUBLE_GAIN_THRESHOLD * 2 < ISENSE_HALF_GAIN_THRESHOLD
+const float ISENSE_DOUBLE_GAIN_THRESHOLD = 0.3f;
 
 const gpio::PinConfig ISENSE_U_PHASE_PIN = {GPIOA, gpio::Pin::PIN1,
                                             gpio::AF::NONE};
