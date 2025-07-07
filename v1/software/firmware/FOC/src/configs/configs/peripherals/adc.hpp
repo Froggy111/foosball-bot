@@ -28,6 +28,8 @@
  */
 const uint8_t ADC_POLL_TIMEOUT = 1;        // should never ever exceed 1ms
 const uint16_t ADC_RANGE = (1 << 12) - 1;  // 12 bit ADC
+const float ADC_VOLTAGE = 3.3f;
+const float ADC_VOLTAGE_MULTIPLIER = ADC_VOLTAGE / ADC_RANGE;
 
 // INFO : VOLTAGE SENSING CONFIGS
 // PA0, 490K-1K divider
@@ -68,11 +70,15 @@ const float ISENSE_CURRENT_PER_VOLT = 1.0f / (ISENSE_SHUNT * ISENSE_GAIN);
 // if read voltage is more than ISENSE_HALF_GAIN_THRESHOLD * max_voltage, half
 // PGA gain
 // WARN : ISENSE_HALF_GAIN_THRESHOLD / 2 > ISENSE_DOUBLE_GAIN_THRESHOLD
-const float ISENSE_HALF_GAIN_THRESHOLD = 0.8f;
+const float ISENSE_HALF_GAIN_THRESHOLD_CONF = 0.8f;
+const uint16_t ISENSE_HALF_GAIN_THRESHOLD =
+    ADC_RANGE * ISENSE_HALF_GAIN_THRESHOLD_CONF;
 // if read voltage is less than ISENSE_DOUBLE_GAIN_THRESHOLD * max_voltage,
 // double PGA gain
 // WARN : ISENSE_DOUBLE_GAIN_THRESHOLD * 2 < ISENSE_HALF_GAIN_THRESHOLD
-const float ISENSE_DOUBLE_GAIN_THRESHOLD = 0.3f;
+const float ISENSE_DOUBLE_GAIN_THRESHOLD_CONF = 0.3f;
+const uint16_t ISENSE_DOUBLE_GAIN_THRESHOLD =
+    ADC_RANGE * ISENSE_DOUBLE_GAIN_THRESHOLD_CONF;
 
 const gpio::PinConfig ISENSE_U_PHASE_PIN = {GPIOA, gpio::Pin::PIN1,
                                             gpio::AF::NONE};

@@ -1,6 +1,7 @@
 #include "adc.hpp"
 
 #include <stm32g4xx.h>
+#include <stm32g4xx_ll_opamp.h>
 
 #include "config.hpp"
 #include "debug.hpp"
@@ -11,14 +12,35 @@ void opamp_init(void);
 void adc_init(void);
 void gpio_init(void);
 
-void start_ADC_read(ADC_HandleTypeDef* handle, ADC_ChannelConfTypeDef* channel);
-uint32_t read_ADC(ADC_HandleTypeDef* handle, uint32_t timeout);
-
 void opamp_instance_init(OPAMP_HandleTypeDef* handle, OPAMP_TypeDef* instance,
                          uint32_t power_mode);
 
 uint8_t adc_instance_to_idx(ADC_TypeDef* instance);
 ADC_HandleTypeDef* adc_instance_init(ADC_TypeDef* instance);
+
+void start_ADC_read(ADC_HandleTypeDef* handle, ADC_ChannelConfTypeDef* channel);
+uint32_t read_ADC(ADC_HandleTypeDef* handle, uint32_t timeout);
+
+enum class PGAGain : uint8_t {
+    GAIN2 = 2,
+    GAIN4 = 4,
+    GAIN8 = 8,
+    GAIN16 = 16,
+    GAIN32 = 32,
+    GAIN64 = 64,
+};
+
+PGAGain double_gain(PGAGain gain) { return (PGAGain)((uint8_t)gain * 2); }
+PGAGain half_gain(PGAGain gain) { return (PGAGain)((uint8_t)gain / 2); }
+
+void set_PGA(OPAMP_HandleTypeDef* handle, PGAGain gain);
+float read_PGA(OPAMP_HandleTypeDef* opamp, ADC_HandleTypeDef* adc,
+               ADC_ChannelConfTypeDef* channel, PGAGain* gain,
+               uint32_t timeout);
+
+PGAGain U_phase_gain = PGAGain::GAIN2;
+PGAGain V_phase_gain = PGAGain::GAIN2;
+PGAGain W_phase_gain = PGAGain::GAIN2;
 
 OPAMP_HandleTypeDef U_phase_opamp;
 OPAMP_HandleTypeDef V_phase_opamp;
@@ -111,6 +133,30 @@ float adc::read_5V(void) {
     return voltage;
 }
 
+float adc::read_U_current(void) {
+    float voltage = read_PGA(&U_phase_opamp, ISENSE_U_PHASE_ADC_handle,
+                             &ISENSE_U_PHASE_ADC_channel_config, &U_phase_gain,
+                             ADC_POLL_TIMEOUT);
+    float current = voltage * ISENSE_CURRENT_PER_VOLT;
+    return current;
+}
+
+float adc::read_V_current(void) {
+    float voltage = read_PGA(&V_phase_opamp, ISENSE_V_PHASE_ADC_handle,
+                             &ISENSE_V_PHASE_ADC_channel_config, &V_phase_gain,
+                             ADC_POLL_TIMEOUT);
+    float current = voltage * ISENSE_CURRENT_PER_VOLT;
+    return current;
+}
+
+float adc::read_W_current(void) {
+    float voltage = read_PGA(&W_phase_opamp, ISENSE_W_PHASE_ADC_handle,
+                             &ISENSE_W_PHASE_ADC_channel_config, &W_phase_gain,
+                             ADC_POLL_TIMEOUT);
+    float current = voltage * ISENSE_CURRENT_PER_VOLT;
+    return current;
+}
+
 void start_ADC_read(ADC_HandleTypeDef* handle,
                     ADC_ChannelConfTypeDef* channel) {
     if (HAL_ADC_ConfigChannel(handle, channel) != HAL_OK) {
@@ -135,6 +181,47 @@ uint32_t read_ADC(ADC_HandleTypeDef* handle, uint32_t timeout) {
         error::handler();
     }
     return val;
+}
+
+void set_PGA(OPAMP_HandleTypeDef* handle, PGAGain gain) {
+    uint32_t gain_reg = 0;
+    switch (gain) {
+        case PGAGain::GAIN2:
+            gain_reg = OPAMP_PGA_GAIN_2_OR_MINUS_1;
+            break;
+        case PGAGain::GAIN4:
+            gain_reg = OPAMP_PGA_GAIN_4_OR_MINUS_3;
+            break;
+        case PGAGain::GAIN8:
+            gain_reg = OPAMP_PGA_GAIN_8_OR_MINUS_7;
+            break;
+        case PGAGain::GAIN16:
+            gain_reg = OPAMP_PGA_GAIN_16_OR_MINUS_15;
+            break;
+        case PGAGain::GAIN32:
+            gain_reg = OPAMP_PGA_GAIN_32_OR_MINUS_31;
+        case PGAGain::GAIN64:
+            gain_reg = OPAMP_PGA_GAIN_64_OR_MINUS_63;
+    }
+    LL_OPAMP_SetPGAGain(handle->Instance, gain_reg);
+    return;
+}
+
+float read_PGA(OPAMP_HandleTypeDef* opamp, ADC_HandleTypeDef* adc,
+               ADC_ChannelConfTypeDef* channel, PGAGain* gain,
+               uint32_t timeout) {
+    start_ADC_read(adc, channel);
+    uint32_t raw_reading = read_ADC(adc, timeout);
+    float voltage = raw_reading * ADC_VOLTAGE_MULTIPLIER * *(uint8_t*)gain;
+    // adjust gain if needed
+    if (raw_reading > ISENSE_HALF_GAIN_THRESHOLD) {
+        *gain = half_gain(*gain);
+        set_PGA(opamp, *gain);
+    } else if (raw_reading < ISENSE_DOUBLE_GAIN_THRESHOLD) {
+        *gain = double_gain(*gain);
+        set_PGA(opamp, *gain);
+    }
+    return voltage;
 }
 
 void opamp_init(void) {

@@ -7,6 +7,7 @@ debug_
 gpio
 encoder
 inverter
+adc
 )
 
 add_subdirectory(configs)
