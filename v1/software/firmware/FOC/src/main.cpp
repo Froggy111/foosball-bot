@@ -42,29 +42,27 @@ void main_task([[maybe_unused]] void *args) {
     gpio::PinConfig LED = {GPIOB, gpio::Pin::PIN10, gpio::AF::NONE};
     gpio::init(LED, gpio::Mode::OUTPUT_PP, gpio::Pull::NOPULL,
                gpio::Speed::LOW);
+    gpio::write(LED, 1);
 
     usb::init();
     osDelay(2000);
-    // inverter::init(20000);
+    inverter::init(20000);
+    inverter::set(0, 0, 0);
     // encoder::init();
-    adc::init();
     // float theta = 0;
+
+    adc::init();
     for (;;) {
-        adc::start_5V_read();
-        float vsense_5V_voltage = adc::read_5V();
-        debug::log("5V rail voltage: %fV", vsense_5V_voltage);
-        adc::start_12V_read();
-        float vsense_12V_voltage = adc::read_12V();
-        debug::log("12V rail voltage: %fV", vsense_12V_voltage);
-        adc::start_VMOT_read();
-        float vsense_VMOT_voltage = adc::read_VMOT();
-        debug::log("VMOT rail voltage: %fV", vsense_VMOT_voltage);
+        // NOTE : USB test
+        // debug::log("Hello World!");
+
+        // NOTE : ADC test
         float U_current = adc::read_U_current();
-        debug::log("U phase current: %fA", U_current);
         float V_current = adc::read_V_current();
-        debug::log("V phase current: %fA", V_current);
         float W_current = adc::read_W_current();
-        debug::log("W phase current: %fA", W_current);
+        debug::log("U: %fA, V: %fA, W: %fA", U_current, V_current, W_current);
+
+        // NOTE : encoder / inverter test
         // theta += M_PI / 45;
         // if (theta > M_PI * 2) {
         //     theta -= M_PI * 2;
@@ -75,7 +73,7 @@ void main_task([[maybe_unused]] void *args) {
         // debug::log("Z pulses: %u", encoder::get_z_pulses());
         // debug::log("Delta: %d", encoder::get_delta());
         // inverter::svpwm_set(theta, 0.0f, 24.0f);
-        gpio::write(LED, !read(LED));
-        osDelay(1);
+        gpio::invert(LED);
+        osDelay(100);
     }
 }

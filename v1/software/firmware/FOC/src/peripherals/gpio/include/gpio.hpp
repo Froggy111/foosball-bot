@@ -34,6 +34,9 @@ inline void write(const PinConfig &pin_config, bool state) {
     HAL_GPIO_WritePin(pin_config.port, (uint16_t)pin_config.pin,
                       (GPIO_PinState)state);
 }
+inline void invert(const PinConfig &pin_config) {
+    HAL_GPIO_TogglePin(pin_config.port, (uint16_t)pin_config.pin);
+}
 
 enum class Pin : uint16_t {
     PIN0 = GPIO_PIN_0,

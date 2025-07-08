@@ -39,6 +39,7 @@ static PWMFreqParams calculate_frequency_parameters(
 void inverter::init(uint32_t pwm_freq) {
     timer_init(pwm_freq);
     gpio_init();
+    set(0, 0, 0);  // all pull to ground
 }
 
 void inverter::reverse_direction(void) {

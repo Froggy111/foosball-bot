@@ -1,5 +1,6 @@
 #include "adc.hpp"
 
+#include <cmsis_os2.h>
 #include <stm32g4xx.h>
 #include <stm32g4xx_ll_opamp.h>
 
@@ -30,8 +31,20 @@ enum class PGAGain : uint8_t {
     GAIN64 = 64,
 };
 
-PGAGain double_gain(PGAGain gain) { return (PGAGain)((uint8_t)gain * 2); }
-PGAGain half_gain(PGAGain gain) { return (PGAGain)((uint8_t)gain / 2); }
+PGAGain double_gain(PGAGain gain) {
+    uint8_t current_gain = (uint8_t)gain;
+    if (current_gain >= (uint8_t)PGAGain::GAIN64) {
+        return PGAGain::GAIN64;
+    } else
+        return (PGAGain)((uint8_t)gain * 2);
+}
+PGAGain half_gain(PGAGain gain) {
+    uint8_t current_gain = (uint8_t)gain;
+    if (current_gain <= (uint8_t)PGAGain::GAIN2) {
+        return PGAGain::GAIN2;
+    } else
+        return (PGAGain)((uint8_t)gain / 2);
+}
 
 void set_PGA(OPAMP_HandleTypeDef* handle, PGAGain gain);
 float read_PGA(OPAMP_HandleTypeDef* opamp, ADC_HandleTypeDef* adc,
@@ -98,9 +111,9 @@ struct ADCData {
 static ADCData adc_data[5];
 
 void adc::init(void) {
-    opamp_init();
-    adc_init();
     gpio_init();
+    adc_init();
+    opamp_init();
 }
 
 void adc::start_VMOT_read(void) {
@@ -109,7 +122,8 @@ void adc::start_VMOT_read(void) {
 }
 float adc::read_VMOT(void) {
     uint32_t val = read_ADC(VSENSE_VMOT_ADC_handle, ADC_POLL_TIMEOUT);
-    float voltage = (float)val / (float)ADC_RANGE * VSENSE_VMOT_MULTIPLIER;
+    float voltage =
+        (float)val * ADC_VOLTAGE_MULTIPLIER * VSENSE_VMOT_MULTIPLIER;
     return voltage;
 }
 
@@ -119,7 +133,7 @@ void adc::start_12V_read(void) {
 }
 float adc::read_12V(void) {
     uint32_t val = read_ADC(VSENSE_12V_ADC_handle, ADC_POLL_TIMEOUT);
-    float voltage = (float)val / (float)ADC_RANGE * VSENSE_12V_MULTIPLIER;
+    float voltage = (float)val * ADC_VOLTAGE_MULTIPLIER * VSENSE_12V_MULTIPLIER;
     return voltage;
 }
 
@@ -129,7 +143,7 @@ void adc::start_5V_read(void) {
 }
 float adc::read_5V(void) {
     uint32_t val = read_ADC(VSENSE_5V_ADC_handle, ADC_POLL_TIMEOUT);
-    float voltage = (float)val / (float)ADC_RANGE * VSENSE_5V_MULTIPLIER;
+    float voltage = (float)val * ADC_VOLTAGE_MULTIPLIER * VSENSE_5V_MULTIPLIER;
     return voltage;
 }
 
@@ -200,8 +214,10 @@ void set_PGA(OPAMP_HandleTypeDef* handle, PGAGain gain) {
             break;
         case PGAGain::GAIN32:
             gain_reg = OPAMP_PGA_GAIN_32_OR_MINUS_31;
+            break;
         case PGAGain::GAIN64:
             gain_reg = OPAMP_PGA_GAIN_64_OR_MINUS_63;
+            break;
     }
     LL_OPAMP_SetPGAGain(handle->Instance, gain_reg);
     return;
@@ -212,12 +228,15 @@ float read_PGA(OPAMP_HandleTypeDef* opamp, ADC_HandleTypeDef* adc,
                uint32_t timeout) {
     start_ADC_read(adc, channel);
     uint32_t raw_reading = read_ADC(adc, timeout);
-    float voltage = raw_reading * ADC_VOLTAGE_MULTIPLIER * *(uint8_t*)gain;
+    debug::debug("read_PGA raw reading: %u, gain: %u", raw_reading,
+                 (uint8_t)*gain);
+    float voltage = raw_reading * ADC_VOLTAGE_MULTIPLIER / (uint8_t)*gain;
     // adjust gain if needed
-    if (raw_reading > ISENSE_HALF_GAIN_THRESHOLD) {
+    if (raw_reading > ISENSE_HALF_GAIN_THRESHOLD && *gain != PGAGain::GAIN2) {
         *gain = half_gain(*gain);
         set_PGA(opamp, *gain);
-    } else if (raw_reading < ISENSE_DOUBLE_GAIN_THRESHOLD) {
+    } else if (raw_reading < ISENSE_DOUBLE_GAIN_THRESHOLD &&
+               *gain != PGAGain::GAIN64) {
         *gain = double_gain(*gain);
         set_PGA(opamp, *gain);
     }
@@ -235,6 +254,22 @@ void opamp_init(void) {
 }
 
 void adc_init(void) {
+    // ADC12 peripheral clock source
+    RCC_PeriphCLKInitTypeDef ADC12_clk_init = {};
+    ADC12_clk_init.PeriphClockSelection = RCC_PERIPHCLK_ADC12;
+    ADC12_clk_init.Adc12ClockSelection = RCC_ADC12CLKSOURCE_SYSCLK;
+    if (HAL_RCCEx_PeriphCLKConfig(&ADC12_clk_init) != HAL_OK) {
+        debug::error("Failed to configure ADC12 peripheral clock source");
+    }
+
+    // ADC345 peripheral clock source
+    RCC_PeriphCLKInitTypeDef ADC345_clk_init = {};
+    ADC345_clk_init.PeriphClockSelection = RCC_PERIPHCLK_ADC345;
+    ADC345_clk_init.Adc345ClockSelection = RCC_ADC12CLKSOURCE_SYSCLK;
+    if (HAL_RCCEx_PeriphCLKConfig(&ADC345_clk_init) != HAL_OK) {
+        debug::error("Failed to configure ADC345 peripheral clock source");
+    }
+
     VSENSE_VMOT_ADC_handle = adc_instance_init(VSENSE_VMOT_ADC);
     VSENSE_12V_ADC_handle = adc_instance_init(VSENSE_12V_ADC);
     VSENSE_5V_ADC_handle = adc_instance_init(VSENSE_5V_ADC);
@@ -276,6 +311,25 @@ void opamp_instance_init(OPAMP_HandleTypeDef* handle, OPAMP_TypeDef* instance,
         debug::error("Failed to initialise OPAMP %u", instance_num + 1);
         error::handler();
     }
+    if (HAL_OPAMP_Start(handle) != HAL_OK) {
+        uint8_t instance_num = 0;
+        if (instance == OPAMP1) {
+            instance_num = 0;
+        } else if (instance == OPAMP2) {
+            instance_num = 1;
+        } else if (instance == OPAMP3) {
+            instance_num = 2;
+        } else if (instance == OPAMP4) {
+            instance_num = 3;
+        } else if (instance == OPAMP5) {
+            instance_num = 4;
+        } else if (instance == OPAMP6) {
+            instance_num = 5;
+        }
+
+        debug::error("Failed to start OPAMP %u", instance_num + 1);
+        error::handler();
+    }
     return;
 }
 
@@ -304,7 +358,7 @@ ADC_HandleTypeDef* adc_instance_init(ADC_TypeDef* instance) {
 
     if (instance_idx == 0 || instance_idx == 1) {
         __HAL_RCC_ADC12_CLK_ENABLE();
-    } else if (instance_idx == 3 || instance_idx == 4 || instance_idx == 5) {
+    } else if (instance_idx == 2 || instance_idx == 3 || instance_idx == 4) {
         __HAL_RCC_ADC345_CLK_ENABLE();
     }
 
