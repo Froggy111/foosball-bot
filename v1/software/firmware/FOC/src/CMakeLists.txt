@@ -8,6 +8,8 @@ gpio
 encoder
 inverter
 adc
+FOC_core
+endstop
 )
 
 add_subdirectory(configs)
@@ -23,6 +25,8 @@ add_subdirectory(error)
 add_subdirectory(peripherals)
 add_subdirectory(encoder)
 add_subdirectory(inverter)
+add_subdirectory(FOC_core)
+add_subdirectory(optional)
 
 set(TARGET_NAME "${PROJECT_NAME}-${MCU_SERIES}")
 add_executable(${TARGET_NAME})

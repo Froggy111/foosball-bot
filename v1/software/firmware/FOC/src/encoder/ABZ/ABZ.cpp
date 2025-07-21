@@ -19,8 +19,8 @@ static volatile uint32_t z_pulses = 0;
 static volatile int32_t delta = 0;
 
 int64_t encoder::get_count(void) {
-    return __HAL_TIM_GetCounter(&timer) +
-           rollover_count * (ENCODER_TIMER_PERIOD + 1);
+    return ENCODER_POLARITY * (__HAL_TIM_GetCounter(&timer) +
+                               rollover_count * (ENCODER_TIMER_PERIOD + 1));
 }
 
 void encoder::init(void) {
@@ -106,12 +106,12 @@ static void timer_init(void) {
     // count on both edges (4x resolution)
     encoder_config.EncoderMode = TIM_ENCODERMODE_TI12;
 
-    encoder_config.IC1Polarity = ENCODER_POLARITY;
+    encoder_config.IC1Polarity = ENCODER_PIN_POLARITY;
     encoder_config.IC1Selection = TIM_ICSELECTION_DIRECTTI;
     encoder_config.IC1Prescaler = TIM_ICPSC_DIV1;
     encoder_config.IC1Filter = ENCODER_FILTER;
 
-    encoder_config.IC2Polarity = ENCODER_POLARITY;
+    encoder_config.IC2Polarity = ENCODER_PIN_POLARITY;
     encoder_config.IC2Selection = TIM_ICSELECTION_DIRECTTI;
     encoder_config.IC2Prescaler = TIM_ICPSC_DIV1;
     encoder_config.IC2Filter = ENCODER_FILTER;

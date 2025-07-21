@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <stm32g474xx.h>
 
+#include "configs/FOC.hpp"
 #include "configs/debug.hpp"
 #include "configs/encoder.hpp"
 #include "configs/inverter.hpp"
