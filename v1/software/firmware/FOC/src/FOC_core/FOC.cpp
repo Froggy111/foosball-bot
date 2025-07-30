@@ -191,6 +191,10 @@ void FOC::handler(void) {
     if (!run_IRQ) {
         return;
     }
+    // measure currents
+    float U_current = adc::read_U_current();
+    float V_current = adc::read_V_current();
+    float W_current = adc::read_W_current();
 }
 
 float FOC::get_angular_position(void) {

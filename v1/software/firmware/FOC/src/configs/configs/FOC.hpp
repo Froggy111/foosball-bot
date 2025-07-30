@@ -7,6 +7,8 @@
 
 #define USE_ENDSTOP
 
+const bool direction_reversed = false;
+
 const uint32_t PWM_FREQUENCY = 32768;
 const uint32_t NUM_COIL_SETS = 1;
 

@@ -15,8 +15,6 @@ static TIM_HandleTypeDef timer;
 
 static uint16_t resolution = 0;
 
-static bool direction_reversed = false;
-
 struct PWMFreqParams {
     uint16_t prescaler = 0;
     uint16_t period = 0;
@@ -40,10 +38,6 @@ void inverter::init(uint32_t pwm_freq) {
     timer_init(pwm_freq);
     gpio_init();
     set(0, 0, 0);  // all pull to ground
-}
-
-void inverter::reverse_direction(void) {
-    direction_reversed = !direction_reversed;
 }
 
 void inverter::set(float u, float v, float w) {

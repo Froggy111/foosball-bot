@@ -156,17 +156,31 @@ float adc::read_U_current(void) {
 }
 
 float adc::read_V_current(void) {
-    float voltage = read_PGA(&V_phase_opamp, ISENSE_V_PHASE_ADC_handle,
-                             &ISENSE_V_PHASE_ADC_channel_config, &V_phase_gain,
-                             ADC_POLL_TIMEOUT);
+    float voltage = 0;
+    if (direction_reversed) {
+        voltage = read_PGA(&V_phase_opamp, ISENSE_V_PHASE_ADC_handle,
+                           &ISENSE_V_PHASE_ADC_channel_config, &V_phase_gain,
+                           ADC_POLL_TIMEOUT);
+    } else {
+        voltage = read_PGA(&W_phase_opamp, ISENSE_W_PHASE_ADC_handle,
+                           &ISENSE_W_PHASE_ADC_channel_config, &W_phase_gain,
+                           ADC_POLL_TIMEOUT);
+    }
     float current = voltage * ISENSE_CURRENT_PER_VOLT;
     return current;
 }
 
 float adc::read_W_current(void) {
-    float voltage = read_PGA(&W_phase_opamp, ISENSE_W_PHASE_ADC_handle,
-                             &ISENSE_W_PHASE_ADC_channel_config, &W_phase_gain,
-                             ADC_POLL_TIMEOUT);
+    float voltage = 0;
+    if (direction_reversed) {
+        voltage = read_PGA(&W_phase_opamp, ISENSE_W_PHASE_ADC_handle,
+                           &ISENSE_W_PHASE_ADC_channel_config, &W_phase_gain,
+                           ADC_POLL_TIMEOUT);
+    } else {
+        voltage = read_PGA(&V_phase_opamp, ISENSE_V_PHASE_ADC_handle,
+                           &ISENSE_V_PHASE_ADC_channel_config, &V_phase_gain,
+                           ADC_POLL_TIMEOUT);
+    }
     float current = voltage * ISENSE_CURRENT_PER_VOLT;
     return current;
 }
