@@ -1,0 +1,193 @@
+(footprint "Crystal_SMD_3215-2Pin_3.2x1.5mm"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "SMD Crystal FC-135 https://support.epson.biz/td/api/doc_check.php?dl=brief_FC-135R_en.pdf")
+	(tags "SMD SMT Crystal")
+	(property "Reference" "REF**"
+		(at 0 1.65 0)
+		(layer "F.SilkS")
+		(uuid "780fb996-f58e-4b5a-9887-035551f30eb4")
+		(effects
+			(font
+				(size 0.6 0.6)
+				(thickness 0.1)
+			)
+		)
+	)
+	(property "Value" "Crystal"
+		(at 0 2.000001 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "4685f6ac-d499-441c-8643-57d71a3300f8")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "29b99c4e-2b78-47aa-b9d6-6233523929cd")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" "Two pin crystal"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "5e67b0fa-f6da-4252-893c-7f91797386a5")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -0.675 -0.875)
+		(end 0.675 -0.875)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "13450008-770f-42f8-8737-92cb037c6049")
+	)
+	(fp_line
+		(start -0.675 0.875)
+		(end 0.675 0.875)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "c112d8f2-afec-4305-8923-efb8fa3d6e89")
+	)
+	(fp_line
+		(start -2 -1.15)
+		(end -2 1.15)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "bc254ba8-99ef-4d7d-a003-ce7ba7d9c8f7")
+	)
+	(fp_line
+		(start -2 -1.15)
+		(end 2 -1.15)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "bb1d0203-a451-4209-890f-2c635ebdfffa")
+	)
+	(fp_line
+		(start -2 1.15)
+		(end 2 1.15)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "648ee36c-591c-4816-bd24-6edb1a08a997")
+	)
+	(fp_line
+		(start 2 -1.15)
+		(end 2 1.15)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(layer "F.CrtYd")
+		(uuid "1e746360-b343-40f6-9fcf-c66974b3381e")
+	)
+	(fp_line
+		(start -1.6 -0.75)
+		(end -1.6 0.75)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "8e95fe72-ba6d-4eb5-b3d7-d54f022d943f")
+	)
+	(fp_line
+		(start -1.6 -0.75)
+		(end 1.6 -0.75)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "4afd3d54-c290-4321-835a-107cee6d5900")
+	)
+	(fp_line
+		(start -1.6 0.75)
+		(end 1.6 0.75)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "13835c25-74a1-4cfd-bd5b-cc6c357a56c8")
+	)
+	(fp_line
+		(start 1.6 -0.75)
+		(end 1.6 0.75)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "F.Fab")
+		(uuid "18042cef-b280-41a2-a3c1-c4eac7884e8e")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 -1.7 0)
+		(layer "F.Fab")
+		(uuid "c846eed0-f1e8-41a5-af7a-10091b1db118")
+		(effects
+			(font
+				(size 0.6 0.6)
+				(thickness 0.1)
+			)
+		)
+	)
+	(pad "1" smd rect
+		(at 1.25 0)
+		(size 1 1.8)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "cc507cc0-fa4a-43a2-9bb0-b98530836b14")
+	)
+	(pad "2" smd rect
+		(at -1.25 0)
+		(size 1 1.8)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "8f98640e-cdd1-4c70-8a85-1e6d4c4fac0b")
+	)
+	(embedded_fonts no)
+	(model "${KICAD9_3DMODEL_DIR}/Crystal.3dshapes/Crystal_SMD_3215-2Pin_3.2x1.5mm.wrl"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

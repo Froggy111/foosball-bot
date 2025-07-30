@@ -1,0 +1,132 @@
+(footprint "FUSE-SMD_L12.5-W4.5"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at -7.4 0 90)
+		(layer "F.SilkS")
+		(uuid "53aa94bc-ca31-4110-b0ec-c21b74fe22cf")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.1)
+			)
+		)
+	)
+	(property "Value" "R1245.100"
+		(at 0 4 0)
+		(layer "F.Fab")
+		(uuid "3cde128f-2d7b-4cf8-b604-f695272bcc41")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "e1b7cc78-d387-4aeb-81de-5ace810c011e")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "ef263549-9f0a-4b43-92ee-f96178a5e719")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "LCSC Part" "C2762493"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "9b241617-b7e6-4187-8cf8-b6a7a14574af")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_line
+		(start -2.63 2.29)
+		(end 2.63 2.29)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "eaf70e73-565f-4642-aa03-89e25618907a")
+	)
+	(fp_line
+		(start -2.54 -2.29)
+		(end 2.63 -2.29)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "08946ad9-947c-4e2c-8c80-66bf7acb06d7")
+	)
+	(fp_circle
+		(center -6.23 2.25)
+		(end -6.2 2.25)
+		(stroke
+			(width 0.06)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "aa70160b-255a-4098-a5b1-a8dcc8b7c3c8")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "a3341ead-b07c-4773-92e4-e9e2d83c320e")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" smd rect
+		(at -4.76 0)
+		(size 3.8 5.6)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "145636dc-9cd9-43ef-ab04-dad2c132ffde")
+	)
+	(pad "2" smd rect
+		(at 4.76 0)
+		(size 3.8 5.6)
+		(layers "F.Cu" "F.Mask" "F.Paste")
+		(uuid "7946c170-a061-480d-a892-408a7bf4d1a3")
+	)
+	(embedded_fonts no)
+	(model "${KICAD_3RD_PARTY}/EasyEDA.3dshapes/FUSE-SMD_L12.5-W4.5.wrl"
+		(offset
+			(xyz 0 -0 2)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -0 -0 -0)
+		)
+	)
+)

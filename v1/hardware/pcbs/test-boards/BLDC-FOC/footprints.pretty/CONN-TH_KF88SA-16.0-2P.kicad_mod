@@ -1,0 +1,172 @@
+(footprint "CONN-TH_KF88SA-16.0-2P"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 19 0 90)
+		(layer "F.SilkS")
+		(uuid "f3434354-b72b-4b29-8d64-d2b9de38342a")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "KF88SA-16.0-2P"
+		(at 0 8.5 0)
+		(layer "F.Fab")
+		(uuid "7547c4d2-019a-4439-902f-a36455fe3f8f")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" "https://lcsc.com/product-detail/Barrier-Terminal-Blocks_Cixi-Kefa-Elec-KF88SA-16-0-2P_C707749.html"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "db45fe76-e93d-482b-abc6-114df7c1a332")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "c61e0558-088b-41b5-b2a4-46dd58dc5cf2")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "LCSC Part" "C707749"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "0881ddc9-3a98-4fc9-b539-d495c8da0f27")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_line
+		(start -17.7 -10.5)
+		(end -17.7 10.5)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "fd5fa2df-4b54-481c-9093-2c31bce604d3")
+	)
+	(fp_line
+		(start 17.7 -10.5)
+		(end -17.7 -10.5)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "ec7fa405-754c-4c67-a898-cc4871ff7d7b")
+	)
+	(fp_line
+		(start 17.7 -10.5)
+		(end 17.7 10.5)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "f0baf0a3-c819-4989-8d9f-1ca52bc6ad69")
+	)
+	(fp_line
+		(start 17.7 10.5)
+		(end -17.7 10.5)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "81f73601-836e-456e-a491-6e3dabcf2b79")
+	)
+	(fp_circle
+		(center -17.83 10.63)
+		(end -17.8 10.63)
+		(stroke
+			(width 0.06)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "f7d2e2a6-e30c-4789-9d8f-84cdf3f3b655")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "c4f73d12-0bcd-44e2-834f-4d44ac775606")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole rect
+		(at -8 -4.5)
+		(size 8 4)
+		(drill oval 5.799988 1.999996)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "d8fa282a-db6d-4d76-9c5d-7bf918fddf62")
+	)
+	(pad "1" thru_hole rect
+		(at -8 4.5)
+		(size 8 4)
+		(drill oval 5.799988 1.999996)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "0f3c0f56-f04e-47f3-a23e-5111f2775c34")
+	)
+	(pad "2" thru_hole oval
+		(at 8 -4.5)
+		(size 8 4)
+		(drill oval 5.799988 1.999996)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "6e115af3-bbf8-4d6e-9623-e6cbc54985a5")
+	)
+	(pad "2" thru_hole oval
+		(at 8 4.5)
+		(size 8 4)
+		(drill oval 5.799988 1.999996)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "5f7008c9-b3ae-492e-9888-96ca3a2a75e1")
+	)
+	(embedded_fonts no)
+	(model "${KICAD_3RD_PARTY}/EasyEDA.3dshapes/CONN-TH_KF88SA-16.0-2P.wrl"
+		(offset
+			(xyz 0 -0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

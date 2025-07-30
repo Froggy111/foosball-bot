@@ -1,0 +1,164 @@
+(footprint "CONN-TH_3P-P9.50_HB9500-9.5-3P"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at -16 4 90)
+		(layer "F.SilkS")
+		(uuid "b6820b07-e8d0-4e12-9d0a-a0088eb57c32")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "HB9500-3"
+		(at 0 4 0)
+		(layer "F.Fab")
+		(uuid "9dcd9b72-5475-485d-acf9-671db20cf9da")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" "https://lcsc.com/product-detail/Terminal-Blocks_Terminals-pitch9-5MM-3P_C162697.html"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "80417fc3-3d2c-4827-a4c1-f7bbc533845f")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "a27a40a2-dc35-4139-91bf-bc801c9d317a")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "LCSC Part" "C162697"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "ef9f1866-8841-43e6-bd9d-bf46741f8c2d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_line
+		(start -15 -3.95)
+		(end -15 12.05)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "80ee03b2-4926-469b-baea-55bf2d4e3135")
+	)
+	(fp_line
+		(start -15 -3.95)
+		(end 15 -3.95)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e47074ef-e16f-45ab-86cd-b8ab8cfa2e2f")
+	)
+	(fp_line
+		(start -15 12.05)
+		(end 15 12.05)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "506f5b22-21b8-4139-ba67-46af695fba8f")
+	)
+	(fp_line
+		(start 15 -3.95)
+		(end 15 12.05)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "bbb24f94-b4f0-4754-b204-641988d5e66c")
+	)
+	(fp_circle
+		(center -15 12.05)
+		(end -14.97 12.05)
+		(stroke
+			(width 0.06)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "fea2a786-38e8-4056-857d-61188affb1d4")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "dc17ea93-041b-40d2-8eeb-7a9f9fb49b52")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole oval
+		(at -9.5 0)
+		(size 3.2 2.2)
+		(drill oval 2.200148 1.199896)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "b9531955-0031-49bb-8706-8fcf7f8af38c")
+	)
+	(pad "2" thru_hole oval
+		(at 0 0)
+		(size 3.2 2.2)
+		(drill oval 2.199894 1.199896)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "52fa14e0-5c04-4d43-98a8-218298ea0f57")
+	)
+	(pad "3" thru_hole oval
+		(at 9.5 0)
+		(size 3.2 2.2)
+		(drill oval 2.200148 1.199896)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "b19817dd-5eaf-456c-9df6-faeea7c7b48e")
+	)
+	(embedded_fonts no)
+	(model "${KICAD_3RD_PARTY}/EasyEDA.3dshapes/CONN-TH_3P-P9.50_HB9500-9.5-3P.wrl"
+		(offset
+			(xyz 0 -4.06 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

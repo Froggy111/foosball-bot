@@ -1,0 +1,238 @@
+(footprint "CONN-TH_2P-P5.00_WJ500V-5.08-2P"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(property "Reference" "REF**"
+		(at 0 -2.2 180)
+		(layer "F.SilkS")
+		(uuid "c5144e9c-3c59-4992-a8e3-9797573131c4")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "WJ500V-5.08-2P-14-00A"
+		(at 0 4 180)
+		(layer "F.Fab")
+		(uuid "edae8f2f-039d-45f6-a9a2-f8524cc1eb46")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" "https://lcsc.com/product-detail/Terminal-Blocks_WJ500V-5-08-2P_C8465.html"
+		(at 0 0 180)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "51e27b3f-c4d8-40b2-98a2-de20cce31d3d")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" ""
+		(at 0 0 180)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "ef33dbcf-becc-4de2-b0a8-cd65f2460ca6")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "LCSC Part" "C8465"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "9053ac8e-eed6-4e35-98b4-5ca6dc4ce2a7")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_line
+		(start -5.68 -4.75)
+		(end -5.68 -3.75)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "4b6174cb-b668-4899-830c-e75a37141efd")
+	)
+	(fp_line
+		(start -5.68 -3.75)
+		(end -5.08 -4)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "5fb55f46-c943-4655-9b8f-28892a635feb")
+	)
+	(fp_line
+		(start -5.68 2.75)
+		(end -5.68 3.75)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "df80d291-aa88-4f97-8ff1-978a00ef2728")
+	)
+	(fp_line
+		(start -5.68 3.75)
+		(end -5.08 3.5)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e0633e4e-174c-467e-8578-4b68853306a7")
+	)
+	(fp_line
+		(start -5.08 -4.5)
+		(end -5.68 -4.75)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "d052fe4a-1999-41b5-b59a-97a1912e1fa7")
+	)
+	(fp_line
+		(start -5.08 3)
+		(end -5.68 2.75)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "17272796-98a6-4bb4-9547-250404661716")
+	)
+	(fp_line
+		(start -5.08 4.52)
+		(end -5.08 -5.64)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "2d8b73f4-84e6-4015-a0bc-683026025de2")
+	)
+	(fp_line
+		(start 5.08 -5.64)
+		(end -5.05 -5.64)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e15ee777-4cde-4a31-8e0e-2e1a53c64089")
+	)
+	(fp_line
+		(start 5.08 4.52)
+		(end -5.05 4.52)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "0b70e9f5-ad42-4c6b-a0c5-769081791e7f")
+	)
+	(fp_line
+		(start 5.08 4.52)
+		(end 5.08 -5.64)
+		(stroke
+			(width 0.25)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e2bba4f1-5bdf-4e69-9418-153ffea36549")
+	)
+	(fp_circle
+		(center -5.21 4.5)
+		(end -5.18 4.5)
+		(stroke
+			(width 0.06)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "847faede-34d5-45ba-bf28-16d9b2e23ccd")
+	)
+	(fp_circle
+		(center -2.54 0)
+		(end -2.26 0)
+		(stroke
+			(width 0.55)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "991cbd1e-feb7-431b-9223-534eee6152ee")
+	)
+	(fp_circle
+		(center 2.54 0)
+		(end 2.82 0)
+		(stroke
+			(width 0.55)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "f744a32a-667a-4322-bcc3-a1e32dc5a0e8")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 0 0 180)
+		(layer "F.Fab")
+		(uuid "ffe9f389-0b20-445e-bdb4-e10a3537414c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at -2.54 0 180)
+		(size 2 2)
+		(drill 1.300023)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "e3f1a384-5bf2-4b77-ba9f-7cd07686becd")
+	)
+	(pad "2" thru_hole circle
+		(at 2.54 0 180)
+		(size 2 2)
+		(drill 1.300023)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "66233877-8e79-4fb7-84f6-001da1dd10d7")
+	)
+	(embedded_fonts no)
+	(model "${KICAD_3RD_PARTY}/EasyEDA.3dshapes/CONN-TH_2P-P5.00_WJ500V-5.08-2P.wrl"
+		(offset
+			(xyz 2.5 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -0 -0 -0)
+		)
+	)
+)

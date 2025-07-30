@@ -1,0 +1,127 @@
+(footprint "C_Radial_D18.0mm_H35.5mm_P7.50mm"
+	(version 20241229)
+	(generator "pcbnew")
+	(generator_version "9.0")
+	(layer "F.Cu")
+	(descr "C, Radial series, Radial, pin pitch=7.50mm, diameter=18mm, height=35.5mm, Non-Polar Electrolytic Capacitor")
+	(tags "C Radial series Radial pin pitch 7.50mm diameter 18mm height 35.5mm Non-Polar Electrolytic Capacitor")
+	(property "Reference" "REF**"
+		(at 13.749999 0 270)
+		(layer "F.SilkS")
+		(uuid "261014f2-ab85-4776-9a75-0cae4d69bac1")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "820uF 100V (C443165)"
+		(at 3.75 10.25 180)
+		(layer "F.Fab")
+		(uuid "ca403885-07e5-4647-8410-e527fbab432c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" "~"
+		(at 0 0 180)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "331c9521-6aa5-4387-b97e-ba6702c2ffda")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" "Polarized capacitor"
+		(at 0 0 180)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "fb81cd0a-b837-4a36-9542-24e3abdd3b1d")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole)
+	(fp_circle
+		(center 3.75 0)
+		(end 12.87 0)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "5ceb065c-77bc-4814-a461-6d895aa70fec")
+	)
+	(fp_circle
+		(center 3.75 0)
+		(end 13 0)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "19cdc8f7-43aa-4c66-baa3-3c191b6bbaec")
+	)
+	(fp_circle
+		(center 3.75 0)
+		(end 12.75 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "d3854c82-cad6-4782-85c2-5fd5311254dd")
+	)
+	(fp_text user "${REFERENCE}"
+		(at 3.749999 0 180)
+		(layer "F.Fab")
+		(uuid "934fa435-962f-495d-bfad-6da9f36123a1")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "1" thru_hole circle
+		(at 0 0)
+		(size 2 2)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "082f7c60-a7d5-40d8-9a81-67c37e01d221")
+	)
+	(pad "2" thru_hole circle
+		(at 7.5 0)
+		(size 2 2)
+		(drill 1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "39a1aa63-4215-4df5-8e7a-5ebd92ef96a2")
+	)
+	(embedded_fonts no)
+	(model "${KICAD9_3DMODEL_DIR}/Capacitor_THT.3dshapes/C_Radial_D18.0mm_H35.5mm_P7.50mm.wrl"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

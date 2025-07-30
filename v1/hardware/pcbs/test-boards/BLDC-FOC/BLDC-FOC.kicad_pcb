@@ -257,7 +257,7 @@
 	(net 114 "/CAN+")
 	(net 115 "/CAN-")
 	(net 116 "/power/VMOT_UNFUSED")
-	(footprint "EasyEDA:SOT-23-6_L2.9-W1.6-P0.95-LS2.9-BL"
+	(footprint "footprints:SOT-23-6_L2.9-W1.6-P0.95-LS2.9-BL"
 		(layer "F.Cu")
 		(uuid "01c10330-ba64-451a-8787-0ce1eb8d3e1f")
 		(at -21.6 15.1)
@@ -455,7 +455,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "05b44c3f-12f1-4da8-af4a-b3c7f08ed3b9")
 		(at 19.750001 6.83 -90)
@@ -483,7 +483,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 270)
 			(layer "F.Fab")
 			(hide yes)
@@ -654,7 +654,7 @@
 			)
 		)
 	)
-	(footprint "Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical"
+	(footprint "footprints:PinSocket_1x01_P2.54mm_Vertical"
 		(layer "F.Cu")
 		(uuid "06157889-7f13-409e-8f2f-4ed7de6332de")
 		(at 36.6 -13.4)
@@ -682,7 +682,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -886,7 +886,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0603_1608Metric"
+	(footprint "footprints:C_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "088d254f-0b72-4fce-a7fa-0c7fe6e66084")
 		(at -38.2 31.6)
@@ -914,7 +914,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1085,7 +1085,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:DFN-8_L5.5-W5.2-P1.27-LS6.1-BL"
+	(footprint "footprints:DFN-8_L5.5-W5.2-P1.27-LS6.1-BL"
 		(layer "F.Cu")
 		(uuid "0926679f-13d7-4f46-8b28-7c2e57a3ec54")
 		(at 23.95 6.43 -90)
@@ -1381,7 +1381,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0805_2012Metric"
+	(footprint "footprints:R_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "0bda5a0b-e407-45ec-8e15-063302284a2f")
 		(at 25.550002 36.2)
@@ -1409,7 +1409,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1580,7 +1580,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "0d672c50-96f8-4858-8784-eb7a27118546")
 		(at -37.1 -44.5)
@@ -1608,7 +1608,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1779,7 +1779,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:FUSE-SMD_L12.5-W4.5"
+	(footprint "footprints:FUSE-SMD_L12.5-W4.5"
 		(layer "F.Cu")
 		(uuid "0e53706f-5d49-4c90-8cd7-fe239477dbfd")
 		(at -14.4 5.5)
@@ -1919,7 +1919,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0603_1608Metric"
+	(footprint "footprints:C_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "0e81da7e-dbd6-4d75-b328-799598431909")
 		(at -35.2 26.6 90)
@@ -1947,7 +1947,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -2118,7 +2118,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "10518607-84d6-4b11-8a0c-24ec445a424b")
 		(at -29.8 -9.2 180)
@@ -2146,7 +2146,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2317,7 +2317,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_2512_6332Metric"
+	(footprint "footprints:R_2512_6332Metric"
 		(layer "F.Cu")
 		(uuid "163873ce-b48b-43af-b0f0-95a8e300d77b")
 		(at 14.950002 32.429999)
@@ -2346,7 +2346,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2517,7 +2517,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0603_1608Metric"
+	(footprint "footprints:C_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "16f36e05-85bd-4703-975d-2ab9be5e1f25")
 		(at 9.750002 -14.370002)
@@ -2546,7 +2546,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2717,7 +2717,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_2512_6332Metric"
+	(footprint "footprints:R_2512_6332Metric"
 		(layer "F.Cu")
 		(uuid "1781f046-f040-4628-9bae-a0346fe2fdd4")
 		(at 14.950002 -19.570002)
@@ -2746,7 +2746,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -2917,7 +2917,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "1bb5dd6a-7342-4689-984f-32815fb31dc4")
 		(at -28.2 0.4)
@@ -2934,7 +2934,7 @@
 				)
 			)
 		)
-		(property "Value" "60"
+		(property "Value" "60.4"
 			(at 0 1.43 0)
 			(layer "F.Fab")
 			(uuid "125c0de0-f28d-4c59-aacc-5a62b9c71985")
@@ -2945,7 +2945,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3116,7 +3116,7 @@
 			)
 		)
 	)
-	(footprint "Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical"
+	(footprint "footprints:PinSocket_1x01_P2.54mm_Vertical"
 		(layer "F.Cu")
 		(uuid "1cc5b2fa-0ef3-408d-9373-9f1a1e44f4e3")
 		(at 32 4.2)
@@ -3144,7 +3144,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3348,7 +3348,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:SOT-23-5_L2.9-W1.6-P0.95-LS2.8-BR"
+	(footprint "footprints:SOT-23-5_L2.9-W1.6-P0.95-LS2.8-BR"
 		(layer "F.Cu")
 		(uuid "20c07bdd-935c-45ad-8864-61a43df38d24")
 		(at 14.950001 11.63)
@@ -3547,7 +3547,7 @@
 			)
 		)
 	)
-	(footprint "Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical"
+	(footprint "footprints:PinSocket_1x01_P2.54mm_Vertical"
 		(layer "F.Cu")
 		(uuid "23d1443a-6048-46d1-925b-af93c87056da")
 		(at 36.6 27)
@@ -3575,7 +3575,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3779,7 +3779,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "24bbd0a9-1257-4d5e-8902-21383349c71c")
 		(at -26.6 -12.4 180)
@@ -3807,7 +3807,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -3978,7 +3978,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "2c3a53de-8e64-42c1-bf7c-5d8e48243910")
 		(at -12 -16.2 90)
@@ -3995,7 +3995,7 @@
 				)
 			)
 		)
-		(property "Value" "20K"
+		(property "Value" "2K"
 			(at 0 1.43 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -4007,7 +4007,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -4178,7 +4178,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:DFN-8_L5.5-W5.2-P1.27-LS6.1-BL"
+	(footprint "footprints:DFN-8_L5.5-W5.2-P1.27-LS6.1-BL"
 		(layer "F.Cu")
 		(uuid "2d05383f-ed21-43f8-8678-027c44c0fbe8")
 		(at 29.950002 38.629998 180)
@@ -4474,7 +4474,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0603_1608Metric"
+	(footprint "footprints:C_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "31fc54d1-59f7-4a96-8542-1b72f984e3ca")
 		(at -32.2 -3.6 -90)
@@ -4502,7 +4502,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -4673,7 +4673,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0603_1608Metric"
+	(footprint "footprints:C_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "34d9ac09-e4af-48e8-9701-51f40ab9e20c")
 		(at 9.750002 37.629999)
@@ -4701,7 +4701,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -4872,7 +4872,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "3bbaa27f-046e-449e-8ea6-89c1d86a83f0")
 		(at 0.8 -46.1 135)
@@ -4900,7 +4900,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 135)
 			(layer "F.Fab")
 			(hide yes)
@@ -5071,7 +5071,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "3d469bea-aaab-4f5d-83c9-9c49a040f739")
 		(at 19.750002 32.829999 -90)
@@ -5099,7 +5099,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 270)
 			(layer "F.Fab")
 			(hide yes)
@@ -5270,7 +5270,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_1812_4532Metric"
+	(footprint "footprints:C_1812_4532Metric"
 		(layer "F.Cu")
 		(uuid "3d648da3-4e4d-47b5-a968-2a493963d94e")
 		(at 19.150001 -2.969999)
@@ -5298,7 +5298,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -5469,7 +5469,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:DFN-8_L5.5-W5.2-P1.27-LS6.1-BL"
+	(footprint "footprints:DFN-8_L5.5-W5.2-P1.27-LS6.1-BL"
 		(layer "F.Cu")
 		(uuid "3f1666ee-8250-4cdf-a1b6-f0b332bd5df1")
 		(at 23.950002 32.429999 -90)
@@ -5765,7 +5765,7 @@
 			)
 		)
 	)
-	(footprint "Connector_PinHeader_2.54mm:PinHeader_2x02_P2.54mm_Vertical"
+	(footprint "footprints:PinHeader_2x02_P2.54mm_Vertical"
 		(layer "F.Cu")
 		(uuid "3f2ab3e1-738c-4d2f-86ce-f76cbaa16c37")
 		(at -26.925 -2.325 180)
@@ -5795,7 +5795,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -6062,7 +6062,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_THT:C_Radial_D18.0mm_H35.5mm_P7.50mm"
+	(footprint "footprints:C_Radial_D18.0mm_H35.5mm_P7.50mm"
 		(layer "F.Cu")
 		(uuid "407b2144-fd5f-4987-9aa4-7a5f377c00ab")
 		(at 5.75 19.2 180)
@@ -6090,7 +6090,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -6196,7 +6196,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0805_2012Metric"
+	(footprint "footprints:C_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "47e036f4-b1f6-42b3-8863-2b3326f373f6")
 		(at 20.150002 1.83 90)
@@ -6224,7 +6224,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -6395,7 +6395,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_1812_4532Metric"
+	(footprint "footprints:C_1812_4532Metric"
 		(layer "F.Cu")
 		(uuid "48008934-9e34-4db3-8b3b-9c5fd3070658")
 		(at -45.8 36.2 90)
@@ -6423,7 +6423,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -6594,7 +6594,7 @@
 			)
 		)
 	)
-	(footprint "Connector_JST:JST_XH_S10B-XH-A_1x10_P2.50mm_Horizontal"
+	(footprint "footprints:JST_XH_S10B-XH-A_1x10_P2.50mm_Horizontal"
 		(layer "F.Cu")
 		(uuid "4a1da394-75f0-4bdb-beba-4d1aba651c68")
 		(at 40 -20 90)
@@ -6624,7 +6624,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -7478,7 +7478,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0805_2012Metric"
+	(footprint "footprints:C_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "4a51dfd4-4a88-4f59-b280-a3053f7e1b3c")
 		(at 28.550003 44.429998 -90)
@@ -7506,7 +7506,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -7677,7 +7677,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "4b501ed1-6c1c-476f-9269-3ee763e6d495")
 		(at 17.750002 13.229998 90)
@@ -7705,7 +7705,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -7876,7 +7876,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:DFN-8_L5.5-W5.2-P1.27-LS6.1-BL"
+	(footprint "footprints:DFN-8_L5.5-W5.2-P1.27-LS6.1-BL"
 		(layer "F.Cu")
 		(uuid "4b75095b-7c51-4fce-b5f0-ceddf7a67f60")
 		(at 29.950002 -13.370002 180)
@@ -8172,7 +8172,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "4c3b732c-3066-4cf6-b7a8-df1be971f6c4")
 		(at 17.750002 -12.770002 90)
@@ -8201,7 +8201,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -8372,7 +8372,7 @@
 			)
 		)
 	)
-	(footprint "Diode_SMD:D_SMA"
+	(footprint "footprints:D_SMA"
 		(layer "F.Cu")
 		(uuid "4e6f970e-adfe-4135-b71f-8cd4a075b8d3")
 		(at -21.6 22.7)
@@ -8400,7 +8400,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -8645,7 +8645,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:CONN-TH_2P-P5.00_WJ500V-5.08-2P"
+	(footprint "footprints:CONN-TH_2P-P5.00_WJ500V-5.08-2P"
 		(layer "F.Cu")
 		(uuid "50f66fdd-8c65-4f47-9537-7d3f9e73654f")
 		(at -41 44 180)
@@ -8891,7 +8891,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "516a51b3-e1eb-4e1a-822b-15a41f38f85e")
 		(at 12.150002 10.029999 90)
@@ -8919,7 +8919,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -9090,7 +9090,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "54808cbb-aea9-4141-9009-0824cdf09348")
 		(at 2 -47.3 135)
@@ -9118,7 +9118,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 135)
 			(layer "F.Fab")
 			(hide yes)
@@ -9289,7 +9289,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "54c8d476-8279-4d95-a8d2-b293720ca1c6")
 		(at 12.150002 -15.970002 90)
@@ -9318,7 +9318,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -9489,7 +9489,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0805_2012Metric"
+	(footprint "footprints:C_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "56c0d64c-d13b-4394-ad91-cd72d897f6a4")
 		(at 28.550002 -7.570002 -90)
@@ -9518,7 +9518,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -9689,7 +9689,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_1812_4532Metric"
+	(footprint "footprints:C_1812_4532Metric"
 		(layer "F.Cu")
 		(uuid "56fc1609-ffc3-4173-b514-ce60ffd4c396")
 		(at -38.2 36.2 90)
@@ -9717,7 +9717,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -9888,7 +9888,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "576ce907-930a-4072-8712-f762ee73d477")
 		(at 12.150002 -12.770002 -90)
@@ -9917,7 +9917,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -10088,7 +10088,7 @@
 			)
 		)
 	)
-	(footprint "Custom:STM32G491CET6 breakout"
+	(footprint "footprints:STM32G491CET6 breakout"
 		(layer "F.Cu")
 		(uuid "590caed3-9c66-4f09-be5c-8bedb8056110")
 		(at -31 -28.5 90)
@@ -11516,7 +11516,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0805_2012Metric"
+	(footprint "footprints:R_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "5957b174-be9a-41d2-90e3-e4dcc1288d5d")
 		(at -11 -13.6 180)
@@ -11533,7 +11533,7 @@
 				)
 			)
 		)
-		(property "Value" "470K"
+		(property "Value" "47K"
 			(at 0 1.65 180)
 			(layer "F.Fab")
 			(uuid "f0611dd8-1377-4ae4-9a20-cdd1af6e40b8")
@@ -11544,7 +11544,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 180)
 			(layer "F.Fab")
 			(hide yes)
@@ -11715,7 +11715,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0805_2012Metric"
+	(footprint "footprints:R_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "596be6a4-6222-42b7-9692-ec2dd6b23091")
 		(at 25.550002 -13.8 180)
@@ -11743,7 +11743,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 180)
 			(layer "F.Fab")
 			(hide yes)
@@ -11914,7 +11914,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_THT:C_Radial_D18.0mm_H35.5mm_P7.50mm"
+	(footprint "footprints:C_Radial_D18.0mm_H35.5mm_P7.50mm"
 		(layer "F.Cu")
 		(uuid "5a1fb490-d9a9-461b-8d6a-40ed668b2ac2")
 		(at 11.35 -35.2 180)
@@ -11942,7 +11942,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -12048,7 +12048,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "5d738745-498b-49ee-b663-70a05d6110e5")
 		(at 17.750002 10.029999 -90)
@@ -12076,7 +12076,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -12247,7 +12247,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:DFN-8_L5.5-W5.2-P1.27-LS6.1-BL"
+	(footprint "footprints:DFN-8_L5.5-W5.2-P1.27-LS6.1-BL"
 		(layer "F.Cu")
 		(uuid "5ea68304-9923-4639-9cff-83991e8b16a1")
 		(at 23.950002 -19.570002 -90)
@@ -12543,7 +12543,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0805_2012Metric"
+	(footprint "footprints:C_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "5ede22bf-759f-4616-997e-92b3cdce0838")
 		(at 24.6 -36.2)
@@ -12572,7 +12572,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -12743,7 +12743,7 @@
 			)
 		)
 	)
-	(footprint "Diode_SMD:D_SOD-123F"
+	(footprint "footprints:D_SOD-123F"
 		(layer "F.Cu")
 		(uuid "6054bc5e-51ac-424f-9fcc-66051307f1c8")
 		(at 27 -34)
@@ -12760,7 +12760,7 @@
 				)
 			)
 		)
-		(property "Value" "B5819W"
+		(property "Value" "C7420332"
 			(at 0 2.1 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -12772,7 +12772,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -13027,7 +13027,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0805_2012Metric"
+	(footprint "footprints:C_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "60d5b3ce-4079-4482-b098-7f40d90237bf")
 		(at 31.350002 -7.570002 -90)
@@ -13056,7 +13056,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -13227,7 +13227,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_THT:C_Radial_D18.0mm_H35.5mm_P7.50mm"
+	(footprint "footprints:C_Radial_D18.0mm_H35.5mm_P7.50mm"
 		(layer "F.Cu")
 		(uuid "678436f2-cc14-4d72-938a-8ac8f0ccb590")
 		(at 5.75 0.4 180)
@@ -13255,7 +13255,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -13361,7 +13361,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:SOT-23-6_L2.9-W1.6-P0.95-LS2.9-BL"
+	(footprint "footprints:SOT-23-6_L2.9-W1.6-P0.95-LS2.9-BL"
 		(layer "F.Cu")
 		(uuid "6c1238a3-7be8-49b2-b932-d46f1211e6d0")
 		(at -46 30.6)
@@ -13559,7 +13559,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "6e558e30-bbd1-498b-bdb0-071d3e0d3a48")
 		(at -12 -19.4 90)
@@ -13588,7 +13588,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -13759,7 +13759,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:SOIC-8_L4.9-W3.9-P1.27-LS6.0-BL"
+	(footprint "footprints:SOIC-8_L4.9-W3.9-P1.27-LS6.0-BL"
 		(layer "F.Cu")
 		(uuid "72c91653-1ca7-493a-91ef-645039603672")
 		(at -33 5 90)
@@ -14006,7 +14006,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "747a3091-e5c0-40f0-9863-a65156f52369")
 		(at 17.750002 39.229998 90)
@@ -14034,7 +14034,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -14205,7 +14205,7 @@
 			)
 		)
 	)
-	(footprint "Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical"
+	(footprint "footprints:PinSocket_1x01_P2.54mm_Vertical"
 		(layer "F.Cu")
 		(uuid "758cf6c4-417c-4dd0-af80-eccf52496b40")
 		(at -8.8 -7.6)
@@ -14233,7 +14233,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -14437,7 +14437,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_1812_4532Metric"
+	(footprint "footprints:C_1812_4532Metric"
 		(layer "F.Cu")
 		(uuid "7762aa8b-9a64-44d1-bed2-4b852862a015")
 		(at -21.6 18.9 180)
@@ -14465,7 +14465,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -14636,7 +14636,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "779d30d2-8d0d-456c-8c41-501c0c4a4236")
 		(at 12.150002 36.029999 90)
@@ -14664,7 +14664,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -14835,7 +14835,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0805_2012Metric"
+	(footprint "footprints:R_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "7ac5581d-4998-4f2e-845a-69449d76ba84")
 		(at 25.550001 10.2)
@@ -14863,7 +14863,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15034,7 +15034,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "7afb173f-afac-4bef-98c7-08d510acb303")
 		(at 20.150002 13.229998 -90)
@@ -15062,7 +15062,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 270)
 			(layer "F.Fab")
 			(hide yes)
@@ -15233,7 +15233,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "7bdef161-0d8b-48e7-ac0e-e4c71c78bc8b")
 		(at -26.6 -9.2 180)
@@ -15261,7 +15261,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15432,7 +15432,7 @@
 			)
 		)
 	)
-	(footprint "Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical"
+	(footprint "footprints:PinSocket_1x01_P2.54mm_Vertical"
 		(layer "F.Cu")
 		(uuid "8946b412-56ff-4ef8-a7eb-e0c6b88dd0c8")
 		(at -34.2 -9.2)
@@ -15460,7 +15460,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -15664,7 +15664,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "8b51824a-8167-43a3-9ec6-1276a4b3e6db")
 		(at 17.750002 36.029999 -90)
@@ -15692,7 +15692,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -15863,7 +15863,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0805_2012Metric"
+	(footprint "footprints:C_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "8ea7714e-343e-49db-b5a4-a08330b11cab")
 		(at 17.950002 -24.170002 90)
@@ -15892,7 +15892,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -16063,7 +16063,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0805_2012Metric"
+	(footprint "footprints:R_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "8ee97fd9-c1e9-4f26-ac0a-3c40ad148842")
 		(at 25.550002 -15.8)
@@ -16091,7 +16091,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -16262,7 +16262,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_1812_4532Metric"
+	(footprint "footprints:C_1812_4532Metric"
 		(layer "F.Cu")
 		(uuid "90305df9-8e50-4c48-ba37-a8a0af450094")
 		(at 24.950001 17.029999 -90)
@@ -16290,7 +16290,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -16461,7 +16461,7 @@
 			)
 		)
 	)
-	(footprint "Package_TO_SOT_SMD:TSOT-23-6"
+	(footprint "footprints:TSOT-23-6"
 		(layer "F.Cu")
 		(uuid "9071fa91-a263-40bb-9101-481b8df9d9aa")
 		(at -38.2 29)
@@ -16715,7 +16715,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:DFN-8_L5.5-W5.2-P1.27-LS6.1-BL"
+	(footprint "footprints:DFN-8_L5.5-W5.2-P1.27-LS6.1-BL"
 		(layer "F.Cu")
 		(uuid "91cee7bf-4dac-4cf3-8464-c1c5580e6b30")
 		(at 29.950002 12.629999 180)
@@ -17011,7 +17011,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0603_1608Metric"
+	(footprint "footprints:C_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "9745b86b-010b-493d-8f8e-6067d017fcb7")
 		(at -29.2 18 180)
@@ -17039,7 +17039,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -17210,7 +17210,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_1812_4532Metric"
+	(footprint "footprints:C_1812_4532Metric"
 		(layer "F.Cu")
 		(uuid "99d8d62c-1988-4f4b-a7ea-f06181fdf08c")
 		(at 24.950002 -8.970002 -90)
@@ -17239,7 +17239,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -17410,7 +17410,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0805_2012Metric"
+	(footprint "footprints:C_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "9a9dd307-2e52-4767-a518-b7fca15ecbbe")
 		(at 20.150002 -24.170002 90)
@@ -17439,7 +17439,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -17610,7 +17610,7 @@
 			)
 		)
 	)
-	(footprint "Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical"
+	(footprint "footprints:PinSocket_1x01_P2.54mm_Vertical"
 		(layer "F.Cu")
 		(uuid "9b35e1d0-2064-4873-bcd2-e70db3d64b70")
 		(at 29.6 -26.8)
@@ -17638,7 +17638,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -17842,7 +17842,7 @@
 			)
 		)
 	)
-	(footprint "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical"
+	(footprint "footprints:PinHeader_1x03_P2.54mm_Vertical"
 		(layer "F.Cu")
 		(uuid "9c696270-99b3-482d-a04c-eac90c7bfc87")
 		(at -8.54 -39 90)
@@ -17872,7 +17872,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -18108,7 +18108,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0805_2012Metric"
+	(footprint "footprints:C_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "9e323dce-71ef-4ad7-89cc-67621ad41533")
 		(at 28.550003 18.429999 -90)
@@ -18136,7 +18136,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -18307,7 +18307,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:CONN-TH_KF88SA-16.0-2P"
+	(footprint "footprints:CONN-TH_KF88SA-16.0-2P"
 		(layer "F.Cu")
 		(uuid "a0ba2324-b83c-478b-98be-d92a0b8e2100")
 		(at -17 39)
@@ -18493,7 +18493,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "a5eabe57-75ce-4a26-a605-1d320aa90e01")
 		(at -29.8 -12.4 180)
@@ -18521,7 +18521,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -18692,7 +18692,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:TOLL-8_L10.4-W9.9-P1.20-LS11.7-BL"
+	(footprint "footprints:TOLL-8_L10.4-W9.9-P1.20-LS11.7-BL"
 		(layer "F.Cu")
 		(uuid "ac0ea516-7767-48e8-bb35-1aa0652252c1")
 		(at -12.77 19.2)
@@ -18946,7 +18946,7 @@
 			)
 		)
 	)
-	(footprint "Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical"
+	(footprint "footprints:PinSocket_1x01_P2.54mm_Vertical"
 		(layer "F.Cu")
 		(uuid "af92039c-cfa0-4d20-a205-8631833c79a4")
 		(at -3 -29.4)
@@ -18974,7 +18974,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -19178,7 +19178,7 @@
 			)
 		)
 	)
-	(footprint "Connector_JST:JST_XH_S12B-XH-A_1x12_P2.50mm_Horizontal"
+	(footprint "footprints:JST_XH_S12B-XH-A_1x12_P2.50mm_Horizontal"
 		(layer "F.Cu")
 		(uuid "afc1bc89-3ca8-41f8-9c2a-8d7c608b33a6")
 		(at -40 -4.5 -90)
@@ -19208,7 +19208,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -20164,7 +20164,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0805_2012Metric"
+	(footprint "footprints:C_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "b175e189-1533-45d9-abac-958cafcf532f")
 		(at 20.150002 27.829999 90)
@@ -20193,7 +20193,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -20364,7 +20364,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0805_2012Metric"
+	(footprint "footprints:R_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "b2b21f33-cffb-4f39-9750-996377ebfaec")
 		(at 25.550002 38.2 180)
@@ -20392,7 +20392,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 180)
 			(layer "F.Fab")
 			(hide yes)
@@ -20563,7 +20563,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0805_2012Metric"
+	(footprint "footprints:C_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "b4aec6fd-9fe4-4661-9845-17ed3d28ebf9")
 		(at 31.350002 18.429998 -90)
@@ -20591,7 +20591,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -20762,7 +20762,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_1812_4532Metric"
+	(footprint "footprints:C_1812_4532Metric"
 		(layer "F.Cu")
 		(uuid "b6ca70e7-026e-44c7-80e4-7fc5f1bf7d3f")
 		(at 24.950003 43.029998 -90)
@@ -20790,7 +20790,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -20961,7 +20961,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:IND-SMD_L4.5-W4.1_IHLP"
+	(footprint "footprints:IND-SMD_L4.5-W4.1_IHLP"
 		(layer "F.Cu")
 		(uuid "c0222e0b-a211-4441-b6c6-cd85b33d4217")
 		(at -31.4 26)
@@ -21141,7 +21141,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "c149df6c-bc90-45a1-8267-5d497fa7fa4e")
 		(at 12.150002 39.229998 -90)
@@ -21169,7 +21169,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -21340,7 +21340,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0805_2012Metric"
+	(footprint "footprints:C_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "c1c7d8ee-ee95-4d2d-a50c-43cafc1304a2")
 		(at 24.6 -43.8 180)
@@ -21369,7 +21369,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -21540,7 +21540,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "c1caaa8e-2bed-4169-8f91-7bce9c51507c")
 		(at 12.150002 13.229998 -90)
@@ -21568,7 +21568,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -21739,7 +21739,7 @@
 			)
 		)
 	)
-	(footprint "Diode_SMD:D_SOD-123F"
+	(footprint "footprints:D_SOD-123F"
 		(layer "F.Cu")
 		(uuid "c2f8ccc7-5509-4fab-aec9-f4c082f71e0b")
 		(at 22.2 -46 180)
@@ -21756,7 +21756,7 @@
 				)
 			)
 		)
-		(property "Value" "B5819W"
+		(property "Value" "C7420332"
 			(at 0 2.1 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -21768,7 +21768,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 180)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -22023,7 +22023,7 @@
 			)
 		)
 	)
-	(footprint "Snapeda:FD6288Q_QFN50P400X400X90-25N"
+	(footprint "footprints:FD6288Q_QFN50P400X400X90-25N"
 		(layer "F.Cu")
 		(uuid "c6a88b4b-0947-49d1-86f2-919a5d08dffe")
 		(at 22 -40)
@@ -22713,7 +22713,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_1812_4532Metric"
+	(footprint "footprints:C_1812_4532Metric"
 		(layer "F.Cu")
 		(uuid "c93b1d1c-59ef-48da-ba2d-a937b670e08d")
 		(at 19.150002 -28.970002)
@@ -22742,7 +22742,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -22913,7 +22913,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0603_1608Metric"
+	(footprint "footprints:C_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "cbd0812c-c901-4cf8-8df5-c18b39e7a2ef")
 		(at -28 5 90)
@@ -22941,7 +22941,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -23112,7 +23112,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0805_2012Metric"
+	(footprint "footprints:C_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "cc2ba7d3-c7b6-4bd0-a7ad-d6503008c412")
 		(at 31.350002 44.429998 -90)
@@ -23140,7 +23140,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -23311,7 +23311,7 @@
 			)
 		)
 	)
-	(footprint "Connector_PinSocket_2.54mm:PinSocket_1x01_P2.54mm_Vertical"
+	(footprint "footprints:PinSocket_1x01_P2.54mm_Vertical"
 		(layer "F.Cu")
 		(uuid "cd0d8370-c4b6-43e9-bfc8-11bc781d7ab0")
 		(at -48 45)
@@ -23339,7 +23339,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -23543,7 +23543,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "cd198d4e-aa3d-4972-95bc-8dac730f9620")
 		(at 19.750002 -19.170002 -90)
@@ -23571,7 +23571,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 270)
 			(layer "F.Fab")
 			(hide yes)
@@ -23742,7 +23742,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0603_1608Metric"
+	(footprint "footprints:C_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "cfbec125-0ace-477b-9b10-dd69b6fcd96b")
 		(at -35.8 1 90)
@@ -23770,7 +23770,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -23941,7 +23941,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "d225ad71-8335-4ab5-8fdb-81647f512479")
 		(at 20.150002 -12.770002 -90)
@@ -23969,7 +23969,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 270)
 			(layer "F.Fab")
 			(hide yes)
@@ -24140,7 +24140,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "d714e0d0-45c9-4ac8-90f5-dd22f799ded9")
 		(at 20.150002 39.229999 -90)
@@ -24168,7 +24168,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 270)
 			(layer "F.Fab")
 			(hide yes)
@@ -24339,7 +24339,7 @@
 			)
 		)
 	)
-	(footprint "Package_SO:TSSOP-20_4.4x6.5mm_P0.65mm"
+	(footprint "footprints:TSSOP-20_4.4x6.5mm_P0.65mm"
 		(layer "F.Cu")
 		(uuid "d7f7084c-fc5e-4545-a9b5-6deb876f2bfd")
 		(at -6 -45)
@@ -24733,7 +24733,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0805_2012Metric"
+	(footprint "footprints:C_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "da52a1f6-ebcf-44a6-affb-104a1b38f403")
 		(at 17.950002 27.829999 90)
@@ -24762,7 +24762,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -24933,7 +24933,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0603_1608Metric"
+	(footprint "footprints:C_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "da9469e4-89fb-4d98-8fec-f41ca0e82df5")
 		(at -25.6 9.6 90)
@@ -24961,7 +24961,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -25132,7 +25132,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0805_2012Metric"
+	(footprint "footprints:C_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "e040eb32-f41d-493d-b06c-8a32de7d6ab8")
 		(at 17.950001 1.83 90)
@@ -25160,7 +25160,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -25331,7 +25331,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "e59706e6-4ad1-40e2-b857-f7d565a1731c")
 		(at 17.750002 -15.970002 -90)
@@ -25360,7 +25360,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -25531,7 +25531,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0805_2012Metric"
+	(footprint "footprints:C_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "e6f2caf0-f59a-492a-ad15-ab21621663e7")
 		(at 26 -40 90)
@@ -25560,7 +25560,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -25731,7 +25731,7 @@
 			)
 		)
 	)
-	(footprint "Diode_SMD:D_SOD-123F"
+	(footprint "footprints:D_SOD-123F"
 		(layer "F.Cu")
 		(uuid "e796b880-0566-449c-b0db-39bf2403cb47")
 		(at 28.2 -42.4 90)
@@ -25748,7 +25748,7 @@
 				)
 			)
 		)
-		(property "Value" "B5819W"
+		(property "Value" "C7420332"
 			(at 0 2.1 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -25760,7 +25760,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -26015,7 +26015,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR"
+	(footprint "footprints:SOT-23-3_L2.9-W1.3-P1.90-LS2.4-BR"
 		(layer "F.Cu")
 		(uuid "e7f458ab-5f95-4f76-9764-49e38fabc452")
 		(at -42.6 28.6 -90)
@@ -26205,7 +26205,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0805_2012Metric"
+	(footprint "footprints:R_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "e8d5e3d2-74be-45e9-bb92-f2129de08b25")
 		(at 25.550001 12.2 180)
@@ -26233,7 +26233,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 180)
 			(layer "F.Fab")
 			(hide yes)
@@ -26404,7 +26404,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0805_2012Metric"
+	(footprint "footprints:C_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "eb5636c8-9e89-4e67-ad89-0c09d0ec8ac5")
 		(at -31 22 90)
@@ -26432,7 +26432,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -26603,7 +26603,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0805_2012Metric"
+	(footprint "footprints:C_0805_2012Metric"
 		(layer "F.Cu")
 		(uuid "ebb15ecd-3318-4b56-97b8-ac36ceec44f1")
 		(at -28.6 22 90)
@@ -26631,7 +26631,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 90)
 			(layer "F.Fab")
 			(hide yes)
@@ -26802,7 +26802,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_1812_4532Metric"
+	(footprint "footprints:C_1812_4532Metric"
 		(layer "F.Cu")
 		(uuid "ef43c981-91c4-46de-8a67-e1a7967a2958")
 		(at 19.150002 23.029999)
@@ -26831,7 +26831,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -27002,7 +27002,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_2512_6332Metric"
+	(footprint "footprints:R_2512_6332Metric"
 		(layer "F.Cu")
 		(uuid "f06d23d5-b275-4eaf-b897-b8b9323307af")
 		(at 14.950001 6.429999)
@@ -27030,7 +27030,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -27201,7 +27201,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "f0e961d9-787c-4165-a033-90904b0ec85f")
 		(at -40.3 -44.5)
@@ -27229,7 +27229,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -27400,7 +27400,7 @@
 			)
 		)
 	)
-	(footprint "Diode_SMD:D_SMA"
+	(footprint "footprints:D_SMA"
 		(layer "F.Cu")
 		(uuid "f13535c9-313d-4078-86a9-c552d1f6ef41")
 		(at -42 35.6 -90)
@@ -27428,7 +27428,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 270)
 			(unlocked yes)
 			(layer "F.Fab")
@@ -27673,7 +27673,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_1812_4532Metric"
+	(footprint "footprints:C_1812_4532Metric"
 		(layer "F.Cu")
 		(uuid "f21c3424-5be0-4757-8f1f-c01c52302a11")
 		(at -13.2 26.1 180)
@@ -27701,7 +27701,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -27872,7 +27872,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:SOT-23-5_L2.9-W1.6-P0.95-LS2.8-BR"
+	(footprint "footprints:SOT-23-5_L2.9-W1.6-P0.95-LS2.8-BR"
 		(layer "F.Cu")
 		(uuid "f3cef945-7aa2-413d-a3e1-43796500552d")
 		(at 14.950002 -14.370002)
@@ -28072,7 +28072,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:SOT-223_L6.5-W3.5-P2.30-LS7.0-BR"
+	(footprint "footprints:SOT-223_L6.5-W3.5-P2.30-LS7.0-BR"
 		(layer "F.Cu")
 		(uuid "f5fb8f48-e264-4399-b014-624e98688962")
 		(at -28.4 12.6 -90)
@@ -28261,7 +28261,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_SMD:C_0603_1608Metric"
+	(footprint "footprints:C_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "f6bd3a5e-6749-4c71-b9bb-62fae8e1dfba")
 		(at 9.75 11.63)
@@ -28289,7 +28289,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -28460,7 +28460,7 @@
 			)
 		)
 	)
-	(footprint "Capacitor_THT:C_Radial_D18.0mm_H35.5mm_P7.50mm"
+	(footprint "footprints:C_Radial_D18.0mm_H35.5mm_P7.50mm"
 		(layer "F.Cu")
 		(uuid "f8685eeb-11b2-4193-83ce-ec15cff0dab4")
 		(at 3.15 -18.2 180)
@@ -28488,7 +28488,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -28594,7 +28594,7 @@
 			)
 		)
 	)
-	(footprint "Resistor_SMD:R_0603_1608Metric"
+	(footprint "footprints:R_0603_1608Metric"
 		(layer "F.Cu")
 		(uuid "f87f7e32-1781-4111-9030-186d86ca39f3")
 		(at -28.2 -7.6 180)
@@ -28611,7 +28611,7 @@
 				)
 			)
 		)
-		(property "Value" "60"
+		(property "Value" "60.4"
 			(at 0 1.43 0)
 			(layer "F.Fab")
 			(uuid "a58ae287-d84f-47ed-8396-4bd783140f5f")
@@ -28622,7 +28622,7 @@
 				)
 			)
 		)
-		(property "Datasheet" ""
+		(property "Datasheet" "~"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -28793,7 +28793,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:SOT-23-5_L2.9-W1.6-P0.95-LS2.8-BR"
+	(footprint "footprints:SOT-23-5_L2.9-W1.6-P0.95-LS2.8-BR"
 		(layer "F.Cu")
 		(uuid "fb7314e3-aa1e-4b5b-8738-40afb068687d")
 		(at 14.950002 37.629999)
@@ -28992,7 +28992,7 @@
 			)
 		)
 	)
-	(footprint "EasyEDA:CONN-TH_3P-P9.50_HB9500-9.5-3P"
+	(footprint "footprints:CONN-TH_3P-P9.50_HB9500-9.5-3P"
 		(layer "F.Cu")
 		(uuid "fc1886d2-eee3-4b20-aa4d-42d260bfc89b")
 		(at 38 7 90)
