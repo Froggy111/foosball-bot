@@ -11644,6 +11644,16 @@
 	)
 	(wire
 		(pts
+			(xy 24.13 53.34) (xy 31.75 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2e30c34a-6377-481d-a538-b0b841a7a307")
+	)
+	(wire
+		(pts
 			(xy 416.56 281.94) (xy 416.56 287.02)
 		)
 		(stroke
@@ -13604,16 +13614,6 @@
 	)
 	(wire
 		(pts
-			(xy 24.13 48.26) (xy 31.75 48.26)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7aefb149-fb89-43bf-b3f4-5eac48bfc5ad")
-	)
-	(wire
-		(pts
 			(xy 466.09 48.26) (xy 463.55 48.26)
 		)
 		(stroke
@@ -14931,6 +14931,16 @@
 			(type default)
 		)
 		(uuid "b139ed9e-0b88-4294-94a9-3a89e0b5c46c")
+	)
+	(wire
+		(pts
+			(xy 24.13 48.26) (xy 31.75 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b1b36cc5-e746-4a34-b34c-98fb002289e6")
 	)
 	(wire
 		(pts
@@ -16762,16 +16772,6 @@
 		)
 		(uuid "ff5087fc-f95a-4688-9cdd-b8c972d163fd")
 	)
-	(wire
-		(pts
-			(xy 24.13 53.34) (xy 31.75 53.34)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ffedfe4c-ccb8-4674-84c5-718ebb9f6343")
-	)
 	(label "W_HIGH_GATE"
 		(at 191.77 91.44 0)
 		(effects
@@ -17262,6 +17262,16 @@
 		)
 		(uuid "36d022a8-e162-4968-b5c3-dc7cbce81b30")
 	)
+	(label "U_POWER"
+		(at 24.13 48.26 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "3927772e-5a24-4a4d-b324-8e5f198bd74c")
+	)
 	(label "ENC_DIFF.B-"
 		(at 209.55 340.36 180)
 		(effects
@@ -17581,16 +17591,6 @@
 			(justify left bottom)
 		)
 		(uuid "62b27043-9d74-40b8-9710-edf4814fccfb")
-	)
-	(label "W_POWER"
-		(at 24.13 48.26 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "63109075-e3e8-43d6-abd6-1c20eabdf4cd")
 	)
 	(label "ENC.A"
 		(at 430.53 95.25 0)
@@ -18292,16 +18292,6 @@
 		)
 		(uuid "aecc860f-f039-4fd5-acdf-86a77b9af6ad")
 	)
-	(label "U_POWER"
-		(at 24.13 53.34 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "af2c20d4-023c-4844-b861-e6b1a43eef9b")
-	)
 	(label "DEBUG{SWCLK SWDIO SWO}"
 		(at 387.35 134.62 180)
 		(effects
@@ -18941,6 +18931,16 @@
 			(justify right bottom)
 		)
 		(uuid "f11b554a-a632-4525-a226-fdc0016f8ebb")
+	)
+	(label "W_POWER"
+		(at 24.13 53.34 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f187ccef-4473-4a3b-910e-d5ae6e5e65b4")
 	)
 	(label "U_HIGH_PWM"
 		(at 492.76 77.47 180)

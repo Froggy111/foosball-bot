@@ -46036,7 +46036,7 @@
 			(drill oval 2.200148 1.199896)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net 32 "/W_POWER")
+			(net 30 "/U_POWER")
 			(pinfunction "1")
 			(pintype "passive")
 			(uuid "47dfcfe6-ef55-446d-9f3f-cc870b6f8cf1")
@@ -46058,7 +46058,7 @@
 			(drill oval 2.200148 1.199896)
 			(layers "*.Cu" "*.Mask")
 			(remove_unused_layers no)
-			(net 30 "/U_POWER")
+			(net 32 "/W_POWER")
 			(pinfunction "3")
 			(pintype "passive")
 			(uuid "97631aa0-e13c-41c5-a9bb-134ec21dfe55")
@@ -56891,6 +56891,19 @@
 		(layer "Edge.Cuts")
 		(uuid "fe3855ae-70e9-4eb5-9c85-58eae543dbec")
 	)
+	(gr_text "V"
+		(at -2 33.5 0)
+		(layer "F.SilkS")
+		(uuid "0169deca-b501-4cc4-91c5-28d07e4a4766")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.3)
+				(bold yes)
+			)
+			(justify bottom)
+		)
+	)
 	(gr_text "GND 5V A+A- B+B- Z+Z-\nENCODER ABZ"
 		(at 39 24.75 90)
 		(layer "F.SilkS")
@@ -57016,6 +57029,32 @@
 			(font
 				(size 0.8 0.8)
 				(thickness 0.15)
+				(bold yes)
+			)
+			(justify bottom)
+		)
+	)
+	(gr_text "W"
+		(at 7.5 33.5 0)
+		(layer "F.SilkS")
+		(uuid "d4c7dbc7-5753-4b60-b30c-b8f0db342ff5")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.3)
+				(bold yes)
+			)
+			(justify bottom)
+		)
+	)
+	(gr_text "U"
+		(at -11.5 33.5 0)
+		(layer "F.SilkS")
+		(uuid "dab83e3a-1107-4886-98f3-351fe6f315f3")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.3)
 				(bold yes)
 			)
 			(justify bottom)
