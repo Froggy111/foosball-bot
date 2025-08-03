@@ -60192,6 +60192,30 @@
 			(justify bottom)
 		)
 	)
+	(gr_text "foosball bot\nFOC driver V2 by LJY"
+		(at 12.8 14 0)
+		(layer "B.SilkS")
+		(uuid "b9f306d9-2747-43f0-8173-032e6a48afba")
+		(effects
+			(font
+				(size 2 2)
+				(thickness 0.25)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "Maximum ratings: VCC <= 80V, RMS current <= 50A"
+		(at 12.6 16.35 0)
+		(layer "B.SilkS")
+		(uuid "c6f889dd-6b20-4948-99d8-b380df0405bb")
+		(effects
+			(font
+				(size 1.25 1.25)
+				(thickness 0.15625)
+			)
+			(justify left bottom mirror)
+		)
+	)
 	(segment
 		(start 19.2625 -29.55)
 		(end 17.93 -29.55)
