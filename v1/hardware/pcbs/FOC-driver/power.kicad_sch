@@ -885,24 +885,6 @@
 						)
 					)
 				)
-				(pin no_connect line
-					(at 11.43 -11.43 180)
-					(length 2.54)
-					(name "NC"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "13"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
 			)
 			(symbol "MST8A50QA-15A1Y_1_1"
 				(pin input line
@@ -1024,6 +1006,24 @@
 						)
 					)
 					(number "23"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin no_connect line
+					(at 11.43 -11.43 180)
+					(length 2.54)
+					(name "NC"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "13"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -3233,12 +3233,12 @@
 		(uuid "9564603c-d06e-4b2e-a041-6db4ec9694f5")
 	)
 	(no_connect
-		(at 119.38 72.39)
-		(uuid "bd696481-e76b-473e-a720-bd627a86d93e")
-	)
-	(no_connect
 		(at 96.52 62.23)
 		(uuid "cfadebe2-bc37-4a16-a749-357769f47a90")
+	)
+	(no_connect
+		(at 119.38 72.39)
+		(uuid "e6c114d6-6fcc-4807-a165-cdaa5239ca6e")
 	)
 	(wire
 		(pts
