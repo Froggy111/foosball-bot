@@ -1,0 +1,7 @@
+﻿Designator,Mid X,Mid Y,Rotation,Layer
+C1,51.25,5.5,270.0,top
+C2,50.5,-2.5,90.0,top
+DIFF_DRV1,49.0,6.25,90.0,top
+J1,55.5,0.0,90.0,top
+R1,49.0,3.75,180.0,top
+SW1,52.5,11.0,0.0,top
