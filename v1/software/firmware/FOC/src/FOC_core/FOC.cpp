@@ -10,38 +10,26 @@
 
 #include <cstdlib>
 
+#include "PID.hpp"
 #include "adc.hpp"
-#include "configs.hpp"
+#include "config.hpp"
 #include "encoder.hpp"
 #include "endstop.hpp"
 #include "inverter.hpp"
 
-volatile static float coil_resistance = -1;
+volatile static float coil_resistance = COIL_RESISTANCE;
 volatile static float speed_constant = -1;
 volatile static float torque_constant = -1;
-volatile static float torque_Kp = -1;
-volatile static float torque_Ki = -1;
-volatile static float velocity_Kp = -1;
-volatile static float velocity_Ki = -1;
-volatile static float position_Kp = -1;
-volatile static float position_Kd = -1;
+volatile static uint32_t num_winding_sets = -1;
 
-volatile static float target_torque = 0;
-volatile static float target_angular_velocity = 0;
-volatile static float target_linear_velocity = 0;
-volatile static float target_angular_position = 0;
-volatile static float target_linear_position = 0;
+FOC::PID current_PID(CURRENT_KP, CURRENT_KI, 0);
+FOC::PID velocity_PID(VELOCITY_KP, VELOCITY_KI, VELOCITY_KD);
+FOC::PID position_PID(POSITION_KP, POSITION_KI, POSITION_KD);
 
-volatile static float previous_torque = 0;
-volatile static float previous_angular_velocity = 0;
-volatile static float previous_linear_velocity = 0;
-// this is based off endstop = 0;
-volatile static float previous_angular_position = 0;
-volatile static float previous_linear_position = 0;
-
-volatile static float torque_err_I = 0;
-volatile static float velocity_err_I = 0;
-volatile static float position_err_I = 0;
+volatile static float U_current = 0;
+volatile static float V_current = 0;
+volatile static float W_current = 0;
+volatile static float VMOT_voltage = 0;
 
 volatile static bool run_IRQ = false;
 // this is based off theta = 0
@@ -54,6 +42,8 @@ volatile static endstop::Endstop triggered_endstop;
 volatile static float zero_position_angular_offset = 0;
 volatile static float zero_position_linear_offset = 0;
 
+volatile static uint32_t handler_counter = 0;
+
 void zero_encoder(void);
 #ifdef USE_ENDSTOP
 void zero_position(void);
@@ -64,12 +54,6 @@ void FOC::init(Parameters parameters) {
     coil_resistance = parameters.coil_resistance;
     speed_constant = parameters.speed_constant;
     torque_constant = 1.0f / speed_constant;
-    torque_Kp = parameters.torque_Kp;
-    torque_Ki = parameters.torque_Ki;
-    velocity_Kp = parameters.velocity_Kp;
-    velocity_Ki = parameters.velocity_Ki;
-    position_Kp = parameters.position_Kp;
-    position_Kd = parameters.position_Kd;
 
     adc::init();
     encoder::init();
@@ -82,14 +66,27 @@ void FOC::init(Parameters parameters) {
     zero_encoder();
     zero_position_angular_offset = 0.0f;
     zero_position_linear_offset = 0.0f;
-    previous_angular_position = 0.0f;  // will be changed by homing later
-    previous_linear_position = 0.0f;
+
     // start FOC loop
+    adc::start_VMOT_read();
+    VMOT_voltage = adc::read_VMOT();
     run_IRQ = true;
 
 #ifdef USE_ENDSTOP
     zero_position();
 #endif
+    return;
+}
+
+void FOC::set_PID(PIDParams pid_parameters) {
+    current_PID.set_params(pid_parameters.current_Kp, pid_parameters.current_Ki,
+                           0);
+    velocity_PID.set_params(pid_parameters.velocity_Kp,
+                            pid_parameters.velocity_Ki,
+                            pid_parameters.velocity_Kd);
+    position_PID.set_params(pid_parameters.position_Kp,
+                            pid_parameters.position_Ki,
+                            pid_parameters.position_Kd);
     return;
 }
 
@@ -184,6 +181,7 @@ void endstop_irq(endstop::Endstop endstop, endstop::State state,
                 zero_position_linear_offset / DISTANCE_PER_RADIAN;
         }
     }
+    return;
 }
 #endif
 
@@ -192,17 +190,42 @@ void FOC::handler(void) {
         return;
     }
     // measure currents
-    float U_current = adc::read_U_current();
-    float V_current = adc::read_V_current();
-    float W_current = adc::read_W_current();
+    U_current = adc::read_U_current();
+    V_current = adc::read_V_current();
+    W_current = adc::read_W_current();
+
+    // start voltage measurement
+    adc::start_VMOT_read();
+
+    float angular_position = get_angular_position();
+    float electrical_angle = (angular_position * NUM_WINDING_SETS);
+    float target_torque = velocity_PID.get();
+    float target_current = target_torque / torque_constant;
+
+    // transform target current to phase currents
+
+    if (handler_counter % FOC_CYCLES_PER_VELOCITY_LOOP) {
+        // run velocity control
+    }
+
+    if (handler_counter % FOC_CYCLES_PER_POSITION_LOOP) {
+        // run position control
+    }
+
+    // read VMOT (end of handler)
+    VMOT_voltage = adc::read_VMOT();
+    handler_counter++;
+    return;
 }
 
 float FOC::get_angular_position(void) {
-    return (encoder::get_count() / ENCODER_RADIANS_PER_PULSE) +
+    encoder_position = encoder::get_count();
+    return (encoder_position / ENCODER_RADIANS_PER_PULSE) +
            zero_position_angular_offset;
 }
 float FOC::get_linear_position(void) {
-    return (encoder::get_count() / ENCODER_RADIANS_PER_PULSE *
+    encoder_position = encoder::get_count();
+    return (encoder_position / ENCODER_RADIANS_PER_PULSE *
             DISTANCE_PER_RADIAN) +
            zero_position_linear_offset;
 }

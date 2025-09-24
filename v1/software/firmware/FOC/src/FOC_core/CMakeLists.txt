@@ -3,8 +3,10 @@ add_library(FOC_core)
 target_sources(FOC_core
 PRIVATE
     FOC.cpp
+    PID.cpp
 PUBLIC
     include/FOC.hpp
+    include/PID.hpp
 )
 
 target_include_directories(FOC_core

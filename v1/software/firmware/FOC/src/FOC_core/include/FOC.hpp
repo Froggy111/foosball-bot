@@ -1,23 +1,35 @@
 #pragma once
 
+#include "config.hpp"
+
 namespace FOC {
 struct Parameters {
-    float coil_resistance = -1;  // ohms
+    float coil_resistance = COIL_RESISTANCE;  // ohms
     // torque constant is computed as 1 / speed constant
-    float speed_constant = -1;  // back-EMF RPM per volt
-    float torque_Kp = -1;
-    float torque_Ki = -1;
-    float velocity_Kp = -1;
-    float velocity_Ki = -1;
-    float position_Kp = -1;
-    float position_Ki = -1;
-    float position_Kd = -1;
+    float speed_constant = MOTOR_KV;  // radians per second per volt
+    float num_winding_sets = NUM_WINDING_SETS;
+};
+
+struct PIDParams {
+    float current_Kp = CURRENT_KP;
+    float current_Ki = CURRENT_KI;
+    float velocity_Kp = VELOCITY_KP;
+    float velocity_Ki = VELOCITY_KI;
+    float velocity_Kd = VELOCITY_KD;
+    float position_Kp = POSITION_KP;
+    float position_Ki = POSITION_KI;
+    float position_Kd = POSITION_KD;
 };
 
 /**
  * @brief Init FOC loop, run this in task space
  */
 void init(Parameters parameters);
+
+/**
+ * @brief Set FOC PID parameters
+ */
+void set_PID(PIDParams pid_parameters);
 
 /**
  * @brief called in the FOC loop (usually PWM interrupt)

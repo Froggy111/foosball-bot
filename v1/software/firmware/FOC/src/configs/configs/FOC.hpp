@@ -10,7 +10,12 @@
 const bool direction_reversed = false;
 
 const uint32_t PWM_FREQUENCY = 32768;
-const uint32_t NUM_COIL_SETS = 1;
+const uint32_t NUM_WINDING_SETS = 1;
+const float COIL_RESISTANCE = 1;              // in ohms
+const float MOTOR_KV = 80 * (2 * M_PI / 60);  // radians per second per volt
+
+const uint8_t FOC_CYCLES_PER_VELOCITY_LOOP = 2;
+const uint8_t FOC_CYCLES_PER_POSITION_LOOP = 8;
 
 const float ENCODER_RADIANS_PER_PULSE = (2.0f * M_PI) / ENCODER_RESOLUTION;
 
@@ -31,3 +36,16 @@ const float ZERO_POSITION_ANGULAR_VELOCITY =
 const float ZERO_ENDSTOP_LINEAR_POSITION = -5;
 const float ZERO_ENDSTOP_ANGULAR_POSITION =
     ZERO_ENDSTOP_LINEAR_POSITION / DISTANCE_PER_RADIAN;
+
+// PID
+// current is PI
+const float CURRENT_KP = 0;
+const float CURRENT_KI = 0;
+// velocity is PI/PID
+const float VELOCITY_KP = 0;
+const float VELOCITY_KI = 0;
+const float VELOCITY_KD = 0;
+// position is P/PI/PID
+const float POSITION_KP = 0;
+const float POSITION_KI = 0;
+const float POSITION_KD = 0;

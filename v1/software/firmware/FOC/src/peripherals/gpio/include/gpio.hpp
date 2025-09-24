@@ -28,7 +28,7 @@ void attach_interrupt(const PinConfig &pin_config, Mode mode, Pull pull,
                       Speed speed, InterruptFn callback, void *args);
 
 inline bool read(const PinConfig &pin_config) {
-    HAL_GPIO_ReadPin(pin_config.port, (uint16_t)pin_config.pin);
+    return (bool)HAL_GPIO_ReadPin(pin_config.port, (uint16_t)pin_config.pin);
 }
 inline void write(const PinConfig &pin_config, bool state) {
     HAL_GPIO_WritePin(pin_config.port, (uint16_t)pin_config.pin,
