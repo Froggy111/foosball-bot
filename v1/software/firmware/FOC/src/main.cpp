@@ -46,18 +46,19 @@ void main_task([[maybe_unused]] void *args) {
     gpio::write(LED, 1);
 
     swo::init();
-    osDelay(2000);
-    // inverter::init(20000);
-    // inverter::set(0, 0, 0);
+    osDelay(1000);
+    inverter::init(20000);
+    inverter::set(0, 0, 0);
     encoder::init();
+    encoder::set_count(0);
     float theta = 0;
 
-    // adc::init();
+    adc::init();
     for (;;) {
         // NOTE : debug test
-        debug::log("Hello World!");
+        // debug::log("Hello World!");
 
-        // NOTE : ADC test
+        // // NOTE : ADC test
         // float U_current = adc::read_U_current();
         // float V_current = adc::read_V_current();
         // float W_current = adc::read_W_current();
@@ -65,11 +66,13 @@ void main_task([[maybe_unused]] void *args) {
         // float VMOT = adc::read_VMOT();
         // debug::log("VMOT: %fV, U: %fA, V: %fA, W: %fA", VMOT, U_current,
         //            V_current, W_current);
-        // debug::log("reading encoder");
-        // int64_t count = encoder::get_count();
-        // debug::log("Encoder count: %lld", count);
 
-        // NOTE : encoder / inverter test
+        int64_t encoder_count = encoder::get_count();
+        debug::log("Encoder count: %lld", encoder_count);
+        debug::log("Z pulses: %u", encoder::get_z_pulses());
+        debug::log("Rollover count: %lld", encoder::get_rollovers());
+        debug::log("Delta: %d", encoder::get_delta());
+        // // NOTE : encoder / inverter test
         // theta += M_PI / 45;
         // if (theta > M_PI * 2) {
         //     theta -= M_PI * 2;
@@ -79,7 +82,7 @@ void main_task([[maybe_unused]] void *args) {
         // debug::log("Encoder count: %u", encoder_count);
         // debug::log("Z pulses: %u", encoder::get_z_pulses());
         // debug::log("Delta: %d", encoder::get_delta());
-        // inverter::svpwm_set(theta, 1.2f, 12.0f);
+        // inverter::svpwm_set(theta, 1.0f, VMOT);
         gpio::invert(LED);
         osDelay(100);
     }
