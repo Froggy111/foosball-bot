@@ -12,6 +12,8 @@ PUBLIC
 
     configs/peripherals.hpp
     configs/peripherals/usb.hpp
+    configs/peripherals/swo.hpp
+    configs/peripherals/adc.hpp
 
     configs/inverter.hpp
 )

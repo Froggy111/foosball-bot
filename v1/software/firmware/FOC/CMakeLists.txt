@@ -11,7 +11,7 @@ set(PROJECT_NAME FOC)
 set(MCU_SERIES G4)
 string(TOLOWER "${MCU_SERIES}" MCU_SERIES_LOWER)
 set(MCU_CORE M4F)
-set(MCU_SUBSERIES G431CB)
+set(MCU_SUBSERIES G431RB)
 # flashing and debugging
 set(OPENOCD_INTERFACE_CFG "interface/stlink.cfg")
 set(OPENOCD_MCU_CFG "target/stm32${MCU_SERIES_LOWER}x.cfg")

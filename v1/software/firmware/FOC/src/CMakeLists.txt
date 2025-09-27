@@ -2,6 +2,7 @@ set(CUSTOM_LIBS
 error
 clock
 usb
+swo
 msp
 debug_
 gpio

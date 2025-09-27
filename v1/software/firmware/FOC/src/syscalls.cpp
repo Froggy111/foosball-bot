@@ -8,11 +8,16 @@
 #include <unistd.h>
 
 #include "config.hpp"
+
+#if STDIO_TARGET == STDIO_USB
 #include "usb.hpp"
+#elif STDIO_TARGET == STDIO_SWO
+#include "swo.hpp"
+#endif
 
 extern "C" {
 
-#if STDIO_TARGET == STDIO_USB
+#if STDIO_TARGET != STDIO_NULL
 
 #ifdef __GNUC__
 
@@ -21,7 +26,11 @@ int _write(int file, char *ptr, int len) {
         return -1;
     }
 
+#if STDIO_TARGET == STDIO_USB
     usb::write((uint8_t *)ptr, len);
+#elif STDIO_TARGET == STDIO_SWO
+    swo::write((uint8_t *)ptr, len);
+#endif
     return len;
 }
 

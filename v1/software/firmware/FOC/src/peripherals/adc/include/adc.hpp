@@ -1,5 +1,7 @@
 #pragma once
 
+#include "config.hpp"
+
 namespace adc {
 
 void init(void);

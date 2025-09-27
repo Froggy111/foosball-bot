@@ -13,7 +13,7 @@
 #include "gpio.hpp"
 #include "inverter.hpp"
 #include "spi.hpp"
-#include "usb.hpp"
+#include "swo.hpp"
 
 void main_task(void *args);
 
@@ -40,12 +40,12 @@ int main(void) {
 }
 
 void main_task([[maybe_unused]] void *args) {
-    gpio::PinConfig LED = {GPIOC, gpio::Pin::PIN11, gpio::AF::NONE};
+    gpio::PinConfig LED = {GPIOD, gpio::Pin::PIN2, gpio::AF::NONE};
     gpio::init(LED, gpio::Mode::OUTPUT_PP, gpio::Pull::NOPULL,
                gpio::Speed::LOW);
     gpio::write(LED, 1);
 
-    usb::init();
+    swo::init();
     osDelay(2000);
     // inverter::init(20000);
     // inverter::set(0, 0, 0);
@@ -54,8 +54,8 @@ void main_task([[maybe_unused]] void *args) {
 
     // adc::init();
     for (;;) {
-        // NOTE : USB test
-        // debug::log("Hello World!");
+        // NOTE : debug test
+        debug::log("Hello World!");
 
         // NOTE : ADC test
         // float U_current = adc::read_U_current();
@@ -65,9 +65,9 @@ void main_task([[maybe_unused]] void *args) {
         // float VMOT = adc::read_VMOT();
         // debug::log("VMOT: %fV, U: %fA, V: %fA, W: %fA", VMOT, U_current,
         //            V_current, W_current);
-        debug::log("reading encoder");
-        int64_t count = encoder::get_count();
-        debug::log("Encoder count: %lld", count);
+        // debug::log("reading encoder");
+        // int64_t count = encoder::get_count();
+        // debug::log("Encoder count: %lld", count);
 
         // NOTE : encoder / inverter test
         // theta += M_PI / 45;
