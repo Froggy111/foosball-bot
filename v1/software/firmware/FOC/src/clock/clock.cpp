@@ -29,7 +29,7 @@ void clock::init() {
     osc_init.PLL.PLLState = RCC_PLL_ON;
     osc_init.PLL.PLLSource = RCC_PLLSOURCE_HSE;
     /**
-     * Target SYSCLK: 170MHz
+     * SYSCLK: 160MHz
      * HSE: 24MHz
      * SYSCLK = (HSE / PLLM_DIV) * PLLN_MUL / PLLR_DIV
      * VCO_CLK = (HSE / PLLM_DIV) * PLLN_MUL

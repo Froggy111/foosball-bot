@@ -8,6 +8,7 @@ PUBLIC
 
     configs/encoder.hpp
     configs/encoder/ABZ.hpp
+    configs/encoder/MT6701.hpp
 
     configs/peripherals.hpp
     configs/peripherals/usb.hpp
@@ -26,6 +27,7 @@ target_link_libraries(configs
 PUBLIC
     ${COMMON_LIBS}
     gpio
+    spi
 )
 
 set_target_properties(configs PROPERTIES LINKER_LANGUAGE CXX)

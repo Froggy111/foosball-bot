@@ -1,4 +1,5 @@
 add_subdirectory(ABZ)
+add_subdirectory(MT6701)
 
 add_library(encoder)
 
@@ -23,4 +24,5 @@ PUBLIC
     error
     debug_
     ABZ
+    MT6701
 )

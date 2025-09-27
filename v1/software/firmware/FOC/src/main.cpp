@@ -12,6 +12,7 @@
 #include "encoder.hpp"
 #include "gpio.hpp"
 #include "inverter.hpp"
+#include "spi.hpp"
 #include "usb.hpp"
 
 void main_task(void *args);
@@ -39,28 +40,34 @@ int main(void) {
 }
 
 void main_task([[maybe_unused]] void *args) {
-    gpio::PinConfig LED = {GPIOB, gpio::Pin::PIN10, gpio::AF::NONE};
+    gpio::PinConfig LED = {GPIOC, gpio::Pin::PIN11, gpio::AF::NONE};
     gpio::init(LED, gpio::Mode::OUTPUT_PP, gpio::Pull::NOPULL,
                gpio::Speed::LOW);
     gpio::write(LED, 1);
 
     usb::init();
     osDelay(2000);
-    inverter::init(20000);
-    inverter::set(0, 0, 0);
-    // encoder::init();
-    // float theta = 0;
+    // inverter::init(20000);
+    // inverter::set(0, 0, 0);
+    encoder::init();
+    float theta = 0;
 
-    adc::init();
+    // adc::init();
     for (;;) {
         // NOTE : USB test
         // debug::log("Hello World!");
 
         // NOTE : ADC test
-        float U_current = adc::read_U_current();
-        float V_current = adc::read_V_current();
-        float W_current = adc::read_W_current();
-        debug::log("U: %fA, V: %fA, W: %fA", U_current, V_current, W_current);
+        // float U_current = adc::read_U_current();
+        // float V_current = adc::read_V_current();
+        // float W_current = adc::read_W_current();
+        // adc::start_VMOT_read();
+        // float VMOT = adc::read_VMOT();
+        // debug::log("VMOT: %fV, U: %fA, V: %fA, W: %fA", VMOT, U_current,
+        //            V_current, W_current);
+        debug::log("reading encoder");
+        int64_t count = encoder::get_count();
+        debug::log("Encoder count: %lld", count);
 
         // NOTE : encoder / inverter test
         // theta += M_PI / 45;
@@ -72,7 +79,7 @@ void main_task([[maybe_unused]] void *args) {
         // debug::log("Encoder count: %u", encoder_count);
         // debug::log("Z pulses: %u", encoder::get_z_pulses());
         // debug::log("Delta: %d", encoder::get_delta());
-        // inverter::svpwm_set(theta, 0.0f, 24.0f);
+        // inverter::svpwm_set(theta, 1.2f, 12.0f);
         gpio::invert(LED);
         osDelay(100);
     }

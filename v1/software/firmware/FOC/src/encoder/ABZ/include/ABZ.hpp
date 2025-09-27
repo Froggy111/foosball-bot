@@ -1,6 +1,9 @@
-#include <stm32g4xx_hal.h>
+#pragma once
 
 #include "config.hpp"
+#if ENCODER_TYPE == ABZ
+
+#include <stm32g4xx_hal.h>
 
 namespace encoder {
 
@@ -18,7 +21,7 @@ int64_t get_count(void);
  * @param count: summed count, following Z being at multiples of encoder
  * resolution
  */
-void set_count(int64_t count);
+void set_count(int32_t count);
 
 /**
  * @brief This is only for core_interrupts.cpp. It should not be called anywhere
@@ -37,3 +40,5 @@ uint32_t get_z_pulses(void);
 int32_t get_delta(void);
 
 }  // namespace encoder
+
+#endif

@@ -40,7 +40,9 @@ volatile static endstop::Endstop triggered_endstop;
 
 // encoder position + offset = zeroed position
 volatile static float zero_position_angular_offset = 0;
+#ifdef USE_LINEAR_MOTION
 volatile static float zero_position_linear_offset = 0;
+#endif
 
 volatile static uint32_t handler_counter = 0;
 
@@ -65,7 +67,9 @@ void FOC::init(Parameters parameters) {
     // zero encoder
     zero_encoder();
     zero_position_angular_offset = 0.0f;
+#ifdef USE_LINEAR_MOTION
     zero_position_linear_offset = 0.0f;
+#endif
 
     // start FOC loop
     adc::start_VMOT_read();
@@ -159,8 +163,10 @@ void zero_position(void) {
     while (!any_endstop_triggered) {
         osDelay(1);
     }
+#ifdef USE_LINEAR_MOTION
     FOC::set_linear_velocity(0);
     FOC::set_linear_position(0);
+#endif
 
     return;
 }
@@ -177,8 +183,10 @@ void endstop_irq(endstop::Endstop endstop, endstop::State state,
             // offsets
             zero_position_angular_offset =
                 angular_position - encoder_angular_position;
-            zero_position_angular_offset =
+#ifdef USE_LINEAR_MOTION
+            zero_position_linear_offset =
                 zero_position_linear_offset / DISTANCE_PER_RADIAN;
+#endif
         }
     }
     return;
@@ -223,9 +231,12 @@ float FOC::get_angular_position(void) {
     return (encoder_position / ENCODER_RADIANS_PER_PULSE) +
            zero_position_angular_offset;
 }
+
+#ifdef USE_LINEAR_MOTION
 float FOC::get_linear_position(void) {
     encoder_position = encoder::get_count();
     return (encoder_position / ENCODER_RADIANS_PER_PULSE *
             DISTANCE_PER_RADIAN) +
            zero_position_linear_offset;
 }
+#endif

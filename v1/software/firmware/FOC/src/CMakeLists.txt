@@ -8,6 +8,7 @@ gpio
 encoder
 inverter
 adc
+spi
 FOC_core
 endstop
 )

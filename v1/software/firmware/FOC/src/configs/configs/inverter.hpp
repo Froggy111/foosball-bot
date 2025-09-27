@@ -21,9 +21,9 @@ const float PWM_MAX_FREQ_DEVIATION = 0.05;  // 5% max deviation
 #define PCLK1 1
 #define PCLK2 2
 
-#define U_PHASE_CHANNEL TIM_CHANNEL_1
+#define U_PHASE_CHANNEL TIM_CHANNEL_3
 #define V_PHASE_CHANNEL TIM_CHANNEL_2
-#define W_PHASE_CHANNEL TIM_CHANNEL_3
+#define W_PHASE_CHANNEL TIM_CHANNEL_1
 
 /**
  * PC13     ------> TIM1_CH1N (AF4)
@@ -34,23 +34,30 @@ const float PWM_MAX_FREQ_DEVIATION = 0.05;  // 5% max deviation
  * PA10     ------> TIM1_CH3 (AF6)
  */
 
+// INFO : comment out for drivers that do not use complementary PWM
+#define INVERTER_COMPLEMENTARY_PWM
+
 // --- Inverter Leg U (High and Low Side) ---
-const gpio::PinConfig INVERTER_U = {GPIOA, gpio::Pin::PIN8, gpio::AF::AF6_TIM1};
-const gpio::PinConfig INVERTER_U_N = {GPIOC, gpio::Pin::PIN13,
-                                      gpio::AF::AF4_TIM1};
+const gpio::PinConfig INVERTER_U = {GPIOA, gpio::Pin::PIN10,
+                                    gpio::AF::AF6_TIM1};
+const gpio::PinConfig INVERTER_U_N = {GPIOB, gpio::Pin::PIN1,
+                                      gpio::AF::AF6_TIM1};
 
 // --- Inverter Leg V (High and Low Side) ---
 const gpio::PinConfig INVERTER_V = {GPIOA, gpio::Pin::PIN9, gpio::AF::AF6_TIM1};
-const gpio::PinConfig INVERTER_V_N = {GPIOB, gpio::Pin::PIN14,
+const gpio::PinConfig INVERTER_V_N = {GPIOB, gpio::Pin::PIN0,
                                       gpio::AF::AF6_TIM1};
 
 // --- Inverter Leg W (High and Low Side) ---
-const gpio::PinConfig INVERTER_W = {GPIOA, gpio::Pin::PIN10,
-                                    gpio::AF::AF6_TIM1};
-const gpio::PinConfig INVERTER_W_N = {GPIOB, gpio::Pin::PIN1,
-                                      gpio::AF::AF6_TIM1};
+const gpio::PinConfig INVERTER_W = {GPIOA, gpio::Pin::PIN8, gpio::AF::AF6_TIM1};
+const gpio::PinConfig INVERTER_W_N = {GPIOC, gpio::Pin::PIN13,
+                                      gpio::AF::AF4_TIM1};
 
 const uint32_t INVERTER_BREAKTIME = 500;  // in ns
+
+// INFO : comment out for drivers without such features
+
+// #define INVERTER_USE_DRIVER_MODE
 
 // maximum high-side on-time, due to bootstrap circuit used
 const float MAX_PWM_ONTIME = 0.95;  // 95% should be safe

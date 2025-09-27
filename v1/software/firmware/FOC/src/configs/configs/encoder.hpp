@@ -1,9 +1,12 @@
 #pragma once
-#include "configs/encoder/ABZ.hpp"
-#include "gpio.hpp"
+
+#define ABZ 1
+#define MT6701 2
 
 #define ENCODER_TYPE ABZ
-#define ABZ 0
 
-const gpio::PinConfig ENCODER_SHIFTER_OE = {GPIOB, gpio::Pin::PIN11,
-                                            gpio::AF::NONE};
+#if ENCODER_TYPE == ABZ
+#include "configs/encoder/ABZ.hpp"
+#elif ENCODER_TYPE == MT6701
+#include "configs/encoder/MT6701.hpp"
+#endif

@@ -2,13 +2,14 @@
 
 /**
  * @brief Target for stdio functions (printf)
- * @options USB, CANFD, UART
+ * @options USB, CANFD, UART, SWO
  */
-#define STDIO_TARGET STDIO_USB
+#define STDIO_TARGET STDIO_SWO
 #define STDIO_NULL 0
 #define STDIO_USB 1
 #define STDIO_CANFD 2
 #define STDIO_UART 3
+#define STDIO_SWO 4
 
 /**
  * @brief Debug output settings. Comment out defines to disable a log level.

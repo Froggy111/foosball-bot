@@ -247,41 +247,71 @@ static void timer_init(uint32_t pwm_freq) {
         debug::fatal("Inverter: Failed to start U phase PWM");
         error::handler();
     }
+#ifdef INVERTER_COMPLEMENTARY_PWM
     if (HAL_TIMEx_PWMN_Start(&timer, U_PHASE_CHANNEL) != HAL_OK) {
         debug::fatal("Inverter: Failed to start U_N phase PWM");
         error::handler();
     }
+#endif
     if (HAL_TIM_PWM_Start(&timer, V_PHASE_CHANNEL) != HAL_OK) {
         debug::fatal("Inverter: Failed to start V phase PWM");
         error::handler();
     }
+#ifdef INVERTER_COMPLEMENTARY_PWM
     if (HAL_TIMEx_PWMN_Start(&timer, V_PHASE_CHANNEL) != HAL_OK) {
         debug::fatal("Inverter: Failed to start V_N phase PWM");
         error::handler();
     }
+#endif
     if (HAL_TIM_PWM_Start(&timer, W_PHASE_CHANNEL) != HAL_OK) {
         debug::fatal("Inverter: Failed to start W phase PWM");
         error::handler();
     }
+#ifdef INVERTER_COMPLEMENTARY_PWM
     if (HAL_TIMEx_PWMN_Start(&timer, W_PHASE_CHANNEL) != HAL_OK) {
         debug::fatal("Inverter: Failed to start W_N phase PWM");
         error::handler();
     }
+#endif
 }
 
 static void gpio_init(void) {
     gpio::init(INVERTER_U, gpio::Mode::AF_PP, gpio::Pull::NOPULL,
                gpio::Speed::LOW);
+#ifdef INVERTER_COMPLEMENTARY_PWM
     gpio::init(INVERTER_U_N, gpio::Mode::AF_PP, gpio::Pull::NOPULL,
                gpio::Speed::LOW);
+#endif
     gpio::init(INVERTER_V, gpio::Mode::AF_PP, gpio::Pull::NOPULL,
                gpio::Speed::LOW);
+#ifdef INVERTER_COMPLEMENTARY_PWM
     gpio::init(INVERTER_V_N, gpio::Mode::AF_PP, gpio::Pull::NOPULL,
                gpio::Speed::LOW);
+#endif
     gpio::init(INVERTER_W, gpio::Mode::AF_PP, gpio::Pull::NOPULL,
                gpio::Speed::LOW);
+#ifdef INVERTER_COMPLEMENTARY_PWM
     gpio::init(INVERTER_W_N, gpio::Mode::AF_PP, gpio::Pull::NOPULL,
                gpio::Speed::LOW);
+#endif
+
+#ifdef INVERTER_USE_DRIVER_MODE
+    gpio::init(INVERTER_DRIVER_MODE, gpio::Mode::OUTPUT_PP, gpio::Pull::NOPULL,
+               gpio::Speed::LOW);
+    gpio::write(INVERTER_DRIVER_MODE, INVERTER_DRIVER_MODE_STATE);
+#endif
+
+#ifdef INVERTER_USE_PHASE_RESET
+    gpio::init(INVERTER_U_RST, gpio::Mode::OUTPUT_PP, gpio::Pull::NOPULL,
+               gpio::Speed::LOW);
+    gpio::write(INVERTER_U_RST, INVERTER_RST_STATE);
+    gpio::init(INVERTER_V_RST, gpio::Mode::OUTPUT_PP, gpio::Pull::NOPULL,
+               gpio::Speed::LOW);
+    gpio::write(INVERTER_V_RST, INVERTER_RST_STATE);
+    gpio::init(INVERTER_W_RST, gpio::Mode::OUTPUT_PP, gpio::Pull::NOPULL,
+               gpio::Speed::LOW);
+    gpio::write(INVERTER_W_RST, INVERTER_RST_STATE);
+#endif
 }
 
 /**

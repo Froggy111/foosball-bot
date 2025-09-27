@@ -1,9 +1,10 @@
-#include "ABZ.hpp"
+#include "config.hpp"
+#if ENCODER_TYPE == ABZ
 
 #include <stm32g4xx_hal.h>
 #include <stm32g4xx_hal_gpio.h>
 
-#include "config.hpp"
+#include "ABZ.hpp"
 #include "configs/encoder.hpp"
 #include "debug.hpp"
 #include "error.hpp"
@@ -80,11 +81,6 @@ static void gpio_init(void) {
     gpio::attach_interrupt(ENCODER_Z, gpio::Mode::INT_RISING, gpio::Pull::DOWN,
                            gpio::Speed::LOW, z_irq, NULL);
 #endif
-
-    // enable level shifter
-    gpio::init(ENCODER_SHIFTER_OE, gpio::Mode::OUTPUT_PP, gpio::Pull::NOPULL,
-               gpio::Speed::LOW);
-    gpio::write(ENCODER_SHIFTER_OE, gpio::HIGH);
 }
 
 static void timer_init(void) {
@@ -139,3 +135,5 @@ static void timer_init(void) {
 
     HAL_TIM_Encoder_Start_IT(&timer, ENCODER_A_CHANNEL | ENCODER_B_CHANNEL);
 }
+
+#endif

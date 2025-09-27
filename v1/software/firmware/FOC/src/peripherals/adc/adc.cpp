@@ -14,7 +14,7 @@ void adc_init(void);
 void gpio_init(void);
 
 void opamp_instance_init(OPAMP_HandleTypeDef* handle, OPAMP_TypeDef* instance,
-                         uint32_t power_mode);
+                         uint32_t input_num, uint32_t power_mode);
 
 uint8_t adc_instance_to_idx(ADC_TypeDef* instance);
 ADC_HandleTypeDef* adc_instance_init(ADC_TypeDef* instance);
@@ -66,8 +66,12 @@ ADC_HandleTypeDef ADC_4;
 ADC_HandleTypeDef ADC_5;
 
 ADC_HandleTypeDef* VSENSE_VMOT_ADC_handle = NULL;
+#ifdef HAVE_12V_SENSE
 ADC_HandleTypeDef* VSENSE_12V_ADC_handle = NULL;
+#endif
+#ifdef HAVE_5V_SENSE
 ADC_HandleTypeDef* VSENSE_5V_ADC_handle = NULL;
+#endif
 ADC_HandleTypeDef* ISENSE_U_PHASE_ADC_handle = NULL;
 ADC_HandleTypeDef* ISENSE_V_PHASE_ADC_handle = NULL;
 ADC_HandleTypeDef* ISENSE_W_PHASE_ADC_handle = NULL;
@@ -77,16 +81,20 @@ ADC_ChannelConfTypeDef VSENSE_VMOT_ADC_channel_config = {
     VSENSE_VMOT_SAMPLETIME,   ADC_SINGLE_ENDED,
     ADC_OFFSET_NONE,          0,
     ADC_OFFSET_SIGN_POSITIVE, DISABLE};
+#ifdef HAVE_12V_SENSE
 ADC_ChannelConfTypeDef VSENSE_12V_ADC_channel_config = {
     VSENSE_12V_CHANNEL,       ADC_REGULAR_RANK_1,
     VSENSE_12V_SAMPLETIME,    ADC_SINGLE_ENDED,
     ADC_OFFSET_NONE,          0,
     ADC_OFFSET_SIGN_POSITIVE, DISABLE};
+#endif
+#ifdef HAVE_5V_SENSE
 ADC_ChannelConfTypeDef VSENSE_5V_ADC_channel_config = {
     VSENSE_5V_CHANNEL,        ADC_REGULAR_RANK_1,
     VSENSE_5V_SAMPLETIME,     ADC_SINGLE_ENDED,
     ADC_OFFSET_NONE,          0,
     ADC_OFFSET_SIGN_POSITIVE, DISABLE};
+#endif
 ADC_ChannelConfTypeDef ISENSE_U_PHASE_ADC_channel_config = {
     ISENSE_U_PHASE_CHANNEL,    ADC_REGULAR_RANK_1,
     ISENSE_U_PHASE_SAMPLETIME, ADC_SINGLE_ENDED,
@@ -127,6 +135,7 @@ float adc::read_VMOT(void) {
     return voltage;
 }
 
+#ifdef HAVE_12V_SENSE
 void adc::start_12V_read(void) {
     start_ADC_read(VSENSE_12V_ADC_handle, &VSENSE_12V_ADC_channel_config);
     return;
@@ -136,7 +145,9 @@ float adc::read_12V(void) {
     float voltage = (float)val * ADC_VOLTAGE_MULTIPLIER * VSENSE_12V_MULTIPLIER;
     return voltage;
 }
+#endif
 
+#ifdef HAVE_5V_SENSE
 void adc::start_5V_read(void) {
     start_ADC_read(VSENSE_5V_ADC_handle, &VSENSE_5V_ADC_channel_config);
     return;
@@ -146,6 +157,7 @@ float adc::read_5V(void) {
     float voltage = (float)val * ADC_VOLTAGE_MULTIPLIER * VSENSE_5V_MULTIPLIER;
     return voltage;
 }
+#endif
 
 float adc::read_U_current(void) {
     float voltage = read_PGA(&U_phase_opamp, ISENSE_U_PHASE_ADC_handle,
@@ -157,7 +169,7 @@ float adc::read_U_current(void) {
 
 float adc::read_V_current(void) {
     float voltage = 0;
-    if (direction_reversed) {
+    if (!direction_reversed) {
         voltage = read_PGA(&V_phase_opamp, ISENSE_V_PHASE_ADC_handle,
                            &ISENSE_V_PHASE_ADC_channel_config, &V_phase_gain,
                            ADC_POLL_TIMEOUT);
@@ -172,7 +184,7 @@ float adc::read_V_current(void) {
 
 float adc::read_W_current(void) {
     float voltage = 0;
-    if (direction_reversed) {
+    if (!direction_reversed) {
         voltage = read_PGA(&W_phase_opamp, ISENSE_W_PHASE_ADC_handle,
                            &ISENSE_W_PHASE_ADC_channel_config, &W_phase_gain,
                            ADC_POLL_TIMEOUT);
@@ -259,10 +271,13 @@ float read_PGA(OPAMP_HandleTypeDef* opamp, ADC_HandleTypeDef* adc,
 
 void opamp_init(void) {
     opamp_instance_init(&U_phase_opamp, ISENSE_U_PHASE_OPAMP,
+                        ISENSE_U_PHASE_OPAMP_INPUT_NUM,
                         ISENSE_U_PHASE_OPAMP_POWERMODE);
     opamp_instance_init(&V_phase_opamp, ISENSE_V_PHASE_OPAMP,
+                        ISENSE_V_PHASE_OPAMP_INPUT_NUM,
                         ISENSE_V_PHASE_OPAMP_POWERMODE);
     opamp_instance_init(&W_phase_opamp, ISENSE_W_PHASE_OPAMP,
+                        ISENSE_W_PHASE_OPAMP_INPUT_NUM,
                         ISENSE_W_PHASE_OPAMP_POWERMODE);
     return;
 }
@@ -276,17 +291,13 @@ void adc_init(void) {
         debug::error("Failed to configure ADC12 peripheral clock source");
     }
 
-    // ADC345 peripheral clock source
-    RCC_PeriphCLKInitTypeDef ADC345_clk_init = {};
-    ADC345_clk_init.PeriphClockSelection = RCC_PERIPHCLK_ADC345;
-    ADC345_clk_init.Adc345ClockSelection = RCC_ADC12CLKSOURCE_SYSCLK;
-    if (HAL_RCCEx_PeriphCLKConfig(&ADC345_clk_init) != HAL_OK) {
-        debug::error("Failed to configure ADC345 peripheral clock source");
-    }
-
     VSENSE_VMOT_ADC_handle = adc_instance_init(VSENSE_VMOT_ADC);
+#ifdef HAVE_12V_SENSE
     VSENSE_12V_ADC_handle = adc_instance_init(VSENSE_12V_ADC);
+#endif
+#ifdef HAVE_5V_SENSE
     VSENSE_5V_ADC_handle = adc_instance_init(VSENSE_5V_ADC);
+#endif
 
     ISENSE_U_PHASE_ADC_handle = adc_instance_init(ISENSE_U_PHASE_ADC);
     ISENSE_V_PHASE_ADC_handle = adc_instance_init(ISENSE_V_PHASE_ADC);
@@ -295,11 +306,11 @@ void adc_init(void) {
 }
 
 void opamp_instance_init(OPAMP_HandleTypeDef* handle, OPAMP_TypeDef* instance,
-                         uint32_t power_mode) {
+                         uint32_t input_num, uint32_t power_mode) {
     handle->Instance = instance;
     handle->Init.PowerMode = power_mode;
     handle->Init.Mode = OPAMP_PGA_MODE;
-    handle->Init.NonInvertingInput = OPAMP_NONINVERTINGINPUT_IO2;
+    handle->Init.NonInvertingInput = input_num;
     handle->Init.InternalOutput = ENABLE;
     handle->Init.TimerControlledMuxmode = OPAMP_TIMERCONTROLLEDMUXMODE_DISABLE;
     handle->Init.PgaConnect = OPAMP_PGA_CONNECT_INVERTINGINPUT_NO;
@@ -314,14 +325,7 @@ void opamp_instance_init(OPAMP_HandleTypeDef* handle, OPAMP_TypeDef* instance,
             instance_num = 1;
         } else if (instance == OPAMP3) {
             instance_num = 2;
-        } else if (instance == OPAMP4) {
-            instance_num = 3;
-        } else if (instance == OPAMP5) {
-            instance_num = 4;
-        } else if (instance == OPAMP6) {
-            instance_num = 5;
         }
-
         debug::error("Failed to initialise OPAMP %u", instance_num + 1);
         error::handler();
     }
@@ -333,14 +337,7 @@ void opamp_instance_init(OPAMP_HandleTypeDef* handle, OPAMP_TypeDef* instance,
             instance_num = 1;
         } else if (instance == OPAMP3) {
             instance_num = 2;
-        } else if (instance == OPAMP4) {
-            instance_num = 3;
-        } else if (instance == OPAMP5) {
-            instance_num = 4;
-        } else if (instance == OPAMP6) {
-            instance_num = 5;
         }
-
         debug::error("Failed to start OPAMP %u", instance_num + 1);
         error::handler();
     }
@@ -350,10 +347,14 @@ void opamp_instance_init(OPAMP_HandleTypeDef* handle, OPAMP_TypeDef* instance,
 void gpio_init(void) {
     gpio::init(VSENSE_VMOT_PIN, gpio::Mode::ANALOG, gpio::Pull::NOPULL,
                gpio::Speed::MEDIUM);
+#ifdef HAVE_12V_SENSE
     gpio::init(VSENSE_12V_PIN, gpio::Mode::ANALOG, gpio::Pull::NOPULL,
                gpio::Speed::MEDIUM);
+#endif
+#ifdef HAVE_5V_SENSE
     gpio::init(VSENSE_5V_PIN, gpio::Mode::ANALOG, gpio::Pull::NOPULL,
                gpio::Speed::MEDIUM);
+#endif
     gpio::init(ISENSE_U_PHASE_PIN, gpio::Mode::ANALOG, gpio::Pull::NOPULL,
                gpio::Speed::MEDIUM);
     gpio::init(ISENSE_V_PHASE_PIN, gpio::Mode::ANALOG, gpio::Pull::NOPULL,
@@ -373,7 +374,6 @@ ADC_HandleTypeDef* adc_instance_init(ADC_TypeDef* instance) {
     if (instance_idx == 0 || instance_idx == 1) {
         __HAL_RCC_ADC12_CLK_ENABLE();
     } else if (instance_idx == 2 || instance_idx == 3 || instance_idx == 4) {
-        __HAL_RCC_ADC345_CLK_ENABLE();
     }
 
     handle->Instance = instance;
@@ -411,13 +411,6 @@ uint8_t adc_instance_to_idx(ADC_TypeDef* instance) {
         return 0;
     } else if (instance == ADC2) {
         return 1;
-    } else if (instance == ADC3) {
-        return 2;
-    } else if (instance == ADC4) {
-        return 3;
-    } else if (instance == ADC5) {
-        return 4;
     }
-
     return 255;
 }

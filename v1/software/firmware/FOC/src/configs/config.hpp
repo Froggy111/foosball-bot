@@ -3,7 +3,7 @@
 // configs for FOC firmware
 
 #include <stdint.h>
-#include <stm32g474xx.h>
+#include <stm32g4xx_hal.h>
 
 #include "configs/FOC.hpp"
 #include "configs/debug.hpp"
