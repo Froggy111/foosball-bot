@@ -325,3 +325,43 @@ float FOC::get_linear_position(void) {
            zero_position_linear_offset;
 }
 #endif
+
+void FOC::set_torque(float torque) {
+    target_mode = TargetMode::torque;
+    torque_target = torque;
+    return;
+}
+void FOC::set_max_torque(float torque) {}
+
+void FOC::set_angular_velocity(float angular_velocity) {
+    target_mode = TargetMode::velocity;
+    velocity_target = angular_velocity;
+    return;
+}
+void FOC::set_max_angular_velocity(float max_angular_velocity) {}
+void FOC::set_max_angular_acceleration(float max_angular_acceleration) {}
+void FOC::set_angular_jerk(float angular_jerk) {}
+void FOC::set_angular_position(float angular_position) {
+    target_mode = TargetMode::position;
+    position_target = angular_position;
+    return;
+}
+#ifdef USE_LINEAR_MOTION
+void FOC::set_linear_velocity(float linear_velocity) {
+    set_angular_velocity(linear_velocity * RADIANS_PER_DISTANCE);
+    return;
+}
+void FOC::set_max_linear_velocity(float max_linear_velocity) {}
+void FOC::set_max_linear_acceleration(float max_linear_acceleration) {}
+void FOC::set_linear_jerk(float linear_jerk) {}
+void FOC::set_linear_position(float linear_position) {
+    set_angular_position(linear_position * RADIANS_PER_DISTANCE);
+}
+#endif
+
+void FOC::set_parameters(Parameters parameters) {
+    coil_resistance = parameters.coil_resistance;
+    speed_constant = parameters.speed_constant;
+    torque_constant = 1.0f / speed_constant;
+    return;
+}

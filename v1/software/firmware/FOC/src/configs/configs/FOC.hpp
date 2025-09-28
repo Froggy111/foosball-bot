@@ -30,6 +30,7 @@ const uint32_t ZERO_ENCODER_MAX_TICKS_PER_PULSE =
 // #define USE_LINEAR_MOTION
 // const float ROTATION_DISTANCE = 20.0f;  // 20mm per rotation
 // const float DISTANCE_PER_RADIAN = ROTATION_DISTANCE / (2.0f * M_PI);
+// const float RADIANS_PER_DISTANCE = 1 / DISTANCE_PER_RADIAN;
 //
 // // mm/s
 // const float ZERO_POSITION_LINEAR_VELOCITY = 100;
