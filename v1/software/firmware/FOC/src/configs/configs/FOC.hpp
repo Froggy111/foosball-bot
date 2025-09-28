@@ -41,8 +41,12 @@ const uint32_t ZERO_ENCODER_MAX_TICKS_PER_PULSE =
 
 // PID
 // current is PI
-const float CURRENT_KP = 0;
-const float CURRENT_KI = 0;
+// direct-axis current (magnetic flux)
+const float CURRENT_D_KP = 0;
+const float CURRENT_D_KI = 0;
+// quadrature-axis current (torque generating)
+const float CURRENT_Q_KP = 0;
+const float CURRENT_Q_KI = 0;
 // velocity is PI/PID
 const float VELOCITY_KP = 0;
 const float VELOCITY_KI = 0;

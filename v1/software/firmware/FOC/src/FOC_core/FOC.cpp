@@ -6,8 +6,8 @@
 #include "FOC.hpp"
 
 #include <cmsis_os2.h>
-#include <math.h>
 
+#include <cmath>
 #include <cstdlib>
 
 #include "PID.hpp"
@@ -22,16 +22,36 @@ volatile static float speed_constant = -1;
 volatile static float torque_constant = -1;
 volatile static uint32_t num_winding_sets = -1;
 
-FOC::PID current_PID(CURRENT_KP, CURRENT_KI, 0);
-FOC::PID velocity_PID(VELOCITY_KP, VELOCITY_KI, VELOCITY_KD);
-FOC::PID position_PID(POSITION_KP, POSITION_KI, POSITION_KD);
+FOC::PID I_d_PID(CURRENT_D_KP, CURRENT_D_KI, 0, 1.0f);
+FOC::PID I_q_PID(CURRENT_Q_KP, CURRENT_Q_KI, 0, 1.0f);
+FOC::PID velocity_PID(VELOCITY_KP, VELOCITY_KI, VELOCITY_KD, 1.0f);
+FOC::PID position_PID(POSITION_KP, POSITION_KI, POSITION_KD, 1.0f);
 
+// CONTROL SETTINGS
+volatile static float position_target = 0;
+volatile static float velocity_target = 0;
+volatile static float torque_target = 0;
+enum class TargetMode { position, velocity, torque };
+volatile static TargetMode target_mode;
+volatile static bool run_IRQ = false;
+
+// ANALOG SENSING VALUES
 volatile static float U_current = 0;
 volatile static float V_current = 0;
 volatile static float W_current = 0;
 volatile static float VMOT_voltage = 0;
 
-volatile static bool run_IRQ = false;
+// VELOCITY CALCULATION
+volatile static uint32_t actual_pwm_frequency = 0;
+volatile static float time_between_velocity_cycles = 0;
+volatile static float velocity_multiplier = 0;
+volatile static float past_angular_position = 0;
+
+// PID frequency corrections
+float current_cycle_frequency = 1.0f;
+float velocity_cycle_frequency = 1.0f;
+float position_cycle_frequency = 1.0f;
+
 // this is based off theta = 0
 volatile static int64_t encoder_position;
 
@@ -59,7 +79,25 @@ void FOC::init(Parameters parameters) {
 
     adc::init();
     encoder::init();
-    inverter::init(PWM_FREQUENCY);
+    actual_pwm_frequency = inverter::init(PWM_FREQUENCY);
+    current_cycle_frequency = (float)actual_pwm_frequency;
+    velocity_cycle_frequency =
+        (float)actual_pwm_frequency / (float)FOC_CYCLES_PER_VELOCITY_LOOP;
+    position_cycle_frequency =
+        (float)actual_pwm_frequency / (float)FOC_CYCLES_PER_POSITION_LOOP;
+    time_between_velocity_cycles = (1.0f / velocity_cycle_frequency);
+    velocity_multiplier = 1 / time_between_velocity_cycles;
+
+    // PID frequency correction
+    I_q_PID.set_params(CURRENT_Q_KP, CURRENT_Q_KI, 0.0f,
+                       current_cycle_frequency);
+    I_d_PID.set_params(CURRENT_D_KP, CURRENT_D_KI, 0.0f,
+                       current_cycle_frequency);
+    velocity_PID.set_params(VELOCITY_KP, VELOCITY_KI, VELOCITY_KD,
+                            velocity_cycle_frequency);
+    position_PID.set_params(POSITION_KP, POSITION_KI, POSITION_KD,
+                            position_cycle_frequency);
+
 #ifdef USE_ENDSTOP
     endstop::init(endstop_irq);
 #endif
@@ -79,18 +117,27 @@ void FOC::init(Parameters parameters) {
 #ifdef USE_ENDSTOP
     zero_position();
 #endif
+
+    past_angular_position = get_angular_position();
     return;
 }
 
 void FOC::set_PID(PIDParams pid_parameters) {
-    current_PID.set_params(pid_parameters.current_Kp, pid_parameters.current_Ki,
-                           0);
-    velocity_PID.set_params(pid_parameters.velocity_Kp,
-                            pid_parameters.velocity_Ki,
-                            pid_parameters.velocity_Kd);
-    position_PID.set_params(pid_parameters.position_Kp,
-                            pid_parameters.position_Ki,
-                            pid_parameters.position_Kd);
+    I_q_PID.set_params(pid_parameters.current_q_Kp, pid_parameters.current_q_Ki,
+                       0.0f, current_cycle_frequency);
+    I_d_PID.set_params(pid_parameters.current_d_Kp, pid_parameters.current_d_Ki,
+                       0.0f, current_cycle_frequency);
+    velocity_PID.set_params(
+        pid_parameters.velocity_Kp, pid_parameters.velocity_Ki,
+        pid_parameters.velocity_Kd, velocity_cycle_frequency);
+    position_PID.set_params(
+        pid_parameters.position_Kp, pid_parameters.position_Ki,
+        pid_parameters.position_Kd, velocity_cycle_frequency);
+
+    I_q_PID.set(0);
+    I_d_PID.set(0);
+    velocity_PID.set(0);
+    position_PID.set(0);
     return;
 }
 
@@ -98,7 +145,7 @@ void zero_encoder(void) {
     encoder_position = encoder::get_count();
     adc::start_VMOT_read();
     float voltage = adc::read_VMOT();
-    inverter::svpwm_set(0.0f, ZERO_ENCODER_VOLTAGE / voltage, voltage);
+    inverter::svpwm_set(0.0f, ZERO_ENCODER_VOLTAGE / voltage, 0.0f, voltage);
 
     // keep checking if it has either:
     // 1. hit an endstop
@@ -147,7 +194,7 @@ void zero_encoder(void) {
             ZERO_ENCODER_MAX_TICKS_PER_PULSE) {
             encoder::set_count(0);
             // turn off motor
-            inverter::svpwm_set(0.0f, 0.0f, 0.0f);
+            inverter::svpwm_set(0.0f, 0.0f, 0.0f, VMOT_voltage);
             encoder_position = encoder::get_count();
             break;
         }
@@ -193,6 +240,10 @@ void endstop_irq(endstop::Endstop endstop, endstop::State state,
 }
 #endif
 
+const float TWO_THIRDS = 2.0f / 3.0f;
+const float ONE_THIRD = 1.0f / 3.0f;
+const float TWO_OVER_SQRT3 = 2.0f / std::sqrtf(3.0f);
+
 void FOC::handler(void) {
     if (!run_IRQ) {
         return;
@@ -207,22 +258,56 @@ void FOC::handler(void) {
 
     float angular_position = get_angular_position();
     float electrical_angle = (angular_position * NUM_WINDING_SETS);
-    float target_torque = velocity_PID.get();
-    float target_current = target_torque / torque_constant;
+
+    // run position control (only if in position mode)
+    if (handler_counter % FOC_CYCLES_PER_POSITION_LOOP &&
+        target_mode == TargetMode::position) {
+        // run position control
+        position_PID.set(position_target);
+        position_PID.update(angular_position);
+        velocity_target = position_PID.get();
+    }
+    // run velocity control (only if not in torque mode)
+    if (handler_counter % FOC_CYCLES_PER_VELOCITY_LOOP &&
+        (target_mode == TargetMode::velocity ||
+         target_mode == TargetMode::position)) {
+        // run velocity control
+        float velocity =
+            (angular_position - past_angular_position) * velocity_multiplier;
+        velocity_PID.set(velocity_target);
+        velocity_PID.update(velocity);
+        torque_target = velocity_PID.get();
+    }
+
+    float I_target = torque_target / torque_constant;
+
+    // replace with CORDIC if needed
+    float sin_theta = std::sinf(electrical_angle);
+    float cos_theta = std::cosf(electrical_angle);
 
     // transform target current to phase currents
+    // clarke transformation
+    // INFO : refer to:
+    // https://ww1.microchip.com/downloads/aemdocuments/documents/fpga/ProductDocuments/UserGuides/sf2_mc_park_invpark_clarke_invclarke_transforms_ug.pdf
+    float I_alpha =
+        TWO_THIRDS * U_current - ONE_THIRD * (V_current - W_current);
+    float I_beta = TWO_OVER_SQRT3 * (V_current - W_current);
 
-    if (handler_counter % FOC_CYCLES_PER_VELOCITY_LOOP) {
-        // run velocity control
-    }
+    float I_d = I_beta * sin_theta + I_alpha * cos_theta;
+    float I_q = I_beta * cos_theta - I_alpha * sin_theta;
 
-    if (handler_counter % FOC_CYCLES_PER_POSITION_LOOP) {
-        // run position control
-    }
+    // target I_d = 0, target I_q = I_target
+    I_d_PID.update(I_d);
+    I_q_PID.set(I_target);
+    I_q_PID.update(I_q);
+
+    float V_d = I_d_PID.get();
+    float V_q = I_q_PID.get();
 
     // read VMOT (end of handler)
     VMOT_voltage = adc::read_VMOT();
     handler_counter++;
+    past_angular_position = angular_position;
     return;
 }
 

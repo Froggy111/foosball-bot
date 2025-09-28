@@ -11,8 +11,10 @@ struct Parameters {
 };
 
 struct PIDParams {
-    float current_Kp = CURRENT_KP;
-    float current_Ki = CURRENT_KI;
+    float current_d_Kp = CURRENT_D_KP;
+    float current_d_Ki = CURRENT_D_KI;
+    float current_q_Kp = CURRENT_Q_KP;
+    float current_q_Ki = CURRENT_Q_KI;
     float velocity_Kp = VELOCITY_KP;
     float velocity_Ki = VELOCITY_KI;
     float velocity_Kd = VELOCITY_KD;
