@@ -7,8 +7,9 @@ namespace inverter {
  * @param motor_pwm_frequency: Target PWM frequency of
  * @note Modify as needed to suit hardware. Configurations are in
  * src/configs
+ * @returns actual PWM frequency
  */
-void init(uint32_t pwm_frequency);
+uint32_t init(uint32_t pwm_frequency);
 
 /**
  * @brief Reverse direction of the inverter (swaps V and W phases)
@@ -26,9 +27,14 @@ void set(float u, float v, float w);
 /**
  * @brief Set SVPWM angle and duty cycle
  * @param theta: angle of target voltage vector
- * @param V_target: magnitude of target voltage vector (line-to-line)
+ * @param V_d: magnitude of target voltage d vector (line-to-line) (magnetic
+ * flux)
+ * @param V_q: magnitude of target voltage q vector (line-to-line) (torque)
  * @param V_dc: inverter DC bus voltage
  */
-void svpwm_set(float theta, float V_target, float V_dc);
+void svpwm_set(float theta, float V_d, float V_q, float V_dc);
+// same function but taking in sin and cos theta instead
+void svpwm_set(float sin_theta, float cos_theta, float V_d, float V_q,
+               float V_dc);
 
 }  // namespace inverter

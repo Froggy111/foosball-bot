@@ -30,14 +30,15 @@ enum class TargetSector : uint8_t {
     WU_U = 5,
 };
 
-static void timer_init(uint32_t pwm_freq);
+static PWMFreqParams timer_init(uint32_t pwm_freq);
 static void gpio_init(void);
 static PWMFreqParams calculate_frequency_parameters(
     uint32_t target_frequency, uint32_t clock_source_frequency);
-void inverter::init(uint32_t pwm_freq) {
-    timer_init(pwm_freq);
+uint32_t inverter::init(uint32_t pwm_freq) {
+    PWMFreqParams pwm_freq_params = timer_init(pwm_freq);
     gpio_init();
     set(0, 0, 0);  // all pull to ground
+    return pwm_freq_params.frequency;
 }
 
 void inverter::set(float u, float v, float w) {
@@ -68,36 +69,70 @@ void inverter::set(float u, float v, float w) {
     __HAL_TIM_SET_COMPARE(&timer, W_PHASE_CHANNEL, w_count);
 }
 
-void inverter::svpwm_set(float theta, float V_target, float V_dc) {
-    // clamp V_target
-    V_target =
-        std::fmax(0.0f, std::fmin(V_target, V_dc * std::cosf(M_PI / 6.0f)));
-    debug::trace("Inverter SVPWM: V_target: %f", V_target);
+const float COS_PI_6 = 0.86602540378f;  // cos(PI/6)
+const float TAN_PI_6 = 0.57735026919f;  // tan(PI/6)
+const float PI_DIV_3 = M_PI / 3;
 
-    TargetSector sector = (TargetSector)std::floorf(theta / (M_PI / 3.0f));
-    float sector_theta = theta - (float)(uint8_t)sector * (M_PI / 3.0f);
-    debug::trace("Inverter SVPWM: sector_theta: %f", sector_theta);
+const float COS_LOOKUP[6] = {
+    1.0f,   // cos(0)
+    0.5f,   // cos(-60)
+    -0.5f,  // cos(-120)
+    -1.0f,  // cos(-180)
+    -0.5f,  // cos(-240)
+    0.5f    // cos(-300)
+};
+const float SIN_LOOKUP[6] = {
+    0.0f,         // sin(0)
+    -0.8660254f,  // sin(-60)
+    -0.8660254f,  // sin(-120)
+    0.0f,         // sin(-180)
+    0.8660254f,   // sin(-240)
+    0.8660254f    // sin(-300)
+};
 
-    float V_x = V_target * std::cosf(sector_theta);
-    float V_y = V_target * std::sinf(sector_theta);
+void inverter::svpwm_set(float theta, float V_d, float V_q, float V_dc) {
+    svpwm_set(std::sinf(theta), std::cosf(theta), V_d, V_q, V_dc);
+}
+
+void inverter::svpwm_set(float sin_theta, float cos_theta, float V_d, float V_q,
+                         float V_dc) {
+    // inverse Park transformation
+    float V_alpha = V_d * cos_theta - V_q * sin_theta;
+    float V_beta = V_d * sin_theta + V_q * cos_theta;
+
+    // clamp V magnitude
+    float V_mag = std::sqrtf(V_alpha * V_alpha + V_beta * V_beta);
+    float V_mag_clamped = std::fmin(V_mag, V_dc * COS_PI_6);
+    float scale_factor = (V_mag > 0.0f) ? (V_mag_clamped / V_mag) : 0.0f;
+    V_alpha *= scale_factor;
+    V_beta *= scale_factor;
+    debug::trace(
+        "Inverter SVPWM: V_d: %f, V_q: %f, V_alpha: %f, V_beta = %f, V_mag: %f",
+        V_d, V_q, V_alpha, V_beta, V_mag);
+
+    float target_angle = std::atan2f(V_beta, V_alpha);
+    uint8_t sector = std::floorf(target_angle / PI_DIV_3);
+
+    // rotate V_alpha and V_beta to sectors
+    float cos_rot = COS_LOOKUP[sector];
+    float sin_rot = SIN_LOOKUP[sector];
+    float V_x = V_alpha * cos_rot - V_beta * sin_rot;
+    float V_y = V_alpha * sin_rot + V_beta * cos_rot;
     debug::trace("Inverter SVPWM: V_x: %f, V_y: %f", V_x, V_y);
 
-    // V_2_y = V_y
-    // V_2_x / V_2_y = tan(30deg)
-    float V_2_x = V_y * std::tanf(M_PI / 6.0f);
-    // V_2_y / V_2 = cos(30deg)
-    // V_2 = V_2_y / cos(30deg)
-    float V_2 = V_y / std::cosf(M_PI / 6.0f);
-    // V_1 = V_1_x = V_x - V_2_x
-    float V_1 = V_x - V_2_x;
-
+    // calculate component voltages
+    float V_2 = V_y / COS_PI_6;
+    float V_1 = V_x - V_y * TAN_PI_6;
+    // calculate duty cycles
     float duty_1 = V_1 / V_dc;
     float duty_2 = V_2 / V_dc;
     float duty_zero = (1.0f - duty_1 - duty_2) / 2;
 
     float duty_U = 0, duty_V = 0, duty_W = 0;
 
-    switch (sector) {
+    TargetSector sector_enum = (TargetSector)sector;
+
+    switch (sector_enum) {
         case TargetSector::U_UV:
             duty_U = duty_zero + duty_1 + duty_2;
             duty_V = duty_zero + duty_2;
@@ -140,7 +175,7 @@ void inverter::svpwm_set(float theta, float V_target, float V_dc) {
     set(duty_U, duty_V, duty_W);
 }
 
-static void timer_init(uint32_t pwm_freq) {
+static PWMFreqParams timer_init(uint32_t pwm_freq) {
     // init timer
     timer.Instance = INVERTER_TIMER;
     // assuming APB prescaler = 1
@@ -273,6 +308,8 @@ static void timer_init(uint32_t pwm_freq) {
         error::handler();
     }
 #endif
+
+    return freq_params;
 }
 
 static void gpio_init(void) {
