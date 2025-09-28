@@ -2,12 +2,13 @@
 
 namespace FOC {
 
-PID::PID(float Kp, float Ki, float Kd) : Kp(Kp), Ki(Ki), Kd(Kd) {}
+PID::PID(float Kp, float Ki, float Kd, float frequency)
+    : Kp(Kp), Ki(Ki), Kd(Kd), frequency(frequency) {}
 
 void PID::update(float actual) {
     past_err = curr_err;
-    curr_err = target - actual;
-    sum_err += curr_err;
+    curr_err = (target - actual) * frequency;
+    sum_err += curr_err / frequency;
     return;
 }
 
@@ -26,10 +27,11 @@ float PID::get(void) {
 
 float PID::get_target(void) { return target; }
 
-void PID::set_params(float Kp, float Ki, float Kd) {
+void PID::set_params(float Kp, float Ki, float Kd, float frequency) {
     this->Kp = Kp;
     this->Ki = Ki;
     this->Kd = Kd;
+    this->frequency = frequency;
     return;
 }
 
