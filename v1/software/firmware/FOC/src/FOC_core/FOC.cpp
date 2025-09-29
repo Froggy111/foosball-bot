@@ -7,6 +7,7 @@
 
 #include <cmsis_os2.h>
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 
@@ -35,11 +36,20 @@ enum class TargetMode { position, velocity, torque };
 volatile static TargetMode target_mode;
 volatile static bool run_IRQ = false;
 
+volatile static float torque_limit = 0;
+volatile static float velocity_limit = 0;
+volatile static float acceleration_limit = 0;
+volatile static float jerk_limit = 0;
+
+volatile static float ramped_velocity_target = 0;
+volatile static float current_acceleration = 0;
+
 // ANALOG SENSING VALUES
 volatile static float U_current = 0;
 volatile static float V_current = 0;
 volatile static float W_current = 0;
 volatile static float VMOT_voltage = 0;
+volatile static inverter::SVPWMDuty duty_cycles = {0.0f, 0.0f, 0.0f};
 
 // VELOCITY CALCULATION
 volatile static uint32_t actual_pwm_frequency = 0;
@@ -253,6 +263,17 @@ void FOC::handler(void) {
     V_current = adc::read_V_current();
     W_current = adc::read_W_current();
 
+    // figure out which 2 to trust
+    float max_duty_cycle =
+        std::max(std::max(duty_cycles.u, duty_cycles.v), duty_cycles.w);
+    if (duty_cycles.u == max_duty_cycle) {
+        U_current = -(V_current + W_current);
+    } else if (duty_cycles.v == max_duty_cycle) {
+        V_current = -(U_current + W_current);
+    } else if (duty_cycles.w == max_duty_cycle) {
+        W_current = -(U_current + V_current);
+    }
+
     // start voltage measurement
     adc::start_VMOT_read();
 
@@ -266,17 +287,57 @@ void FOC::handler(void) {
         position_PID.set(position_target);
         position_PID.update(angular_position);
         velocity_target = position_PID.get();
+        if (velocity_target > velocity_limit) {
+            velocity_target = velocity_limit;
+        } else if (velocity_target < -velocity_limit) {
+            velocity_target = -velocity_limit;
+        }
     }
     // run velocity control (only if not in torque mode)
     if (handler_counter % FOC_CYCLES_PER_VELOCITY_LOOP &&
         (target_mode == TargetMode::velocity ||
          target_mode == TargetMode::position)) {
+        // jerk limit
+        float target_acceleration = (velocity_target - ramped_velocity_target) *
+                                    velocity_cycle_frequency;
+        if (target_acceleration > acceleration_limit) {
+            target_acceleration = acceleration_limit;
+        } else if (target_acceleration < -acceleration_limit) {
+            target_acceleration = -acceleration_limit;
+        }
+        float acceleration_change = target_acceleration - current_acceleration;
+        float max_acceleration_change =
+            jerk_limit * time_between_velocity_cycles;
+        if (acceleration_change > max_acceleration_change) {
+            current_acceleration += max_acceleration_change;
+        } else if (acceleration_change < -max_acceleration_change) {
+            current_acceleration -= max_acceleration_change;
+        } else {
+            current_acceleration = target_acceleration;
+        }
+
+        // acceleration limit
+        float velocity_change = velocity_target - ramped_velocity_target;
+        float max_velocity_change =
+            current_acceleration * time_between_velocity_cycles;
+        if (velocity_change > max_velocity_change) {
+            ramped_velocity_target += max_velocity_change;
+        } else if (velocity_change < -max_velocity_change) {
+            ramped_velocity_target -= max_velocity_change;
+        } else {
+            ramped_velocity_target = velocity_target;
+        }
         // run velocity control
         float velocity =
             (angular_position - past_angular_position) * velocity_multiplier;
-        velocity_PID.set(velocity_target);
+        velocity_PID.set(ramped_velocity_target);
         velocity_PID.update(velocity);
         torque_target = velocity_PID.get();
+        if (torque_target > torque_limit) {
+            torque_target = torque_limit;
+        } else if (torque_target < -torque_limit) {
+            torque_target = -torque_limit;
+        }
     }
 
     float I_target = torque_target / torque_constant;
@@ -301,8 +362,14 @@ void FOC::handler(void) {
     I_q_PID.set(I_target);
     I_q_PID.update(I_q);
 
-    float V_d = I_d_PID.get();
-    float V_q = I_q_PID.get();
+    float V_d = I_d_PID.get() * COIL_RESISTANCE;
+    float V_q = I_q_PID.get() * COIL_RESISTANCE;
+
+    inverter::SVPWMDuty set_duty_cycles =
+        inverter::svpwm_set(electrical_angle, V_d, V_q, VMOT_voltage);
+    duty_cycles.u = set_duty_cycles.u;
+    duty_cycles.v = set_duty_cycles.v;
+    duty_cycles.w = set_duty_cycles.w;
 
     // read VMOT (end of handler)
     VMOT_voltage = adc::read_VMOT();
@@ -331,16 +398,27 @@ void FOC::set_torque(float torque) {
     torque_target = torque;
     return;
 }
-void FOC::set_max_torque(float torque) {}
-
+void FOC::set_max_torque(float torque) {
+    torque_limit = torque;
+    return;
+}
 void FOC::set_angular_velocity(float angular_velocity) {
     target_mode = TargetMode::velocity;
     velocity_target = angular_velocity;
     return;
 }
-void FOC::set_max_angular_velocity(float max_angular_velocity) {}
-void FOC::set_max_angular_acceleration(float max_angular_acceleration) {}
-void FOC::set_angular_jerk(float angular_jerk) {}
+void FOC::set_max_angular_velocity(float max_angular_velocity) {
+    velocity_limit = max_angular_velocity;
+    return;
+}
+void FOC::set_max_angular_acceleration(float max_angular_acceleration) {
+    acceleration_limit = max_angular_acceleration;
+    return;
+}
+void FOC::set_angular_jerk(float angular_jerk) {
+    jerk_limit = angular_jerk;
+    return;
+}
 void FOC::set_angular_position(float angular_position) {
     target_mode = TargetMode::position;
     position_target = angular_position;
@@ -351,11 +429,22 @@ void FOC::set_linear_velocity(float linear_velocity) {
     set_angular_velocity(linear_velocity * RADIANS_PER_DISTANCE);
     return;
 }
-void FOC::set_max_linear_velocity(float max_linear_velocity) {}
-void FOC::set_max_linear_acceleration(float max_linear_acceleration) {}
-void FOC::set_linear_jerk(float linear_jerk) {}
+void FOC::set_max_linear_velocity(float max_linear_velocity) {
+    set_max_angular_velocity(max_linear_velocity * RADIANS_PER_DISTANCE);
+    return;
+}
+void FOC::set_max_linear_acceleration(float max_linear_acceleration) {
+    set_max_angular_acceleration(max_linear_acceleration *
+                                 RADIANS_PER_DISTANCE);
+    return;
+}
+void FOC::set_linear_jerk(float linear_jerk) {
+    set_angular_jerk(linear_jerk * RADIANS_PER_DISTANCE);
+    return;
+}
 void FOC::set_linear_position(float linear_position) {
     set_angular_position(linear_position * RADIANS_PER_DISTANCE);
+    return;
 }
 #endif
 

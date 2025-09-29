@@ -24,6 +24,10 @@ void reverse_direction(void);
  */
 void set(float u, float v, float w);
 
+struct SVPWMDuty {
+    volatile float u = 0, v = 0, w = 0;
+};
+
 /**
  * @brief Set SVPWM angle and duty cycle
  * @param theta: angle of target voltage vector
@@ -32,9 +36,9 @@ void set(float u, float v, float w);
  * @param V_q: magnitude of target voltage q vector (line-to-line) (torque)
  * @param V_dc: inverter DC bus voltage
  */
-void svpwm_set(float theta, float V_d, float V_q, float V_dc);
+SVPWMDuty svpwm_set(float theta, float V_d, float V_q, float V_dc);
 // same function but taking in sin and cos theta instead
-void svpwm_set(float sin_theta, float cos_theta, float V_d, float V_q,
-               float V_dc);
+SVPWMDuty svpwm_set(float sin_theta, float cos_theta, float V_d, float V_q,
+                    float V_dc);
 
 }  // namespace inverter

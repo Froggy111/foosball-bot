@@ -90,12 +90,13 @@ const float SIN_LOOKUP[6] = {
     0.8660254f    // sin(-300)
 };
 
-void inverter::svpwm_set(float theta, float V_d, float V_q, float V_dc) {
-    svpwm_set(std::sinf(theta), std::cosf(theta), V_d, V_q, V_dc);
+inverter::SVPWMDuty inverter::svpwm_set(float theta, float V_d, float V_q,
+                                        float V_dc) {
+    return svpwm_set(std::sinf(theta), std::cosf(theta), V_d, V_q, V_dc);
 }
 
-void inverter::svpwm_set(float sin_theta, float cos_theta, float V_d, float V_q,
-                         float V_dc) {
+inverter::SVPWMDuty inverter::svpwm_set(float sin_theta, float cos_theta,
+                                        float V_d, float V_q, float V_dc) {
     // inverse Park transformation
     float V_alpha = V_d * cos_theta - V_q * sin_theta;
     float V_beta = V_d * sin_theta + V_q * cos_theta;
@@ -173,6 +174,8 @@ void inverter::svpwm_set(float sin_theta, float cos_theta, float V_d, float V_q,
 
     debug::trace("duty_U: %f, duty_V: %f, duty_W: %f", duty_U, duty_V, duty_W);
     set(duty_U, duty_V, duty_W);
+
+    return SVPWMDuty{duty_U, duty_V, duty_W};
 }
 
 static PWMFreqParams timer_init(uint32_t pwm_freq) {
