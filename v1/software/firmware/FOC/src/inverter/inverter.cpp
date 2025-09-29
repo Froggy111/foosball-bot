@@ -312,6 +312,19 @@ static PWMFreqParams timer_init(uint32_t pwm_freq) {
     }
 #endif
 
+    // enable update interrupt
+    if (HAL_TIM_Base_Start_IT(&timer) != HAL_OK) {
+        debug::fatal("Inverter: Failed to start timer update interrupt");
+        error::handler();
+    }
+    if (INVERTER_TIMER == TIM1) {
+        HAL_NVIC_SetPriority(TIM1_UP_TIM16_IRQn, 0, 0);
+        HAL_NVIC_EnableIRQ(TIM1_UP_TIM16_IRQn);
+    } else if (INVERTER_TIMER == TIM8) {
+        HAL_NVIC_SetPriority(TIM8_UP_IRQn, 0, 0);
+        HAL_NVIC_EnableIRQ(TIM8_UP_IRQn);
+    }
+
     return freq_params;
 }
 
@@ -406,3 +419,5 @@ static PWMFreqParams calculate_frequency_parameters(
     // accept the latest combination (period = 1 << PWM_MIN_RESOLUTION - 1)
     return params;
 }
+
+void inverter::timer_irq(void) { HAL_TIM_IRQHandler(&timer); }

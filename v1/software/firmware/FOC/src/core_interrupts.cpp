@@ -1,7 +1,9 @@
 #include <stm32g4xx_hal.h>
 
+#include "FOC.hpp"
 #include "config.hpp"
 #include "encoder.hpp"
+#include "inverter.hpp"
 
 extern "C" {
 
@@ -137,10 +139,24 @@ void TIM4_IRQHandler(void) {
 #endif
 }
 
+void TIM1_UP_TIM16_IRQHandler(void) {
+    if (INVERTER_TIMER == TIM1) {
+        inverter::timer_irq();
+    }
+}
+
+void TIM8_UP_IRQHandler(void) {
+    if (INVERTER_TIMER == TIM8) {
+        inverter::timer_irq();
+    }
+}
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* timer) {
 #if ENCODER_TYPE == ABZ
     if (timer->Instance == ENCODER_TIMER) {
         encoder::rollover_irq();
+    } else if (timer->Instance == INVERTER_TIMER) {
+        FOC::handler();
     }
 #endif
 }

@@ -41,4 +41,5 @@ SVPWMDuty svpwm_set(float theta, float V_d, float V_q, float V_dc);
 SVPWMDuty svpwm_set(float sin_theta, float cos_theta, float V_d, float V_q,
                     float V_dc);
 
+void timer_irq(void);
 }  // namespace inverter
