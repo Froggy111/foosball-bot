@@ -37,6 +37,8 @@ void set_PID(PIDParams pid_parameters);
  * @brief called in the FOC loop (usually PWM interrupt)
  */
 void handler(void);
+void enable(void);
+void disable(void);
 
 /**
  * @brief set target torque, and sets the algorithm to torque mode.

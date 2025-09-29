@@ -378,6 +378,16 @@ void FOC::handler(void) {
     return;
 }
 
+void FOC::enable(void) {
+    run_IRQ = true;
+    return;
+}
+
+void FOC::disable(void) {
+    run_IRQ = false;
+    return;
+}
+
 float FOC::get_angular_position(void) {
     encoder_position = encoder::get_count();
     return (encoder_position / ENCODER_RADIANS_PER_PULSE) +

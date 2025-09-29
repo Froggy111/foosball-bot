@@ -6,6 +6,7 @@
 
 #include <cmath>
 
+#include "FOC.hpp"
 #include "adc.hpp"
 #include "clock.hpp"
 #include "debug.hpp"
