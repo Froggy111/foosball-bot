@@ -22,10 +22,13 @@ static volatile int32_t count_offset = 0;
 
 int64_t encoder::get_count(void) {
     debug::trace("count offset: %i", count_offset);
-    return ENCODER_POLARITY *
-               ((int64_t)__HAL_TIM_GetCounter(&timer) +
-                rollover_count * ((int64_t)ENCODER_TIMER_PERIOD + 1)) +
-           count_offset;
+    volatile uint32_t counter_value = __HAL_TIM_GetCounter(&timer);
+    volatile int64_t count =
+        ENCODER_POLARITY *
+            ((int64_t)counter_value +
+             rollover_count * ((int64_t)ENCODER_TIMER_PERIOD + 1)) +
+        count_offset;
+    return count;
 }
 
 void encoder::init(void) {
@@ -156,10 +159,10 @@ static void timer_init(void) {
     }
 
     if (ENCODER_TIMER == TIM4) {
-        HAL_NVIC_SetPriority(TIM4_IRQn, 1, 0);
+        HAL_NVIC_SetPriority(TIM4_IRQn, 3, 0);
         HAL_NVIC_EnableIRQ(TIM4_IRQn);
     } else if (ENCODER_TIMER == TIM3) {
-        HAL_NVIC_SetPriority(TIM3_IRQn, 1, 0);
+        HAL_NVIC_SetPriority(TIM3_IRQn, 3, 0);
         HAL_NVIC_EnableIRQ(TIM3_IRQn);
     }
 

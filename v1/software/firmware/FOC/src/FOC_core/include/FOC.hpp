@@ -40,6 +40,22 @@ void handler(void);
 void enable(void);
 void disable(void);
 
+uint32_t get_handler_counter(void);
+float get_V_d_target(void);
+float get_V_q_target(void);
+float get_I_d_target(void);
+float get_I_q_target(void);
+float get_torque_target(void);
+float get_velocity_target(void);
+float get_position_target(void);
+float get_I_d(void);
+float get_I_q(void);
+float get_torque(void);
+float get_velocity(void);
+float get_position(void);
+
+void set_max_current(float max_current);
+
 /**
  * @brief set target torque, and sets the algorithm to torque mode.
  * Torque is in newton-meters

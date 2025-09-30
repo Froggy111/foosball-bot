@@ -9,8 +9,8 @@
 
 const bool direction_reversed = false;
 
-const uint32_t PWM_FREQUENCY = 32768;
-const uint32_t NUM_WINDING_SETS = 1;
+const uint32_t PWM_FREQUENCY = 32768 / 32;
+const uint32_t NUM_WINDING_SETS = 2;
 const float COIL_RESISTANCE = 1;              // in ohms
 const float MOTOR_KV = 61 * (2 * M_PI / 60);  // radians per second per volt
 
@@ -19,8 +19,8 @@ const uint8_t FOC_CYCLES_PER_POSITION_LOOP = 8;
 
 const float ENCODER_RADIANS_PER_PULSE = (2.0f * M_PI) / ENCODER_RESOLUTION;
 
-const float ZERO_ENCODER_VOLTAGE = 6.0f;
-const float ZERO_ENCODER_MIN_RPM = 1;
+const float ZERO_ENCODER_VOLTAGE = 1.0f;
+const float ZERO_ENCODER_MIN_RPM = 0.1;
 const float ZERO_ENCODER_CRASH_REVERSE_THETA_INCREMENT = M_PI / 180.0f;
 const uint32_t ZERO_ENCODER_MAX_TICKS_PER_PULSE =
     1.0f / ((ZERO_ENCODER_MIN_RPM / (60.0f * 1000.0f)) * ENCODER_RESOLUTION);
@@ -43,11 +43,11 @@ const uint32_t ZERO_ENCODER_MAX_TICKS_PER_PULSE =
 // PID
 // current is PI
 // direct-axis current (magnetic flux)
-const float CURRENT_D_KP = 0;
-const float CURRENT_D_KI = 0;
+const float CURRENT_D_KP = 1;
+const float CURRENT_D_KI = 0.1;
 // quadrature-axis current (torque generating)
-const float CURRENT_Q_KP = 0;
-const float CURRENT_Q_KI = 0;
+const float CURRENT_Q_KP = 1;
+const float CURRENT_Q_KI = 0.1;
 // velocity is PI/PID
 const float VELOCITY_KP = 0;
 const float VELOCITY_KI = 0;

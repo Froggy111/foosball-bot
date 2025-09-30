@@ -7,7 +7,7 @@ PID::PID(float Kp, float Ki, float Kd, float frequency)
 
 void PID::update(float actual) {
     past_err = curr_err;
-    curr_err = (target - actual) * frequency;
+    curr_err = target - actual;
     sum_err += curr_err / frequency;
     this->actual = actual;
     return;
@@ -21,7 +21,7 @@ void PID::set(float target) {
 float PID::get(void) {
     float p = curr_err * Kp;
     float i = sum_err * Ki;
-    float d = (curr_err - past_err) * Kd;
+    float d = (curr_err - past_err) * frequency * Kd;
     float pid = p + i + d;
     return pid;
 }

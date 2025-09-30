@@ -17,8 +17,8 @@
 #ifndef NDEBUG
 
 #define DEBUG_ENABLED
-#define DEBUG_LEVEL_TRACE
-#define DEBUG_LEVEL_DEBUG
+// #define DEBUG_LEVEL_TRACE
+// #define DEBUG_LEVEL_DEBUG
 #define DEBUG_LEVEL_LOG
 #define DEBUG_LEVEL_NOTE
 #define DEBUG_LEVEL_WARN

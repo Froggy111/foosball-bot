@@ -318,11 +318,12 @@ static PWMFreqParams timer_init(uint32_t pwm_freq) {
         debug::fatal("Inverter: Failed to start timer update interrupt");
         error::handler();
     }
+    // set lowest preempt priority possible, so other calls can preempt it
     if (INVERTER_TIMER == TIM1) {
-        HAL_NVIC_SetPriority(TIM1_UP_TIM16_IRQn, 0, 0);
+        HAL_NVIC_SetPriority(TIM1_UP_TIM16_IRQn, 15, 0);
         HAL_NVIC_EnableIRQ(TIM1_UP_TIM16_IRQn);
     } else if (INVERTER_TIMER == TIM8) {
-        HAL_NVIC_SetPriority(TIM8_UP_IRQn, 0, 0);
+        HAL_NVIC_SetPriority(TIM8_UP_IRQn, 15, 0);
         HAL_NVIC_EnableIRQ(TIM8_UP_IRQn);
     }
 

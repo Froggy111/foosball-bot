@@ -155,9 +155,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* timer) {
 #if ENCODER_TYPE == ABZ
     if (timer->Instance == ENCODER_TIMER) {
         encoder::rollover_irq();
-    } else if (timer->Instance == INVERTER_TIMER) {
-        FOC::handler();
     }
 #endif
+    if (timer->Instance == INVERTER_TIMER) {
+        FOC::handler();
+    }
 }
 }
