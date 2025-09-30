@@ -49,10 +49,10 @@ const float CURRENT_D_KI = 0.1;
 const float CURRENT_Q_KP = 1;
 const float CURRENT_Q_KI = 0.1;
 // velocity is PI/PID
-const float VELOCITY_KP = 0;
+const float VELOCITY_KP = 0.1;
 const float VELOCITY_KI = 0;
 const float VELOCITY_KD = 0;
 // position is P/PI/PID
-const float POSITION_KP = 0;
+const float POSITION_KP = 0.1;
 const float POSITION_KI = 0;
 const float POSITION_KD = 0;

@@ -112,6 +112,9 @@ inverter::SVPWMDuty inverter::svpwm_set(float sin_theta, float cos_theta,
         V_d, V_q, V_alpha, V_beta, V_mag);
 
     float target_angle = std::atan2f(V_beta, V_alpha);
+    if (target_angle < 0.0f) {
+        target_angle += 2.0f * M_PI;
+    }
     uint8_t sector = std::floorf(target_angle / PI_DIV_3);
 
     // rotate V_alpha and V_beta to sectors

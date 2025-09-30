@@ -52,7 +52,7 @@ void main_task([[maybe_unused]] void *args) {
     // inverter::set(0, 0, 0);
     // encoder::init();
     // encoder::set_count(0);
-    // float theta = 0;
+    float theta = 0;
     //
     // adc::init();
 
@@ -68,7 +68,7 @@ void main_task([[maybe_unused]] void *args) {
     FOC::set_max_torque(0.1f);
     FOC::set_max_angular_velocity(10.0f);
     FOC::set_max_angular_acceleration(10.0f);
-    FOC::set_angular_jerk(10.0f);
+    FOC::set_angular_jerk(100.0f);
     FOC::enable();
 
     osDelay(100);
@@ -80,10 +80,12 @@ void main_task([[maybe_unused]] void *args) {
                    FOC::get_I_q());
         debug::log("V_d: %f, V_q: %f", FOC::get_V_d_target(),
                    FOC::get_V_q_target());
-        if ((i / 1000) % 2 == 0) {
-            FOC::set_torque(0.05f);
+        if ((i / 10) % 2 == 0) {
+            // FOC::set_torque(0.05f);
+            FOC::set_angular_velocity(-5.0f);
         } else {
-            FOC::set_torque(0.05f);
+            // FOC::set_torque(-0.05f);
+            FOC::set_angular_velocity(-5.0f);
         }
         i++;
         // NOTE : debug test
@@ -106,12 +108,12 @@ void main_task([[maybe_unused]] void *args) {
         // debug::log("Delta: %d", encoder::get_delta());
 
         // NOTE : inverter test
-        // theta += M_PI / 45;
+        // theta -= M_PI / 45;
         // if (theta > M_PI * 2) {
         //     theta -= M_PI * 2;
         // }
         // debug::log("Theta: %f", theta);
-        // inverter::svpwm_set(theta, 0.0f, 4.0f, VMOT);
+        // inverter::svpwm_set(theta, 0.0f, 1.0f, VMOT);
         gpio::invert(LED);
         osDelay(100);
     }

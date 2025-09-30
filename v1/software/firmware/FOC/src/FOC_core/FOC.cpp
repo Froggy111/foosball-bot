@@ -148,7 +148,7 @@ void FOC::set_PID(PIDParams pid_parameters) {
         pid_parameters.velocity_Kd, velocity_cycle_frequency);
     position_PID.set_params(
         pid_parameters.position_Kp, pid_parameters.position_Ki,
-        pid_parameters.position_Kd, velocity_cycle_frequency);
+        pid_parameters.position_Kd, position_cycle_frequency);
 
     I_q_PID.set(0);
     I_d_PID.set(0);
@@ -286,6 +286,9 @@ void FOC::handler(void) {
     volatile float angular_position = get_angular_position();
     volatile float electrical_angle =
         std::fmod((angular_position * NUM_WINDING_SETS), 2 * M_PI);
+    if (electrical_angle < 0.0f) {
+        electrical_angle += 2.0f * M_PI;
+    }
 
     // run position control (only if in position mode)
     if (handler_counter % FOC_CYCLES_PER_POSITION_LOOP == 0 &&
@@ -329,7 +332,7 @@ void FOC::handler(void) {
         volatile float velocity_change =
             velocity_target - ramped_velocity_target;
         volatile float max_velocity_change =
-            current_acceleration * time_between_velocity_cycles;
+            std::fabs(current_acceleration) * time_between_velocity_cycles;
         if (velocity_change > max_velocity_change) {
             ramped_velocity_target += max_velocity_change;
         } else if (velocity_change < -max_velocity_change) {
@@ -348,6 +351,7 @@ void FOC::handler(void) {
         } else if (torque_target < -torque_limit) {
             torque_target = -torque_limit;
         }
+        past_angular_position = angular_position;
     }
 
     volatile float I_target = torque_target / torque_constant;
@@ -401,7 +405,6 @@ void FOC::handler(void) {
     // read VMOT (end of handler)
     VMOT_voltage = adc::read_VMOT();
     handler_counter++;
-    past_angular_position = angular_position;
     return;
 }
 
