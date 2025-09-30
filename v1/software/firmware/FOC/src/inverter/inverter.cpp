@@ -205,7 +205,8 @@ static PWMFreqParams timer_init(uint32_t pwm_freq) {
     timer.Init.CounterMode = TIM_COUNTERMODE_CENTERALIGNED1;
     timer.Init.Period = freq_params.period;
     timer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-    timer.Init.RepetitionCounter = 0;  // interrupt every PWM cycle
+    timer.Init.RepetitionCounter =
+        1;  // interrupt at trough of every PWM cycle (counter underflow)
     // changes to period will only apply after the current cycle completes
     timer.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
     resolution = freq_params.period;
