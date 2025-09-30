@@ -160,15 +160,15 @@ float adc::read_5V(void) {
 #endif
 
 float adc::read_U_current(void) {
-    float voltage = read_PGA(&U_phase_opamp, ISENSE_U_PHASE_ADC_handle,
-                             &ISENSE_U_PHASE_ADC_channel_config, &U_phase_gain,
-                             ADC_POLL_TIMEOUT);
-    float current = voltage * ISENSE_CURRENT_PER_VOLT;
+    volatile float voltage = read_PGA(&U_phase_opamp, ISENSE_U_PHASE_ADC_handle,
+                                      &ISENSE_U_PHASE_ADC_channel_config,
+                                      &U_phase_gain, ADC_POLL_TIMEOUT);
+    volatile float current = voltage * ISENSE_CURRENT_PER_VOLT;
     return current;
 }
 
 float adc::read_V_current(void) {
-    float voltage = 0;
+    volatile float voltage = 0;
     if (!direction_reversed) {
         voltage = read_PGA(&V_phase_opamp, ISENSE_V_PHASE_ADC_handle,
                            &ISENSE_V_PHASE_ADC_channel_config, &V_phase_gain,
@@ -178,12 +178,12 @@ float adc::read_V_current(void) {
                            &ISENSE_W_PHASE_ADC_channel_config, &W_phase_gain,
                            ADC_POLL_TIMEOUT);
     }
-    float current = voltage * ISENSE_CURRENT_PER_VOLT;
+    volatile float current = voltage * ISENSE_CURRENT_PER_VOLT;
     return current;
 }
 
 float adc::read_W_current(void) {
-    float voltage = 0;
+    volatile float voltage = 0;
     if (!direction_reversed) {
         voltage = read_PGA(&W_phase_opamp, ISENSE_W_PHASE_ADC_handle,
                            &ISENSE_W_PHASE_ADC_channel_config, &W_phase_gain,
@@ -193,7 +193,7 @@ float adc::read_W_current(void) {
                            &ISENSE_V_PHASE_ADC_channel_config, &V_phase_gain,
                            ADC_POLL_TIMEOUT);
     }
-    float current = voltage * ISENSE_CURRENT_PER_VOLT;
+    volatile float current = voltage * ISENSE_CURRENT_PER_VOLT;
     return current;
 }
 
@@ -254,9 +254,10 @@ float read_PGA(OPAMP_HandleTypeDef* opamp, ADC_HandleTypeDef* adc,
                uint32_t timeout) {
     start_ADC_read(adc, channel);
     uint32_t raw_reading = read_ADC(adc, timeout);
-    debug::debug("read_PGA raw reading: %u, gain: %u", raw_reading,
+    debug::trace("read_PGA raw reading: %u, gain: %u", raw_reading,
                  (uint8_t)*gain);
-    float voltage = raw_reading * ADC_VOLTAGE_MULTIPLIER / (uint8_t)*gain;
+    volatile float voltage =
+        raw_reading * ADC_VOLTAGE_MULTIPLIER / (uint8_t)*gain;
     // adjust gain if needed
     if (raw_reading > ISENSE_HALF_GAIN_THRESHOLD && *gain != PGAGain::GAIN2) {
         *gain = half_gain(*gain);
