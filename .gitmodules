@@ -1,3 +1,9 @@
 [submodule "v1/software/toolchains/stm32-cmake"]
 	path = v1/software/toolchains/stm32-cmake
 	url = https://github.com/ObKo/stm32-cmake
+[submodule "v1/software/firmware/FOC/FreeRTOS"]
+	path = v1/software/firmware/FOC/FreeRTOS
+	url = https://github.com/FreeRTOS/FreeRTOS
+[submodule "v1/software/firmware/FOC/STM32CubeG4"]
+	path = v1/software/firmware/FOC/STM32CubeG4
+	url = https://github.com/STMicroelectronics/STM32CubeG4
