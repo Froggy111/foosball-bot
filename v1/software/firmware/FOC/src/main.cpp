@@ -20,13 +20,16 @@
 
 void main_task(void *args);
 
+gpio::PinConfig LED = {GPIOD, gpio::Pin::PIN2, gpio::AF::NONE};
+
 int main(void) {
     HAL_Init();
+    // SystemInit();
     clock::init();
 
-    xTaskCreate(main_task, "main task", 2048, NULL, 10, NULL);
+    BaseType_t task_creation_status =
+        xTaskCreate(main_task, "main task", 1024, NULL, 1, NULL);
     vTaskStartScheduler();
-
     // should never reach here
     __disable_irq();
     while (1) {
@@ -35,18 +38,17 @@ int main(void) {
 }
 
 void main_task([[maybe_unused]] void *args) {
-    gpio::PinConfig LED = {GPIOD, gpio::Pin::PIN2, gpio::AF::NONE};
     gpio::init(LED, gpio::Mode::OUTPUT_PP_, gpio::Pull::NOPULL,
                gpio::Speed::LOW);
     gpio::write(LED, 1);
 
-    swo::init();
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    // swo::init();
+    // vTaskDelay(pdMS_TO_TICKS(1000));
     // inverter::init(20000);
     // inverter::set(0, 0, 0);
     // encoder::init();
     // encoder::set_count(0);
-    float theta = 0;
+    // float theta = 0;
     //
     // adc::init();
 
@@ -106,6 +108,9 @@ void main_task([[maybe_unused]] void *args) {
         //            values.sin, values.cos, std::sinf(theta),
         //            std::cosf(theta));
         gpio::invert(LED);
+        // for (int i = 0; i < 1 << 24; i++) {
+        //     __asm__ __volatile__("nop");
+        // }
         vTaskDelay(pdMS_TO_TICKS(100));
     }
 }
