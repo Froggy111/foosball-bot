@@ -1,8 +1,10 @@
 #include "usb.hpp"
 
 #include <FreeRTOS.h>
+#include <semphr.h>
 #include <stdio.h>
 #include <stm32g4xx_hal.h>
+#include <task.h>
 
 #include <climits>
 
@@ -46,7 +48,7 @@ void usb::write(uint8_t *buf, uint16_t length) {
         uint16_t write_len = MIN(free_space, length - written);
         memcpy(&write_buffer[write_buffer_idx], &buf[written], write_len);
         write_buffer_idx += write_len;
-        xSemaphoreGive();
+        xSemaphoreGive(write_buffer_mutex);
         xTaskNotify(usb_flush_task_handle, WRITE_REQUEST, eSetBits);
         written += write_len;
         vTaskDelay(pdMS_TO_TICKS(1));
@@ -67,7 +69,7 @@ void usb_flush_task([[maybe_unused]] void *args) {
                 CDC_Transmit_FS((uint8_t *)transmit_buffer, write_buffer_idx);
                 memset(write_buffer, 0, USB_TX_BUFFER_SIZE);
                 write_buffer_idx = 0;
-                xSemaphoreGive();
+                xSemaphoreGive(write_buffer_mutex);
             }
         }
     }

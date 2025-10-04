@@ -2,6 +2,7 @@
 
 #include <FreeRTOS.h>
 #include <stm32g4xx_hal.h>
+#include <task.h>
 
 #include <cmath>
 

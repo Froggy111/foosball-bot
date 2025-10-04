@@ -7,6 +7,7 @@
 
 #include <FreeRTOS.h>
 #include <arm_math.h>
+#include <task.h>
 
 #include <algorithm>
 #include <cmath>
