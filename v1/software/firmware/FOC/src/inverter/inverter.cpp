@@ -1,5 +1,6 @@
 #include "inverter.hpp"
 
+#include <arm_math.h>
 #include <stm32g4xx_hal.h>
 #include <stm32g4xx_hal_tim.h>
 #include <stm32g4xx_hal_tim_ex.h>
@@ -19,15 +20,6 @@ struct PWMFreqParams {
     uint16_t prescaler = 0;
     uint16_t period = 0;
     uint32_t frequency = 0;
-};
-
-enum class TargetSector : uint8_t {
-    U_UV = 0,
-    UV_V = 1,
-    V_VW = 2,
-    VW_W = 3,
-    W_WU = 4,
-    WU_U = 5,
 };
 
 static PWMFreqParams timer_init(uint32_t pwm_freq);
@@ -90,19 +82,24 @@ const float SIN_LOOKUP[6] = {
     0.8660254f    // sin(-300)
 };
 
-inverter::SVPWMDuty inverter::svpwm_set(float theta, float V_d, float V_q,
-                                        float V_dc) {
+const uint8_t SECTOR_MAP[8] = {
+    0, 1, 5, 0, 3, 2, 4, 0,
+};
+
+inverter::TargetSector inverter::svpwm_set(float theta, float V_d, float V_q,
+                                           float V_dc) {
     return svpwm_set(std::sinf(theta), std::cosf(theta), V_d, V_q, V_dc);
 }
 
-inverter::SVPWMDuty inverter::svpwm_set(float sin_theta, float cos_theta,
-                                        float V_d, float V_q, float V_dc) {
+inverter::TargetSector inverter::svpwm_set(float sin_theta, float cos_theta,
+                                           float V_d, float V_q, float V_dc) {
     // inverse Park transformation
     float V_alpha = V_d * cos_theta - V_q * sin_theta;
     float V_beta = V_d * sin_theta + V_q * cos_theta;
 
     // clamp V magnitude
-    float V_mag = std::sqrtf(V_alpha * V_alpha + V_beta * V_beta);
+    float V_mag = 0;
+    arm_sqrt_f32(V_alpha * V_alpha + V_beta * V_beta, &V_mag);
     float V_mag_clamped = std::fmin(V_mag, V_dc * COS_PI_6);
     float scale_factor = (V_mag > 0.0f) ? (V_mag_clamped / V_mag) : 0.0f;
     V_alpha *= scale_factor;
@@ -111,11 +108,23 @@ inverter::SVPWMDuty inverter::svpwm_set(float sin_theta, float cos_theta,
         "Inverter SVPWM: V_d: %f, V_q: %f, V_alpha: %f, V_beta = %f, V_mag: %f",
         V_d, V_q, V_alpha, V_beta, V_mag);
 
-    float target_angle = std::atan2f(V_beta, V_alpha);
-    if (target_angle < 0.0f) {
-        target_angle += 2.0f * M_PI;
-    }
-    uint8_t sector = std::floorf(target_angle / PI_DIV_3);
+    // float target_angle = std::atan2f(V_beta, V_alpha);
+    // if (target_angle < 0.0f) {
+    //     target_angle += 2.0f * M_PI;
+    // }
+    // uint8_t sector = std::floorf(target_angle / PI_DIV_3);
+
+    // faster sector finding
+    // transform to 3 phase
+    float U1 = V_beta;
+    float U2 = -0.5f * V_beta + COS_PI_6 * V_alpha;
+    float U3 = -0.5f * V_beta - COS_PI_6 * V_alpha;
+    // map to sector
+    uint8_t n = 0;
+    if (U1 > 0.0f) n |= 1;
+    if (U2 > 0.0f) n |= 2;
+    if (U3 > 0.0f) n |= 4;
+    uint8_t sector = SECTOR_MAP[n];
 
     // rotate V_alpha and V_beta to sectors
     float cos_rot = COS_LOOKUP[sector];
@@ -128,8 +137,9 @@ inverter::SVPWMDuty inverter::svpwm_set(float sin_theta, float cos_theta,
     float V_2 = V_y / COS_PI_6;
     float V_1 = V_x - V_y * TAN_PI_6;
     // calculate duty cycles
-    float duty_1 = V_1 / V_dc;
-    float duty_2 = V_2 / V_dc;
+    float inv_V_dc = 1.0f / V_dc;
+    float duty_1 = V_1 * inv_V_dc;
+    float duty_2 = V_2 * inv_V_dc;
     float duty_zero = (1.0f - duty_1 - duty_2) / 2;
 
     float duty_U = 0, duty_V = 0, duty_W = 0;
@@ -178,7 +188,7 @@ inverter::SVPWMDuty inverter::svpwm_set(float sin_theta, float cos_theta,
     debug::trace("duty_U: %f, duty_V: %f, duty_W: %f", duty_U, duty_V, duty_W);
     set(duty_U, duty_V, duty_W);
 
-    return SVPWMDuty{duty_U, duty_V, duty_W};
+    return sector_enum;
 }
 
 static PWMFreqParams timer_init(uint32_t pwm_freq) {
@@ -323,10 +333,10 @@ static PWMFreqParams timer_init(uint32_t pwm_freq) {
     }
     // set lowest preempt priority possible, so other calls can preempt it
     if (INVERTER_TIMER == TIM1) {
-        HAL_NVIC_SetPriority(TIM1_UP_TIM16_IRQn, 15, 0);
+        HAL_NVIC_SetPriority(TIM1_UP_TIM16_IRQn, 6, 0);
         HAL_NVIC_EnableIRQ(TIM1_UP_TIM16_IRQn);
     } else if (INVERTER_TIMER == TIM8) {
-        HAL_NVIC_SetPriority(TIM8_UP_IRQn, 15, 0);
+        HAL_NVIC_SetPriority(TIM8_UP_IRQn, 6, 0);
         HAL_NVIC_EnableIRQ(TIM8_UP_IRQn);
     }
 

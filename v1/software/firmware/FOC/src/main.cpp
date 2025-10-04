@@ -1,14 +1,15 @@
 #include "main.hpp"
 
 #include <FreeRTOS.h>
-#include <cmsis_os2.h>
 #include <stm32g4xx_hal.h>
 
 #include <cmath>
 
 #include "FOC.hpp"
 #include "adc.hpp"
+#include "arm_math.h"
 #include "clock.hpp"
+#include "cordic.hpp"
 #include "debug.hpp"
 #include "encoder.hpp"
 #include "gpio.hpp"
@@ -22,16 +23,8 @@ int main(void) {
     HAL_Init();
     clock::init();
 
-    [[maybe_unused]] osThreadId_t main_task_handle;
-    const osThreadAttr_t main_task_attr = {
-        .name = (char *)"main task",
-        .stack_size = 2048,
-        .priority = osPriorityNormal,
-    };
-
-    osKernelInitialize();
-    osThreadNew(main_task, NULL, &main_task_attr);
-    osKernelStart();
+    xTaskCreate(main_task, "main task", 2048, NULL, 10, NULL);
+    vTaskStartScheduler();
 
     // should never reach here
     __disable_irq();
@@ -42,12 +35,12 @@ int main(void) {
 
 void main_task([[maybe_unused]] void *args) {
     gpio::PinConfig LED = {GPIOD, gpio::Pin::PIN2, gpio::AF::NONE};
-    gpio::init(LED, gpio::Mode::OUTPUT_PP, gpio::Pull::NOPULL,
+    gpio::init(LED, gpio::Mode::OUTPUT_PP_, gpio::Pull::NOPULL,
                gpio::Speed::LOW);
     gpio::write(LED, 1);
 
-    // swo::init();
-    // osDelay(2000);
+    swo::init();
+    vTaskDelay(pdMS_TO_TICKS(1000));
     // inverter::init(20000);
     // inverter::set(0, 0, 0);
     // encoder::init();
@@ -65,29 +58,22 @@ void main_task([[maybe_unused]] void *args) {
         VELOCITY_KI,  VELOCITY_KD,  POSITION_KP,  POSITION_KI,  POSITION_KD};
     FOC::set_PID(PID_params);
     FOC::set_max_current(1.0f);
-    FOC::set_max_torque(0.1f);
+    FOC::set_max_torque(0.5f);
     FOC::set_max_angular_velocity(10.0f);
-    FOC::set_max_angular_acceleration(10.0f);
-    FOC::set_angular_jerk(100.0f);
+    FOC::set_max_angular_acceleration(100.0f);
+    FOC::set_angular_jerk(1000.0f);
     FOC::enable();
 
-    osDelay(100);
+    vTaskDelay(pdMS_TO_TICKS(100));
 
-    uint32_t i = 0;
     for (;;) {
-        debug::log("I_d_target: %f, I_q_target: %f, I_d: %f, I_q: %f",
-                   FOC::get_I_d_target(), FOC::get_I_q_target(), FOC::get_I_d(),
-                   FOC::get_I_q());
-        debug::log("V_d: %f, V_q: %f", FOC::get_V_d_target(),
-                   FOC::get_V_q_target());
-        if ((i / 10) % 2 == 0) {
-            // FOC::set_torque(0.05f);
-            FOC::set_angular_velocity(-5.0f);
-        } else {
-            // FOC::set_torque(-0.05f);
-            FOC::set_angular_velocity(-5.0f);
-        }
-        i++;
+        // debug::log("I_d_target: %f, I_q_target: %f, I_d: %f, I_q: %f",
+        //            FOC::get_I_d_target(), FOC::get_I_q_target(),
+        //            FOC::get_I_d(), FOC::get_I_q());
+        // debug::log("V_d: %f, V_q: %f", FOC::get_V_d_target(),
+        //            FOC::get_V_q_target());
+        FOC::set_angular_velocity(10.0f);
+        // FOC::set_torque(0.2f);
         // NOTE : debug test
         // debug::log("Hello World!");
 
@@ -113,8 +99,12 @@ void main_task([[maybe_unused]] void *args) {
         //     theta -= M_PI * 2;
         // }
         // debug::log("Theta: %f", theta);
-        // inverter::svpwm_set(theta, 0.0f, 1.0f, VMOT);
+        // // // inverter::svpwm_set(theta, 0.0f, 1.0f, VMOT);
+        // cordic::SinCosVal values = cordic::sincos(theta);
+        // debug::log("CORDIC: sin: %f, cos: %f\nSTD: sin: %f, cos: %f",
+        //            values.sin, values.cos, std::sinf(theta),
+        //            std::cosf(theta));
         gpio::invert(LED);
-        osDelay(100);
+        vTaskDelay(pdMS_TO_TICKS(100));
     }
 }

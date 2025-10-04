@@ -21,6 +21,7 @@ PUBLIC
     ${COMMON_LIBS}
     debug_
     inverter
+    cordic
     adc
     encoder
     endstop

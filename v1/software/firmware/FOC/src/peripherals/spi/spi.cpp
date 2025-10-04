@@ -62,7 +62,7 @@ void spi::init(Config &spi) {
         gpio::init(spi.MOSI, gpio::Mode::AF_PP, gpio::Pull::NOPULL,
                    gpio::Speed::VERY_HIGH);
     }
-    gpio::init(spi.NCS, gpio::Mode::OUTPUT_PP, gpio::Pull::UP,
+    gpio::init(spi.NCS, gpio::Mode::OUTPUT_PP_, gpio::Pull::UP,
                gpio::Speed::VERY_HIGH);
 
     debug::debug("SPI initialisation successful.");

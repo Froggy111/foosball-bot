@@ -17,6 +17,7 @@ PUBLIC
 target_link_libraries(inverter
 PUBLIC
     ${COMMON_LIBS}
+    DSP
     gpio
     error
     debug_

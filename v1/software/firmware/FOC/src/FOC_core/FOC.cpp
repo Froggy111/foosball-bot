@@ -5,7 +5,8 @@
  */
 #include "FOC.hpp"
 
-#include <cmsis_os2.h>
+#include <FreeRTOS.h>
+#include <arm_math.h>
 
 #include <algorithm>
 #include <cmath>
@@ -14,6 +15,7 @@
 #include "PID.hpp"
 #include "adc.hpp"
 #include "config.hpp"
+#include "cordic.hpp"
 #include "debug.hpp"
 #include "encoder.hpp"
 #include "endstop.hpp"
@@ -51,7 +53,7 @@ volatile static float U_current = 0;
 volatile static float V_current = 0;
 volatile static float W_current = 0;
 volatile static float VMOT_voltage = 0;
-volatile static inverter::SVPWMDuty duty_cycles = {0.0f, 0.0f, 0.0f};
+volatile static inverter::TargetSector sector = inverter::TargetSector::UV_V;
 
 // VELOCITY CALCULATION
 volatile static uint32_t actual_pwm_frequency = 0;
@@ -89,6 +91,8 @@ void FOC::init(Parameters parameters) {
     speed_constant = parameters.speed_constant;
     torque_constant = 1.0f / speed_constant;
 
+    debug::debug("FOC: initialising CORDIC");
+    cordic::init();
     debug::debug("FOC: initialising ADC");
     adc::init();
     debug::debug("FOC: initialised ADC, initialising encoder");
@@ -167,9 +171,9 @@ void zero_encoder(void) {
     // 1. hit an endstop
     // 2. stopped moving
     // NOTE : not accounting for overflow, as this is ran at the start
-    uint32_t last_encoder_pulse_tick = osKernelGetTickCount();
+    uint32_t last_encoder_pulse_tick = xTaskGetTickCount();
     while (true) {
-        osDelay(1);
+        vTaskDelay(pdMS_TO_TICKS(1));
 
 #ifdef USE_ENDSTOP
         // check for endstop crash
@@ -183,7 +187,7 @@ void zero_encoder(void) {
                     inverter::svpwm_set(current_theta, 0.0f,
                                         ZERO_ENCODER_VOLTAGE, voltage);
                     current_theta -= ZERO_ENCODER_CRASH_REVERSE_THETA_INCREMENT;
-                    osDelay(1);
+                    vTaskDelay(pdMS_TO_TICKS(1));
                 }
             } else if (triggered_endstop == endstop::Endstop::ZERO) {
                 // crashed into the start, go forward by one set (i.e go until
@@ -193,7 +197,7 @@ void zero_encoder(void) {
                     inverter::svpwm_set(current_theta, 0.0f,
                                         ZERO_ENCODER_VOLTAGE, voltage);
                     current_theta += ZERO_ENCODER_CRASH_REVERSE_THETA_INCREMENT;
-                    osDelay(1);
+                    vTaskDelay(pdMS_TO_TICKS(1));
                 }
             }
         }
@@ -201,7 +205,7 @@ void zero_encoder(void) {
 
         // check for stopped moving
         int64_t new_encoder_position = encoder::get_count();
-        uint32_t tick = osKernelGetTickCount();
+        uint32_t tick = xTaskGetTickCount();
         if (new_encoder_position != encoder_position) {
             encoder_position = new_encoder_position;
             last_encoder_pulse_tick = tick;
@@ -224,7 +228,7 @@ void zero_encoder(void) {
 void zero_position(void) {
     FOC::set_angular_velocity(-ZERO_POSITION_ANGULAR_VELOCITY);
     while (!any_endstop_triggered) {
-        osDelay(1);
+        vTaskDelay(pdMS_TO_TICKS(1));
     }
 #ifdef USE_LINEAR_MOTION
     FOC::set_linear_velocity(0);
@@ -258,7 +262,7 @@ void endstop_irq(endstop::Endstop endstop, endstop::State state,
 
 const float TWO_THIRDS = 2.0f / 3.0f;
 const float ONE_THIRD = 1.0f / 3.0f;
-const float TWO_OVER_SQRT3 = 2.0f / std::sqrtf(3.0f);
+const float ONE_OVER_SQRT3 = 1.0f / std::sqrtf(3.0f);
 
 void FOC::handler(void) {
     if (!run_IRQ) {
@@ -269,22 +273,27 @@ void FOC::handler(void) {
     V_current = adc::read_V_current();
     W_current = adc::read_W_current();
 
-    // figure out which 2 to trust
-    volatile float max_duty_cycle =
-        std::max(std::max(duty_cycles.u, duty_cycles.v), duty_cycles.w);
-    if (duty_cycles.u >= max_duty_cycle - 0.0001f) {
-        U_current = -(V_current + W_current);
-    } else if (duty_cycles.v >= max_duty_cycle - 0.0001f) {
-        V_current = -(U_current + W_current);
-    } else if (duty_cycles.w >= max_duty_cycle - 0.0001f) {
-        W_current = -(U_current + V_current);
-    }
-
     // start voltage measurement
     adc::start_VMOT_read();
 
-    volatile float angular_position = get_angular_position();
-    volatile float electrical_angle =
+    // figure out which 2 current measurements to trust
+    switch (sector) {
+        case inverter::TargetSector::U_UV:
+        case inverter::TargetSector::WU_U:
+            U_current = -(V_current + W_current);
+            break;
+        case inverter::TargetSector::V_VW:
+        case inverter::TargetSector::UV_V:
+            V_current = -(U_current + W_current);
+            break;
+        case inverter::TargetSector::W_WU:
+        case inverter::TargetSector::VW_W:
+            W_current = -(U_current + V_current);
+            break;
+    }
+
+    float angular_position = get_angular_position();
+    float electrical_angle =
         std::fmod((angular_position * NUM_WINDING_SETS), 2 * M_PI);
     if (electrical_angle < 0.0f) {
         electrical_angle += 2.0f * M_PI;
@@ -308,17 +317,15 @@ void FOC::handler(void) {
         (target_mode == TargetMode::velocity ||
          target_mode == TargetMode::position)) {
         // jerk limit
-        volatile float target_acceleration =
-            (velocity_target - ramped_velocity_target) *
-            velocity_cycle_frequency;
+        float target_acceleration = (velocity_target - ramped_velocity_target) *
+                                    velocity_cycle_frequency;
         if (target_acceleration > acceleration_limit) {
             target_acceleration = acceleration_limit;
         } else if (target_acceleration < -acceleration_limit) {
             target_acceleration = -acceleration_limit;
         }
-        volatile float acceleration_change =
-            target_acceleration - current_acceleration;
-        volatile float max_acceleration_change =
+        float acceleration_change = target_acceleration - current_acceleration;
+        float max_acceleration_change =
             jerk_limit * time_between_velocity_cycles;
         if (acceleration_change > max_acceleration_change) {
             current_acceleration += max_acceleration_change;
@@ -329,9 +336,8 @@ void FOC::handler(void) {
         }
 
         // acceleration limit
-        volatile float velocity_change =
-            velocity_target - ramped_velocity_target;
-        volatile float max_velocity_change =
+        float velocity_change = velocity_target - ramped_velocity_target;
+        float max_velocity_change =
             std::fabs(current_acceleration) * time_between_velocity_cycles;
         if (velocity_change > max_velocity_change) {
             ramped_velocity_target += max_velocity_change;
@@ -341,7 +347,7 @@ void FOC::handler(void) {
             ramped_velocity_target = velocity_target;
         }
         // run velocity control
-        volatile float velocity =
+        float velocity =
             (angular_position - past_angular_position) * velocity_multiplier;
         velocity_PID.set(ramped_velocity_target);
         velocity_PID.update(velocity);
@@ -354,7 +360,7 @@ void FOC::handler(void) {
         past_angular_position = angular_position;
     }
 
-    volatile float I_target = torque_target / torque_constant;
+    float I_target = torque_target / torque_constant;
 
     if (I_target > current_limit) {
         I_target = current_limit;
@@ -363,44 +369,40 @@ void FOC::handler(void) {
     }
 
     // replace with CORDIC if needed
-    volatile float sin_theta = std::sinf(electrical_angle);
-    volatile float cos_theta = std::cosf(electrical_angle);
+    // cordic::SinCosVal sin_cos_values = cordic::sincos(electrical_angle);
+    // float sin_theta = sin_cos_values.sin;
+    // float cos_theta = sin_cos_values.cos;
+    float sin_theta, cos_theta;
+    arm_sin_cos_f32(electrical_angle * (180.0f / M_PI), &sin_theta, &cos_theta);
 
     // transform target current to phase currents
     // clarke transformation
-    // INFO : refer to:
-    // https://ww1.microchip.com/downloads/aemdocuments/documents/fpga/ProductDocuments/UserGuides/sf2_mc_park_invpark_clarke_invclarke_transforms_ug.pdf
-    volatile float I_alpha =
-        TWO_THIRDS * U_current - ONE_THIRD * (V_current - W_current);
-    volatile float I_beta = TWO_OVER_SQRT3 * (V_current - W_current);
+    float I_alpha = U_current;
+    float I_beta = ONE_OVER_SQRT3 * (V_current - W_current);
 
-    volatile float I_d = I_beta * sin_theta + I_alpha * cos_theta;
-    volatile float I_q = I_beta * cos_theta - I_alpha * sin_theta;
+    float I_d = I_beta * sin_theta + I_alpha * cos_theta;
+    float I_q = I_beta * cos_theta - I_alpha * sin_theta;
 
     // target I_d = 0, target I_q = I_target
     I_d_PID.update(I_d);
     I_q_PID.set(I_target);
     I_q_PID.update(I_q);
 
-    volatile float V_limit = current_limit * COIL_RESISTANCE;
-    volatile float V_d = I_d_PID.get() * COIL_RESISTANCE;
+    float V_limit = current_limit * COIL_RESISTANCE;
+    float V_d = I_d_PID.get() * COIL_RESISTANCE;
     if (V_d > V_limit) {
         V_d = V_limit;
     } else if (V_d < -V_limit) {
         V_d = -V_limit;
     }
-    volatile float V_q = I_q_PID.get() * COIL_RESISTANCE;
+    float V_q = I_q_PID.get() * COIL_RESISTANCE;
     if (V_q > V_limit) {
         V_q = V_limit;
     } else if (V_q < -V_limit) {
         V_q = -V_limit;
     }
 
-    inverter::SVPWMDuty set_duty_cycles =
-        inverter::svpwm_set(electrical_angle, V_d, V_q, VMOT_voltage);
-    duty_cycles.u = set_duty_cycles.u;
-    duty_cycles.v = set_duty_cycles.v;
-    duty_cycles.w = set_duty_cycles.w;
+    sector = inverter::svpwm_set(sin_theta, cos_theta, V_d, V_q, VMOT_voltage);
 
     // read VMOT (end of handler)
     VMOT_voltage = adc::read_VMOT();

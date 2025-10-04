@@ -60,8 +60,8 @@ enum class Pin : uint16_t {
 
 enum class Mode : uint32_t {
     INPUT = GPIO_MODE_INPUT, /*!< Input Floating Mode                   */
-    OUTPUT_PP = GPIO_MODE_OUTPUT_PP, /*!< Output Push Pull Mode */
-    OUTPUT_OD = GPIO_MODE_OUTPUT_OD, /*!< Output Open Drain Mode */
+    OUTPUT_PP_ = GPIO_MODE_OUTPUT_PP, /*!< Output Push Pull Mode */
+    OUTPUT_OD_ = GPIO_MODE_OUTPUT_OD, /*!< Output Open Drain Mode */
     AF_PP = GPIO_MODE_AF_PP,   /*!< Alternate Function Push Pull Mode     */
     AF_OD = GPIO_MODE_AF_OD,   /*!< Alternate Function Open Drain Mode    */
     ANALOG = GPIO_MODE_ANALOG, /*!< Analog Mode  */

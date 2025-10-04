@@ -65,6 +65,10 @@ void clock::init() {
     if (HAL_RCC_ClockConfig(&clk_init, FLASH_LATENCY_4) != HAL_OK) {
         error::handler();
     }
+
+    __HAL_FLASH_PREFETCH_BUFFER_ENABLE();
+    __HAL_FLASH_INSTRUCTION_CACHE_ENABLE();
+    __HAL_FLASH_DATA_CACHE_ENABLE();
 }
 
 extern "C" {

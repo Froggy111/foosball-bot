@@ -2,6 +2,15 @@
 
 namespace inverter {
 
+enum class TargetSector : uint8_t {
+    U_UV = 0,
+    UV_V = 1,
+    V_VW = 2,
+    VW_W = 3,
+    W_WU = 4,
+    WU_U = 5,
+};
+
 /**
  * @brief Initialises inverter PWM timer hardware.
  * @param motor_pwm_frequency: Target PWM frequency of
@@ -36,10 +45,10 @@ struct SVPWMDuty {
  * @param V_q: magnitude of target voltage q vector (line-to-line) (torque)
  * @param V_dc: inverter DC bus voltage
  */
-SVPWMDuty svpwm_set(float theta, float V_d, float V_q, float V_dc);
+TargetSector svpwm_set(float theta, float V_d, float V_q, float V_dc);
 // same function but taking in sin and cos theta instead
-SVPWMDuty svpwm_set(float sin_theta, float cos_theta, float V_d, float V_q,
-                    float V_dc);
+TargetSector svpwm_set(float sin_theta, float cos_theta, float V_d, float V_q,
+                       float V_dc);
 
 void timer_irq(void);
 }  // namespace inverter

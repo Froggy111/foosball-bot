@@ -1,9 +1,11 @@
 cmake_minimum_required(VERSION 4.0)
+
 include(../../cmake/repo-common.cmake)
 include(../../cmake/generate-flash-target.cmake)
 include(../../cmake/print-size.cmake)
 
 set(CMAKE_TOOLCHAIN_FILE "${STM32_CMAKE_PATH}/cmake/stm32_gcc.cmake")
+
 
 set(PROJECT_NAME FOC)
 
@@ -22,16 +24,29 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# RWX error suppression
-add_link_options("-Wl,--no-warn-rwx-segments")
+# stm32_fetch_cube(G4)
 
-# HAL config
-add_compile_definitions(
-    USE_CMSIS_RTOS_V2
-    CMSIS_RTOS_V2_DEVICE_HEADER="STM32${MCU_SERIES_LOWER}_hal_conf.h"
+set(STM32_CUBE_G4_PATH "${CMAKE_CURRENT_LIST_DIR}/STM32CubeG4")
+set(FREERTOS_PATH "{CMAKE_CURRENT_LIST_DIR}/FreeRTOS")
+message(STATUS "STM32_CUBE_G4_PATH is ${STM32_CUBE_G4_PATH}")
+
+# RWX error suppression
+add_link_options(
+    "-Wl,--no-warn-rwx-segments"
+    "-save-temps"
 )
 
-stm32_fetch_cube(${MCU_SERIES})
+add_compile_options(
+    "-mfloat-abi=hard"
+    "-ffunction-sections"
+    "-fdata-sections"
+    "-save-temps"
+)
+
+# # HAL config
+# add_compile_definitions(
+#     CMSIS_RTOS_V2_DEVICE_HEADER="STM32${MCU_SERIES_LOWER}_hal_conf.h"
+# )
 
 # packages
 set(HAL_COMPONENTS
@@ -47,6 +62,7 @@ set(HAL_COMPONENTS
     OPAMP
     LL_OPAMP
     SPI
+    CORDIC
 )
 set(HAL_EXTENSIONS
     RCCEx
@@ -63,7 +79,6 @@ set(HAL_FINDPACKAGE_COMPONENTS
 set(CMSIS_COMPONENTS
     STM32${MCU_SUBSERIES}
     STM32${MCU_SERIES}_${MCU_CORE}
-    RTOS_V2
 )
 set(FREERTOS_COMPONENTS
     ARM_C${MCU_CORE}
@@ -83,7 +98,6 @@ ${FREERTOS_NAMESPACE}::Timers
 ${FREERTOS_NAMESPACE}::Heap::4
 ${FREERTOS_NAMESPACE}::ARM_C${MCU_CORE}
 CMSIS::STM32::${MCU_SUBSERIES}
-CMSIS::STM32::${MCU_SERIES}::RTOS_V2
 STM32::NoSys
 )
 

@@ -10,6 +10,7 @@ encoder
 inverter
 adc
 spi
+cordic
 FOC_core
 endstop
 )

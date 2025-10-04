@@ -22,13 +22,10 @@ static volatile int32_t count_offset = 0;
 
 int64_t encoder::get_count(void) {
     debug::trace("count offset: %i", count_offset);
-    volatile uint32_t counter_value = __HAL_TIM_GetCounter(&timer);
-    volatile int64_t count =
-        ENCODER_POLARITY *
-            ((int64_t)counter_value +
-             rollover_count * ((int64_t)ENCODER_TIMER_PERIOD + 1)) +
-        count_offset;
-    return count;
+    return ENCODER_POLARITY *
+               ((int64_t)__HAL_TIM_GetCounter(&timer) +
+                rollover_count * ((int64_t)ENCODER_TIMER_PERIOD + 1)) +
+           count_offset;
 }
 
 void encoder::init(void) {

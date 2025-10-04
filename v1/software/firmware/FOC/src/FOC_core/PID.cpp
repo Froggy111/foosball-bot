@@ -8,7 +8,7 @@ PID::PID(float Kp, float Ki, float Kd, float frequency)
 void PID::update(float actual) {
     past_err = curr_err;
     curr_err = target - actual;
-    sum_err += curr_err / frequency;
+    sum_err += curr_err * inv_frequency;
     this->actual = actual;
     return;
 }
@@ -35,6 +35,7 @@ void PID::set_params(float Kp, float Ki, float Kd, float frequency) {
     this->Ki = Ki;
     this->Kd = Kd;
     this->frequency = frequency;
+    this->inv_frequency = 1 / frequency;
     return;
 }
 

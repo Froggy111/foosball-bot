@@ -16,7 +16,7 @@ class PID {
     void set_params(float Kp, float Ki, float Kd, float frequency);
 
    private:
-    float Kp = 0, Ki = 0, Kd = 0, frequency = 1.0f;
+    float Kp = 0, Ki = 0, Kd = 0, frequency = 1.0f, inv_frequency = 1.0f;
     float curr_err = 0, sum_err = 0, past_err = 0;
     float target = 0;
     float actual = 0;
