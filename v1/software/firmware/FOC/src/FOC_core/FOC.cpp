@@ -22,6 +22,9 @@
 #include "endstop.hpp"
 #include "inverter.hpp"
 
+gpio::PinConfig DEBUG1 = {GPIOA, gpio::Pin::PIN2, gpio::AF::NONE};
+gpio::PinConfig DEBUG2 = {GPIOA, gpio::Pin::PIN1, gpio::AF::NONE};
+
 volatile static float coil_resistance = COIL_RESISTANCE;
 volatile static float speed_constant = -1;
 volatile static float torque_constant = -1;
@@ -91,6 +94,13 @@ void FOC::init(Parameters parameters) {
     coil_resistance = parameters.coil_resistance;
     speed_constant = parameters.speed_constant;
     torque_constant = 1.0f / speed_constant;
+
+    gpio::init(DEBUG1, gpio::Mode::OUTPUT_PP_, gpio::Pull::NOPULL,
+               gpio::Speed::HIGH);
+    gpio::init(DEBUG2, gpio::Mode::OUTPUT_PP_, gpio::Pull::NOPULL,
+               gpio::Speed::HIGH);
+    gpio::write(DEBUG1, 1);
+    gpio::write(DEBUG2, 1);
 
     debug::debug("FOC: initialising CORDIC");
     cordic::init();
@@ -269,13 +279,21 @@ void FOC::handler(void) {
     if (!run_IRQ) {
         return;
     }
+
+    // NOTE: t=0 us
+    gpio::write(DEBUG1, 1);
     // measure currents
     U_current = adc::read_U_current();
     V_current = adc::read_V_current();
     W_current = adc::read_W_current();
+    // NOTE: t=24us
+    gpio::write(DEBUG1, 0);
+    gpio::write(DEBUG2, 0);
 
     // start voltage measurement
     adc::start_VMOT_read();
+    // NOTE: t=28us
+    gpio::write(DEBUG2, 1);
 
     // figure out which 2 current measurements to trust
     switch (sector) {
@@ -293,12 +311,17 @@ void FOC::handler(void) {
             break;
     }
 
+    gpio::write(DEBUG2, 0);
+
     float angular_position = get_angular_position();
     float electrical_angle =
         std::fmod((angular_position * NUM_WINDING_SETS), 2 * M_PI);
     if (electrical_angle < 0.0f) {
         electrical_angle += 2.0f * M_PI;
     }
+
+    // NOTE: t=34us
+    gpio::write(DEBUG2, 1);
 
     // run position control (only if in position mode)
     if (handler_counter % FOC_CYCLES_PER_POSITION_LOOP == 0 &&
@@ -313,6 +336,9 @@ void FOC::handler(void) {
             velocity_target = -velocity_limit;
         }
     }
+
+    gpio::write(DEBUG2, 0);
+
     // run velocity control (only if not in torque mode)
     if (handler_counter % FOC_CYCLES_PER_VELOCITY_LOOP == 0 &&
         (target_mode == TargetMode::velocity ||
@@ -361,6 +387,9 @@ void FOC::handler(void) {
         past_angular_position = angular_position;
     }
 
+    // NOTE: t=36us
+    gpio::write(DEBUG2, 1);
+
     float I_target = torque_target / torque_constant;
 
     if (I_target > current_limit) {
@@ -375,6 +404,9 @@ void FOC::handler(void) {
     // float cos_theta = sin_cos_values.cos;
     float sin_theta, cos_theta;
     arm_sin_cos_f32(electrical_angle * (180.0f / M_PI), &sin_theta, &cos_theta);
+
+    // NOTE: t=40us
+    gpio::write(DEBUG2, 0);
 
     // transform target current to phase currents
     // clarke transformation
@@ -403,10 +435,19 @@ void FOC::handler(void) {
         V_q = -V_limit;
     }
 
+    // NOTE: t=41/41.5us
+    gpio::write(DEBUG2, 1);
+
     sector = inverter::svpwm_set(sin_theta, cos_theta, V_d, V_q, VMOT_voltage);
+
+    // NOTE: t=47us
+    gpio::write(DEBUG2, 0);
 
     // read VMOT (end of handler)
     VMOT_voltage = adc::read_VMOT();
+
+    // NOTE: t=50us
+    gpio::write(DEBUG2, 1);
     handler_counter++;
     return;
 }
