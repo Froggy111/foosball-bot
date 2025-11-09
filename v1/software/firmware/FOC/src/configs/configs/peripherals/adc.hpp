@@ -10,6 +10,10 @@
  */
 #define ADC_CLK_PRESCALER ADC_CLOCK_ASYNC_DIV4
 
+// INFO : DMA configuration
+#define ADC1_DMA_INSTANCE DMA1_Channel1
+#define ADC2_DMA_INSTANCE DMA1_Channel2
+
 /**
  * NOTE : For STM32G4 ADCs at 12bit:
  * NOTE : Fast ADCs: ADCx_CHANNEL_1 - CHANNEL_5, rest are slow (minimum 6.5)

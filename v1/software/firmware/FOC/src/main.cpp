@@ -65,7 +65,7 @@ void main_task([[maybe_unused]] void *args) {
     FOC::set_max_angular_velocity(10.0f);
     FOC::set_max_angular_acceleration(100.0f);
     FOC::set_angular_jerk(1000.0f);
-    FOC::enable();
+    // FOC::enable();
 
     vTaskDelay(pdMS_TO_TICKS(100));
 
@@ -75,19 +75,21 @@ void main_task([[maybe_unused]] void *args) {
         //            FOC::get_I_d(), FOC::get_I_q());
         // debug::log("V_d: %f, V_q: %f", FOC::get_V_d_target(),
         //            FOC::get_V_q_target());
-        FOC::set_angular_velocity(10.0f);
+        // FOC::set_angular_velocity(10.0f);
         // FOC::set_torque(0.2f);
         // NOTE : debug test
         // debug::log("Hello World!");
 
         // NOTE : ADC test
-        // float U_current = adc::read_U_current();
-        // float V_current = adc::read_V_current();
-        // float W_current = adc::read_W_current();
-        // adc::start_VMOT_read();
-        // float VMOT = adc::read_VMOT();
-        // debug::log("VMOT: %fV, U: %fA, V: %fA, W: %fA", VMOT, U_current,
-        //            V_current, W_current);
+        adc::start_conversions();
+        adc::Values values = adc::read();
+        float U_current = values.current_U;
+        float V_current = values.current_V;
+        float W_current = values.current_W;
+        float VMOT = values.voltage_VMOT;
+        float V_12V = values.voltage_12V;
+        debug::log("VMOT: %fV, 12V: %fV, U: %fA, V: %fA, W: %fA", VMOT, V_12V,
+                   U_current, V_current, W_current);
 
         // NOTE : encoder test
         // int64_t encoder_count = encoder::get_count();

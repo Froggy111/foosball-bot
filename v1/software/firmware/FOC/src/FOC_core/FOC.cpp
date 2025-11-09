@@ -133,15 +133,17 @@ void FOC::init(Parameters parameters) {
     endstop::init(endstop_irq);
 #endif
 
+    adc::start_conversions();
+    adc::Values readings = adc::read();
+    VMOT_voltage = readings.voltage_VMOT;
+    debug::debug("VMOT: %fV", VMOT_voltage);
+
     // zero encoder
     zero_encoder();
     zero_position_angular_offset = 0.0f;
 #ifdef USE_LINEAR_MOTION
     zero_position_linear_offset = 0.0f;
 #endif
-
-    adc::start_VMOT_read();
-    VMOT_voltage = adc::read_VMOT();
 
 #ifdef USE_ENDSTOP
     // start FOC loop
@@ -174,9 +176,7 @@ void FOC::set_PID(PIDParams pid_parameters) {
 
 void zero_encoder(void) {
     encoder_position = encoder::get_count();
-    adc::start_VMOT_read();
-    float voltage = adc::read_VMOT();
-    inverter::svpwm_set(0.0f, ZERO_ENCODER_VOLTAGE, 0.0f, voltage);
+    inverter::svpwm_set(0.0f, ZERO_ENCODER_VOLTAGE, 0.0f, VMOT_voltage);
 
     // keep checking if it has either:
     // 1. hit an endstop
@@ -282,34 +282,14 @@ void FOC::handler(void) {
 
     // NOTE: t=0 us
     gpio::write(DEBUG1, 1);
+    adc::start_conversions();
     // measure currents
-    U_current = adc::read_U_current();
-    V_current = adc::read_V_current();
-    W_current = adc::read_W_current();
     // NOTE: t=24us
     gpio::write(DEBUG1, 0);
     gpio::write(DEBUG2, 0);
 
-    // start voltage measurement
-    adc::start_VMOT_read();
     // NOTE: t=28us
     gpio::write(DEBUG2, 1);
-
-    // figure out which 2 current measurements to trust
-    switch (sector) {
-        case inverter::TargetSector::U_UV:
-        case inverter::TargetSector::WU_U:
-            U_current = -(V_current + W_current);
-            break;
-        case inverter::TargetSector::V_VW:
-        case inverter::TargetSector::UV_V:
-            V_current = -(U_current + W_current);
-            break;
-        case inverter::TargetSector::W_WU:
-        case inverter::TargetSector::VW_W:
-            W_current = -(U_current + V_current);
-            break;
-    }
 
     gpio::write(DEBUG2, 0);
 
@@ -408,6 +388,28 @@ void FOC::handler(void) {
     // NOTE: t=40us
     gpio::write(DEBUG2, 0);
 
+    adc::Values readings = adc::read();
+    U_current = readings.current_U;
+    V_current = readings.current_V;
+    W_current = readings.current_W;
+    VMOT_voltage = readings.voltage_VMOT;
+
+    // figure out which 2 current measurements to trust
+    switch (sector) {
+        case inverter::TargetSector::U_UV:
+        case inverter::TargetSector::WU_U:
+            U_current = -(V_current + W_current);
+            break;
+        case inverter::TargetSector::V_VW:
+        case inverter::TargetSector::UV_V:
+            V_current = -(U_current + W_current);
+            break;
+        case inverter::TargetSector::W_WU:
+        case inverter::TargetSector::VW_W:
+            W_current = -(U_current + V_current);
+            break;
+    }
+
     // transform target current to phase currents
     // clarke transformation
     float I_alpha = U_current;
@@ -442,9 +444,6 @@ void FOC::handler(void) {
 
     // NOTE: t=47us
     gpio::write(DEBUG2, 0);
-
-    // read VMOT (end of handler)
-    VMOT_voltage = adc::read_VMOT();
 
     // NOTE: t=50us
     gpio::write(DEBUG2, 1);

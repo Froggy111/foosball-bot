@@ -4,29 +4,30 @@
 
 namespace adc {
 
+struct Values {
+    float voltage_VMOT = 0;
+#ifdef HAVE_12V_SENSE
+    float voltage_12V = 0;
+#endif
+#ifdef HAVE_5V_SENSE
+    float voltage_5V = 0;
+#endif
+    float current_U = 0;
+    float current_V = 0;
+    float current_W = 0;
+};
+
 void init(void);
 
-// start the conversion for VMOT
-void start_VMOT_read(void);
-// block for value of VMOT
-float read_VMOT(void);
+// start conversions
+void start_conversions(void);
+// read values
+Values read(void);
 
-#ifdef HAVE_12V_SENSE
-// start the conversion for 12V
-void start_12V_read(void);
-// block for value of 12V
-float read_12V(void);
-#endif
-
-#ifdef HAVE_5V_SENSE
-// start the conversion for 5V
-void start_5V_read(void);
-// block for value of 5V
-float read_5V(void);
-#endif
-
-float read_U_current(void);
-float read_V_current(void);
-float read_W_current(void);
+// used in core_interrupts.cpp
+void DMA_ADC1_handler(void);
+void DMA_ADC2_handler(void);
+void ADC1_conversion_complete_callback(void);
+void ADC2_conversion_complete_callback(void);
 
 }  // namespace adc

@@ -63,6 +63,7 @@ set(HAL_COMPONENTS
     LL_OPAMP
     SPI
     CORDIC
+    DMA
 )
 set(HAL_EXTENSIONS
     RCCEx

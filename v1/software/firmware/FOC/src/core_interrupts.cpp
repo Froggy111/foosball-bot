@@ -1,6 +1,7 @@
 #include <stm32g4xx_hal.h>
 
 #include "FOC.hpp"
+#include "adc.hpp"
 #include "config.hpp"
 #include "encoder.hpp"
 #include "inverter.hpp"
@@ -152,13 +153,33 @@ void TIM8_UP_IRQHandler(void) {
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* timer) {
+    if (timer->Instance == INVERTER_TIMER) {
+        FOC::handler();
+    }
 #if ENCODER_TYPE == ABZ
-    if (timer->Instance == ENCODER_TIMER) {
+    else if (timer->Instance == ENCODER_TIMER) {
         encoder::rollover_irq();
     }
 #endif
-    if (timer->Instance == INVERTER_TIMER) {
-        FOC::handler();
+}
+
+void DMA1_Channel1_IRQHandler(void) {
+    if (ADC1_DMA_INSTANCE == DMA1_Channel1) {
+        adc::DMA_ADC1_handler();
+    }
+}
+
+void DMA1_Channel2_IRQHandler(void) {
+    if (ADC2_DMA_INSTANCE == DMA1_Channel2) {
+        adc::DMA_ADC2_handler();
+    }
+}
+
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* adc) {
+    if (adc->Instance == ADC1) {
+        adc::ADC1_conversion_complete_callback();
+    } else if (adc->Instance == ADC2) {
+        adc::ADC2_conversion_complete_callback();
     }
 }
 }
