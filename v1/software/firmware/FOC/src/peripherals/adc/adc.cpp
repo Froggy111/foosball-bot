@@ -11,6 +11,7 @@
 void opamp_init(void);
 void adc_init(void);
 void gpio_init(void);
+void dma_init(void);
 
 void opamp_instance_init(OPAMP_HandleTypeDef* handle, OPAMP_TypeDef* instance,
                          uint32_t input_num, uint32_t power_mode);
@@ -50,30 +51,33 @@ float read_PGA(OPAMP_HandleTypeDef* opamp, ADC_HandleTypeDef* adc,
                ADC_ChannelConfTypeDef* channel, PGAGain* gain,
                uint32_t timeout);
 
-PGAGain U_phase_gain = PGAGain::GAIN2;
-PGAGain V_phase_gain = PGAGain::GAIN2;
-PGAGain W_phase_gain = PGAGain::GAIN2;
+static PGAGain U_phase_gain = PGAGain::GAIN2;
+static PGAGain V_phase_gain = PGAGain::GAIN2;
+static PGAGain W_phase_gain = PGAGain::GAIN2;
 
-OPAMP_HandleTypeDef U_phase_opamp;
-OPAMP_HandleTypeDef V_phase_opamp;
-OPAMP_HandleTypeDef W_phase_opamp;
+static DMA_HandleTypeDef DMA_ADC1;
+static DMA_HandleTypeDef DMA_ADC2;
 
-ADC_HandleTypeDef ADC_1;
-ADC_HandleTypeDef ADC_2;
-ADC_HandleTypeDef ADC_3;
-ADC_HandleTypeDef ADC_4;
-ADC_HandleTypeDef ADC_5;
+static OPAMP_HandleTypeDef U_phase_opamp;
+static OPAMP_HandleTypeDef V_phase_opamp;
+static OPAMP_HandleTypeDef W_phase_opamp;
 
-ADC_HandleTypeDef* VSENSE_VMOT_ADC_handle = NULL;
+static ADC_HandleTypeDef ADC_1;
+static ADC_HandleTypeDef ADC_2;
+static ADC_HandleTypeDef ADC_3;
+static ADC_HandleTypeDef ADC_4;
+static ADC_HandleTypeDef ADC_5;
+
+static ADC_HandleTypeDef* VSENSE_VMOT_ADC_handle = NULL;
 #ifdef HAVE_12V_SENSE
-ADC_HandleTypeDef* VSENSE_12V_ADC_handle = NULL;
+static ADC_HandleTypeDef* VSENSE_12V_ADC_handle = NULL;
 #endif
 #ifdef HAVE_5V_SENSE
-ADC_HandleTypeDef* VSENSE_5V_ADC_handle = NULL;
+static ADC_HandleTypeDef* VSENSE_5V_ADC_handle = NULL;
 #endif
-ADC_HandleTypeDef* ISENSE_U_PHASE_ADC_handle = NULL;
-ADC_HandleTypeDef* ISENSE_V_PHASE_ADC_handle = NULL;
-ADC_HandleTypeDef* ISENSE_W_PHASE_ADC_handle = NULL;
+static ADC_HandleTypeDef* ISENSE_U_PHASE_ADC_handle = NULL;
+static ADC_HandleTypeDef* ISENSE_V_PHASE_ADC_handle = NULL;
+static ADC_HandleTypeDef* ISENSE_W_PHASE_ADC_handle = NULL;
 
 ADC_ChannelConfTypeDef VSENSE_VMOT_ADC_channel_config = {
     VSENSE_VMOT_CHANNEL,      ADC_REGULAR_RANK_1,
@@ -412,4 +416,37 @@ uint8_t adc_instance_to_idx(ADC_TypeDef* instance) {
         return 1;
     }
     return 255;
+}
+
+void dma_init(void) {
+    __HAL_RCC_DMA1_CLK_ENABLE();
+
+    DMA_ADC1.Instance = DMA1_Channel1;
+    DMA_ADC1.Init.Request = DMA_REQUEST_ADC1;
+    DMA_ADC1.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    DMA_ADC1.Init.PeriphInc = DMA_PINC_DISABLE;
+    DMA_ADC1.Init.MemInc = DMA_MINC_DISABLE;
+    DMA_ADC1.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
+    DMA_ADC1.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
+    DMA_ADC1.Init.Mode = DMA_CIRCULAR;
+    DMA_ADC1.Init.Priority = DMA_PRIORITY_HIGH;
+
+    DMA_ADC2.Instance = DMA1_Channel2;
+    DMA_ADC2.Init.Request = DMA_REQUEST_ADC2;
+    DMA_ADC2.Init.Direction = DMA_PERIPH_TO_MEMORY;
+    DMA_ADC2.Init.PeriphInc = DMA_PINC_DISABLE;
+    DMA_ADC2.Init.MemInc = DMA_MINC_DISABLE;
+    DMA_ADC2.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
+    DMA_ADC2.Init.MemDataAlignment = DMA_MDATAALIGN_WORD;
+    DMA_ADC2.Init.Mode = DMA_CIRCULAR;
+    DMA_ADC2.Init.Priority = DMA_PRIORITY_HIGH;
+
+    if (HAL_DMA_Init(&DMA_ADC1) != HAL_OK) {
+        debug::error("Failed to init DMA for ADC1");
+        error::handler();
+    }
+    if (HAL_DMA_Init(&DMA_ADC2) != HAL_OK) {
+        debug::error("Failed to init DMA for ADC2");
+        error::handler();
+    }
 }
