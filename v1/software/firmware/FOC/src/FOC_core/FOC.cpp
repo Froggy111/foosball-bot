@@ -284,14 +284,8 @@ void FOC::handler(void) {
     gpio::write(DEBUG1, 1);
     adc::start_conversions();
     // measure currents
-    // NOTE: t=24us
+    // NOTE: t=6us
     gpio::write(DEBUG1, 0);
-    gpio::write(DEBUG2, 0);
-
-    // NOTE: t=28us
-    gpio::write(DEBUG2, 1);
-
-    gpio::write(DEBUG2, 0);
 
     float angular_position = get_angular_position();
     float electrical_angle =
@@ -300,8 +294,8 @@ void FOC::handler(void) {
         electrical_angle += 2.0f * M_PI;
     }
 
-    // NOTE: t=34us
-    gpio::write(DEBUG2, 1);
+    // NOTE: t=14us
+    gpio::write(DEBUG2, 0);
 
     // run position control (only if in position mode)
     if (handler_counter % FOC_CYCLES_PER_POSITION_LOOP == 0 &&
@@ -317,7 +311,8 @@ void FOC::handler(void) {
         }
     }
 
-    gpio::write(DEBUG2, 0);
+    // NOTE: t=14us
+    gpio::write(DEBUG2, 1);
 
     // run velocity control (only if not in torque mode)
     if (handler_counter % FOC_CYCLES_PER_VELOCITY_LOOP == 0 &&
@@ -367,8 +362,8 @@ void FOC::handler(void) {
         past_angular_position = angular_position;
     }
 
-    // NOTE: t=36us
-    gpio::write(DEBUG2, 1);
+    // NOTE: t=16us
+    gpio::write(DEBUG2, 0);
 
     float I_target = torque_target / torque_constant;
 
@@ -385,8 +380,8 @@ void FOC::handler(void) {
     float sin_theta, cos_theta;
     arm_sin_cos_f32(electrical_angle * (180.0f / M_PI), &sin_theta, &cos_theta);
 
-    // NOTE: t=40us
-    gpio::write(DEBUG2, 0);
+    // NOTE: t=19us
+    gpio::write(DEBUG2, 1);
 
     adc::Values readings = adc::read();
     U_current = readings.current_U;
@@ -437,15 +432,12 @@ void FOC::handler(void) {
         V_q = -V_limit;
     }
 
-    // NOTE: t=41/41.5us
-    gpio::write(DEBUG2, 1);
+    // NOTE: t=24us
+    gpio::write(DEBUG2, 0);
 
     sector = inverter::svpwm_set(sin_theta, cos_theta, V_d, V_q, VMOT_voltage);
 
-    // NOTE: t=47us
-    gpio::write(DEBUG2, 0);
-
-    // NOTE: t=50us
+    // NOTE: t=30us
     gpio::write(DEBUG2, 1);
     handler_counter++;
     return;

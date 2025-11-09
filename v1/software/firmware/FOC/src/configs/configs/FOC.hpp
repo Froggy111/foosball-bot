@@ -9,7 +9,7 @@
 
 const bool direction_reversed = false;
 
-const uint32_t PWM_FREQUENCY = 12000;
+const uint32_t PWM_FREQUENCY = 24000;
 const uint32_t NUM_WINDING_SETS = 2;
 const float COIL_TO_COIL_RESISTANCE = 1.1;                            // in ohms
 const float COIL_RESISTANCE = COIL_TO_COIL_RESISTANCE * 3.0f / 4.0f;  // in ohms
