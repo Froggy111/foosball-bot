@@ -13,6 +13,7 @@ spi
 cordic
 FOC_core
 endstop
+uart
 )
 
 add_subdirectory(configs)

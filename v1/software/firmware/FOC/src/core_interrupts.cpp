@@ -5,6 +5,7 @@
 #include "config.hpp"
 #include "encoder.hpp"
 #include "inverter.hpp"
+#include "uart.hpp"
 
 extern "C" {
 
@@ -180,6 +181,18 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* adc) {
         adc::ADC1_conversion_complete_callback();
     } else if (adc->Instance == ADC2) {
         adc::ADC2_conversion_complete_callback();
+    }
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef* uart) {
+    if (uart->Instance == UART_INSTANCE) {
+        uart::transmit_complete_callback();
+    }
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef* uart) {
+    if (uart->Instance == UART_INSTANCE) {
+        uart::receive_complete_callback();
     }
 }
 }

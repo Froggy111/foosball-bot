@@ -64,6 +64,7 @@ set(HAL_COMPONENTS
     SPI
     CORDIC
     DMA
+    UART
 )
 set(HAL_EXTENSIONS
     RCCEx
@@ -71,6 +72,7 @@ set(HAL_EXTENSIONS
     PCDEx
     TIMEx
     ADCEx
+    UARTEx
 )
 
 set(HAL_FINDPACKAGE_COMPONENTS

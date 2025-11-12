@@ -504,10 +504,15 @@ void dma_init(void) {
         error::handler();
     }
 
-    HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
-    HAL_NVIC_SetPriority(DMA1_Channel2_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(DMA1_Channel2_IRQn);
+    // allow quadrature encoder and more important to preempt
+    if (ADC1_DMA_INSTANCE == DMA1_Channel1) {
+        HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 4, 0);
+        HAL_NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+    }
+    if (ADC2_DMA_INSTANCE == DMA1_Channel2) {
+        HAL_NVIC_SetPriority(DMA1_Channel2_IRQn, 4, 0);
+        HAL_NVIC_EnableIRQ(DMA1_Channel2_IRQn);
+    }
 
     return;
 }
