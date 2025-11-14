@@ -176,6 +176,18 @@ void DMA1_Channel2_IRQHandler(void) {
     }
 }
 
+void DMA1_Channel3_IRQHandler(void) {
+    if (UART_TX_DMA_INSTANCE == DMA1_Channel3) {
+        uart::DMA_TX_handler();
+    }
+}
+
+void DMA1_Channel4_IRQHandler(void) {
+    if (UART_RX_DMA_INSTANCE == DMA1_Channel4) {
+        uart::DMA_RX_handler();
+    }
+}
+
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* adc) {
     if (adc->Instance == ADC1) {
         adc::ADC1_conversion_complete_callback();
@@ -193,6 +205,12 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef* uart) {
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef* uart) {
     if (uart->Instance == UART_INSTANCE) {
         uart::receive_complete_callback();
+    }
+}
+
+void USART1_IRQHandler(void) {
+    if (UART_INSTANCE == USART1) {
+        uart::UART_handler();
     }
 }
 }

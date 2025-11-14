@@ -17,6 +17,7 @@
 #include "inverter.hpp"
 #include "spi.hpp"
 #include "swo.hpp"
+#include "uart.hpp"
 
 void main_task(void *args);
 
@@ -41,7 +42,6 @@ void main_task([[maybe_unused]] void *args) {
     gpio::init(LED, gpio::Mode::OUTPUT_PP_, gpio::Pull::NOPULL,
                gpio::Speed::LOW);
     gpio::write(LED, 1);
-
     // swo::init();
     // vTaskDelay(pdMS_TO_TICKS(1000));
     // inverter::init(20000);
@@ -66,6 +66,10 @@ void main_task([[maybe_unused]] void *args) {
     FOC::set_max_angular_acceleration(100.0f);
     FOC::set_angular_jerk(1000.0f);
     FOC::enable();
+
+    uart::init(921600);
+    debug::log("UART initialisation complete");
+    uint8_t msg[] = "uart test\n\r";
 
     vTaskDelay(pdMS_TO_TICKS(100));
 

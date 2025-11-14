@@ -13,6 +13,16 @@ static DMA_HandleTypeDef rx_dma_handle;
 static volatile bool transmission_completed = true;
 
 void uart::init(uint32_t baud_rate) {
+    // ADC12 peripheral clock source
+    RCC_PeriphCLKInitTypeDef UART_clk_init = {};
+    if (UART_INSTANCE == USART1) {
+        UART_clk_init.PeriphClockSelection = RCC_PERIPHCLK_USART1;
+        UART_clk_init.Usart1ClockSelection = RCC_USART1CLKSOURCE_SYSCLK;
+    }
+    if (HAL_RCCEx_PeriphCLKConfig(&UART_clk_init) != HAL_OK) {
+        debug::error("Failed to configure UART peripheral clock source");
+    }
+
     // initialise GPIOs
     gpio::init(UART_TX, gpio::Mode::AF_PP, gpio::Pull::NOPULL,
                gpio::Speed::HIGH);
@@ -82,17 +92,17 @@ void uart::init(uint32_t baud_rate) {
 #endif
 
     // initialise interrupts
-    // allow ADC and more important to preempt
+    // lowest priority used so far
     if (UART_TX_DMA_INSTANCE == DMA1_Channel3) {
-        HAL_NVIC_SetPriority(DMA1_Channel3_IRQn, 5, 0);
+        HAL_NVIC_SetPriority(DMA1_Channel3_IRQn, 2, 0);
         HAL_NVIC_EnableIRQ(DMA1_Channel3_IRQn);
     }
     if (UART_RX_DMA_INSTANCE == DMA1_Channel4) {
-        HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 5, 0);
+        HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 2, 0);
         HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
     }
     if (UART_INSTANCE == USART1) {
-        HAL_NVIC_SetPriority(USART1_IRQn, 5, 0);
+        HAL_NVIC_SetPriority(USART1_IRQn, 2, 0);
         HAL_NVIC_EnableIRQ(USART1_IRQn);
     }
     return;
@@ -107,6 +117,12 @@ void uart::transmit(uint8_t *data, uint16_t len) {
 }
 
 bool uart::can_transmit(void) { return transmission_completed; }
+
+void uart::DMA_TX_handler(void) { HAL_DMA_IRQHandler(&tx_dma_handle); }
+
+void uart::DMA_RX_handler(void) { HAL_DMA_IRQHandler(&rx_dma_handle); }
+
+void uart::UART_handler(void) { HAL_UART_IRQHandler(&uart_handle); }
 
 void uart::transmit_complete_callback(void) { transmission_completed = true; }
 

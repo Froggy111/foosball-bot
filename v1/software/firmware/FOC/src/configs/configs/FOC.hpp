@@ -15,8 +15,9 @@ const float COIL_TO_COIL_RESISTANCE = 1.1;                            // in ohms
 const float COIL_RESISTANCE = COIL_TO_COIL_RESISTANCE * 3.0f / 4.0f;  // in ohms
 const float MOTOR_KV = 61 * (2 * M_PI / 60);  // radians per second per volt
 
-const uint8_t FOC_CYCLES_PER_VELOCITY_LOOP = 2;
-const uint8_t FOC_CYCLES_PER_POSITION_LOOP = 8;
+// 24khz torque, 8khz velocity, 2khz position
+const uint8_t FOC_CYCLES_PER_VELOCITY_LOOP = 3;
+const uint8_t FOC_CYCLES_PER_POSITION_LOOP = 12;
 
 const float ENCODER_RADIANS_PER_PULSE = (2.0f * M_PI) / ENCODER_RESOLUTION;
 
