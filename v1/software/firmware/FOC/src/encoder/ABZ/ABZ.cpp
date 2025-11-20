@@ -22,8 +22,27 @@ static volatile int32_t count_offset = 0;
 
 int64_t encoder::get_count(void) {
     debug::trace("count offset: %i", count_offset);
+
+    int64_t current_rollover_count;
+    uint16_t counter_value;
+
+    // WARN : CRITICAL SECTION
+    if (ENCODER_TIMER == TIM4) {
+        HAL_NVIC_DisableIRQ(TIM4_IRQn);
+    } else if (ENCODER_TIMER == TIM3) {
+        HAL_NVIC_DisableIRQ(TIM3_IRQn);
+    }
+    current_rollover_count = rollover_count;
+    counter_value = __HAL_TIM_GET_COUNTER(&timer);
+    if (ENCODER_TIMER == TIM4) {
+        HAL_NVIC_EnableIRQ(TIM4_IRQn);
+    } else if (ENCODER_TIMER == TIM3) {
+        HAL_NVIC_EnableIRQ(TIM3_IRQn);
+    }
+    // WARN : END OF CRITICAL SECTION
+
     return ENCODER_POLARITY *
-               ((int64_t)__HAL_TIM_GetCounter(&timer) +
+               ((int64_t)counter_value +
                 rollover_count * ((int64_t)ENCODER_TIMER_PERIOD + 1)) +
            count_offset;
 }
@@ -47,6 +66,10 @@ void encoder::rollover_irq(void) {
 }
 
 uint32_t encoder::get_z_pulses(void) { return z_pulses; }
+
+uint16_t encoder::get_timer_count(void) {
+    return __HAL_TIM_GET_COUNTER(&timer);
+}
 
 int64_t encoder::get_rollovers(void) { return rollover_count; }
 
@@ -156,10 +179,10 @@ static void timer_init(void) {
     }
 
     if (ENCODER_TIMER == TIM4) {
-        HAL_NVIC_SetPriority(TIM4_IRQn, 3, 0);
+        HAL_NVIC_SetPriority(TIM4_IRQn, 2, 0);
         HAL_NVIC_EnableIRQ(TIM4_IRQn);
     } else if (ENCODER_TIMER == TIM3) {
-        HAL_NVIC_SetPriority(TIM3_IRQn, 3, 0);
+        HAL_NVIC_SetPriority(TIM3_IRQn, 2, 0);
         HAL_NVIC_EnableIRQ(TIM3_IRQn);
     }
 

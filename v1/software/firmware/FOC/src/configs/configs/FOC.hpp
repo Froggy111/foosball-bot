@@ -7,25 +7,43 @@
 
 // #define USE_ENDSTOP
 
-const bool direction_reversed = false;
+const bool direction_reversed = true;
 
 const uint32_t PWM_FREQUENCY = 24000;
 const uint32_t NUM_WINDING_SETS = 2;
-const float COIL_TO_COIL_RESISTANCE = 1.1;                            // in ohms
+const float COIL_TO_COIL_RESISTANCE = 1.2;                            // in ohms
 const float COIL_RESISTANCE = COIL_TO_COIL_RESISTANCE * 3.0f / 4.0f;  // in ohms
-const float MOTOR_KV = 61 * (2 * M_PI / 60);  // radians per second per volt
+const float MOTOR_KV = 80 * (2 * M_PI / 60);  // radians per second per volt
+const float BACK_EMF_CONSTANT = 1 / MOTOR_KV;
 
+const float MIN_RPM = 1;
 // 24khz torque, 8khz velocity, 2khz position
 const uint8_t FOC_CYCLES_PER_VELOCITY_LOOP = 3;
 const uint8_t FOC_CYCLES_PER_POSITION_LOOP = 12;
 
+const uint8_t VELOCITY_MOVING_AVERAGE_SIZE = 2;
+const float VELOCITY_CUTOFF_FREQUENCY = (PWM_FREQUENCY) / 64;
+const float VELOCITY_SAMPLING_PERIOD = 1.0f / PWM_FREQUENCY;
+const float VELOCITY_LOWPASS_ALPHA =
+    (2.0f * M_PI * VELOCITY_SAMPLING_PERIOD * VELOCITY_CUTOFF_FREQUENCY) /
+    (2.0f * M_PI * VELOCITY_SAMPLING_PERIOD * VELOCITY_CUTOFF_FREQUENCY + 1);
+const float VELOCITY_ABG_ALPHA = 0.1;
+const float VELOCITY_ABG_BETA =
+    VELOCITY_ABG_ALPHA * VELOCITY_ABG_ALPHA / (2.0f - VELOCITY_ABG_ALPHA);
+const float VELOCITY_ABG_GAMMA =
+    VELOCITY_ABG_BETA * VELOCITY_ABG_BETA / (2.0f * VELOCITY_ABG_ALPHA);
+
 const float ENCODER_RADIANS_PER_PULSE = (2.0f * M_PI) / ENCODER_RESOLUTION;
 
-const float ZERO_ENCODER_VOLTAGE = 1.0f;
+const float ZERO_ENCODER_SWEEP_VOLTAGE = 12.0f;
+const float ZERO_ENCODER_HOLD_VOLTAGE = 12.0f;
 const float ZERO_ENCODER_MIN_RPM = 0.1;
+const float ZERO_ENCODER_SWEEP_STEPS = 100;
 const float ZERO_ENCODER_CRASH_REVERSE_THETA_INCREMENT = M_PI / 180.0f;
 const uint32_t ZERO_ENCODER_MAX_TICKS_PER_PULSE =
     1.0f / ((ZERO_ENCODER_MIN_RPM / (60.0f * 1000.0f)) * ENCODER_RESOLUTION);
+const float ZERO_ENCODER_SWEEP_INCREMENT =
+    (2.0f * M_PI) / ZERO_ENCODER_SWEEP_STEPS;
 
 // linear parameters
 // NOTE : comment this out to not use linear motion
@@ -46,12 +64,12 @@ const uint32_t ZERO_ENCODER_MAX_TICKS_PER_PULSE =
 // current is PI
 // direct-axis current (magnetic flux)
 const float CURRENT_D_KP = 1;
-const float CURRENT_D_KI = 0.1;
+const float CURRENT_D_KI = 1;
 // quadrature-axis current (torque generating)
 const float CURRENT_Q_KP = 1;
-const float CURRENT_Q_KI = 0.1;
+const float CURRENT_Q_KI = 1;
 // velocity is PI/PID
-const float VELOCITY_KP = 1;
+const float VELOCITY_KP = 0.2;
 const float VELOCITY_KI = 0;
 const float VELOCITY_KD = 0;
 // position is P/PI/PID

@@ -6,7 +6,7 @@ namespace uart {
 
 void init(uint32_t baud_rate);
 
-void transmit(uint8_t* data, uint16_t len);
+void transmit(uint16_t identifier, uint8_t* data, uint16_t len);
 bool can_transmit(void);
 
 // used in core_interrupts.cpp

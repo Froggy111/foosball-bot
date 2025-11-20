@@ -58,6 +58,8 @@ PRIVATE
     ${CUSTOM_LIBS}
 )
 
+stm32_add_linker_script(${TARGET_NAME} PUBLIC ${CMAKE_CURRENT_LIST_DIR}/linker_scripts/${MCU_SUBSERIES}.ld)
+
 target_print_size(${TARGET_NAME})
 
 stm32_generate_binary_file(${TARGET_NAME})

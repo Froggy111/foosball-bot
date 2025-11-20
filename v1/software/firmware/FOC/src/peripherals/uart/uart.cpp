@@ -2,6 +2,8 @@
 
 #include <stm32g4xx_hal.h>
 
+#include <cstring>
+
 #include "config.hpp"
 #include "debug.hpp"
 #include "error.hpp"
@@ -11,6 +13,7 @@ static DMA_HandleTypeDef tx_dma_handle;
 static DMA_HandleTypeDef rx_dma_handle;
 
 static volatile bool transmission_completed = true;
+static volatile uint8_t tx_buffer[UART_BUFFER_SIZE] = {0};
 
 void uart::init(uint32_t baud_rate) {
     // ADC12 peripheral clock source
@@ -94,26 +97,38 @@ void uart::init(uint32_t baud_rate) {
     // initialise interrupts
     // lowest priority used so far
     if (UART_TX_DMA_INSTANCE == DMA1_Channel3) {
-        HAL_NVIC_SetPriority(DMA1_Channel3_IRQn, 2, 0);
+        HAL_NVIC_SetPriority(DMA1_Channel3_IRQn, 3, 0);
         HAL_NVIC_EnableIRQ(DMA1_Channel3_IRQn);
     }
     if (UART_RX_DMA_INSTANCE == DMA1_Channel4) {
-        HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 2, 0);
+        HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 3, 0);
         HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
     }
     if (UART_INSTANCE == USART1) {
-        HAL_NVIC_SetPriority(USART1_IRQn, 2, 0);
+        HAL_NVIC_SetPriority(USART1_IRQn, 3, 0);
         HAL_NVIC_EnableIRQ(USART1_IRQn);
     }
     return;
 }
 
-void uart::transmit(uint8_t *data, uint16_t len) {
+void uart::transmit(uint16_t identifier, uint8_t* data, uint16_t len) {
     if (transmission_completed) {
-        transmission_completed = false;
-        HAL_UART_Transmit_DMA(&uart_handle, data, len);
+        transmission_completed = true;
+        memcpy((void*)&tx_buffer[0], &identifier, sizeof(identifier));
+        memcpy((void*)&tx_buffer[sizeof(identifier)], &len, sizeof(len));
+        memcpy((void*)&tx_buffer[sizeof(identifier) + sizeof(len)], data, len);
+        uint8_t checksum = 0;
+        for (uint16_t i = sizeof(identifier) + sizeof(len);
+             i < sizeof(identifier) + sizeof(len) + len; i++) {
+            checksum += tx_buffer[i];
+        }
+        // checksum = -checksum;
+        tx_buffer[sizeof(identifier) + sizeof(len) + len] = checksum;
+
+        HAL_UART_Transmit_DMA(
+            &uart_handle, (uint8_t*)tx_buffer,
+            sizeof(identifier) + sizeof(len) + len + sizeof(checksum));
     }
-    return;
 }
 
 bool uart::can_transmit(void) { return transmission_completed; }

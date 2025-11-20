@@ -4,6 +4,8 @@
 
 #include "gpio.hpp"
 
+#define UART_BUFFER_SIZE 256
+
 const gpio::PinConfig UART_TX = {GPIOB, gpio::Pin::PIN6, gpio::AF::AF7_USART1};
 const gpio::PinConfig UART_RX = {GPIOB, gpio::Pin::PIN7, gpio::AF::AF7_USART1};
 

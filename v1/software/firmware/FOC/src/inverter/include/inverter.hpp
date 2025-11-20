@@ -3,12 +3,17 @@
 namespace inverter {
 
 enum class TargetSector : uint8_t {
-    U_UV = 0,
-    UV_V = 1,
-    V_VW = 2,
-    VW_W = 3,
-    W_WU = 4,
-    WU_U = 5,
+    U = 0,
+    UV = 1,
+    V = 2,
+    VW = 3,
+    W = 4,
+    WU = 5,
+};
+
+struct SVPWMData {
+    TargetSector sector = TargetSector::U;
+    float U_on_time = 0, V_on_time = 0, W_on_time = 0;
 };
 
 /**
@@ -33,10 +38,6 @@ void reverse_direction(void);
  */
 void set(float u, float v, float w);
 
-struct SVPWMDuty {
-    volatile float u = 0, v = 0, w = 0;
-};
-
 /**
  * @brief Set SVPWM angle and duty cycle
  * @param theta: angle of target voltage vector
@@ -45,10 +46,10 @@ struct SVPWMDuty {
  * @param V_q: magnitude of target voltage q vector (line-to-line) (torque)
  * @param V_dc: inverter DC bus voltage
  */
-TargetSector svpwm_set(float theta, float V_d, float V_q, float V_dc);
+SVPWMData svpwm_set(float theta, float V_d, float V_q, float V_dc);
 // same function but taking in sin and cos theta instead
-TargetSector svpwm_set(float sin_theta, float cos_theta, float V_d, float V_q,
-                       float V_dc);
+SVPWMData svpwm_set(float sin_theta, float cos_theta, float V_d, float V_q,
+                    float V_dc);
 
 void timer_irq(void);
 }  // namespace inverter

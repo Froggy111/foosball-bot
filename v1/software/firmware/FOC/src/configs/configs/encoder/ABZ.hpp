@@ -6,7 +6,7 @@
 
 // NOTE : uncomment to use encoder Z channel (currently very noisy from motor
 // NOTE : power phase wires, due to level shifter)
-#define USE_ENCODER_Z
+// #define USE_ENCODER_Z
 
 const int64_t ENCODER_POLARITY = -1;
 

@@ -27,6 +27,8 @@ int main(void) {
     HAL_Init();
     // SystemInit();
     clock::init();
+    __HAL_FLASH_DATA_CACHE_DISABLE();
+    __HAL_FLASH_DATA_CACHE_RESET();
 
     BaseType_t task_creation_status =
         xTaskCreate(main_task, "main task", 1024, NULL, 1, NULL);
@@ -42,8 +44,7 @@ void main_task([[maybe_unused]] void *args) {
     gpio::init(LED, gpio::Mode::OUTPUT_PP_, gpio::Pull::NOPULL,
                gpio::Speed::LOW);
     gpio::write(LED, 1);
-    // swo::init();
-    // vTaskDelay(pdMS_TO_TICKS(1000));
+    // swo::init(); vTaskDelay(pdMS_TO_TICKS(1000));
     // inverter::init(20000);
     // inverter::set(0, 0, 0);
     // encoder::init();
@@ -56,20 +57,15 @@ void main_task([[maybe_unused]] void *args) {
 
     FOC::init(params);
     debug::log("FOC initialisation complete");
-    FOC::PIDParams PID_params = {
-        CURRENT_D_KP, CURRENT_D_KI, CURRENT_Q_KP, CURRENT_Q_KI, VELOCITY_KP,
-        VELOCITY_KI,  VELOCITY_KD,  POSITION_KP,  POSITION_KI,  POSITION_KD};
+    FOC::PIDParams PID_params = {1.0f, 1.0f, 1.0f, 1.0f, 0.1f,
+                                 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
     FOC::set_PID(PID_params);
-    FOC::set_max_current(1.0f);
-    FOC::set_max_torque(0.5f);
-    FOC::set_max_angular_velocity(10.0f);
+    FOC::set_max_current(10.0f);
+    FOC::set_max_torque(2.0f);
     FOC::set_max_angular_acceleration(100.0f);
     FOC::set_angular_jerk(1000.0f);
     FOC::enable();
-
-    uart::init(921600);
-    debug::log("UART initialisation complete");
-    uint8_t msg[] = "uart test\n\r";
+    FOC::enable_tuning_mode();
 
     vTaskDelay(pdMS_TO_TICKS(100));
 
@@ -79,8 +75,8 @@ void main_task([[maybe_unused]] void *args) {
         //            FOC::get_I_d(), FOC::get_I_q());
         // debug::log("V_d: %f, V_q: %f", FOC::get_V_d_target(),
         //            FOC::get_V_q_target());
-        FOC::set_angular_velocity(10.0f);
-        // FOC::set_torque(0.2f);
+        // FOC::set_angular_velocity(10.0f);
+        FOC::set_angular_velocity(-5.0f);
         // NOTE : debug test
         // debug::log("Hello World!");
 

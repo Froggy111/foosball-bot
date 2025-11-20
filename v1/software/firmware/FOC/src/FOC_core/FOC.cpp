@@ -15,12 +15,16 @@
 
 #include "PID.hpp"
 #include "adc.hpp"
+#include "alpha_beta_gamma_filter.hpp"
 #include "config.hpp"
 #include "cordic.hpp"
 #include "debug.hpp"
 #include "encoder.hpp"
 #include "endstop.hpp"
 #include "inverter.hpp"
+#include "lowpass_filter.hpp"
+#include "moving_average.hpp"
+#include "uart.hpp"
 
 gpio::PinConfig DEBUG1 = {GPIOA, gpio::Pin::PIN2, gpio::AF::NONE};
 gpio::PinConfig DEBUG2 = {GPIOA, gpio::Pin::PIN1, gpio::AF::NONE};
@@ -35,6 +39,12 @@ FOC::PID I_q_PID(CURRENT_Q_KP, CURRENT_Q_KI, 0, 1.0f);
 FOC::PID velocity_PID(VELOCITY_KP, VELOCITY_KI, VELOCITY_KD, 1.0f);
 FOC::PID position_PID(POSITION_KP, POSITION_KI, POSITION_KD, 1.0f);
 
+FOC::LowPassFilter velocity_lowpass_filter(VELOCITY_LOWPASS_ALPHA);
+FOC::MovingAverage<float, VELOCITY_MOVING_AVERAGE_SIZE> velocity_moving_average;
+FOC::AlphaBetaGammaFilter abg_filter(VELOCITY_ABG_ALPHA, VELOCITY_ABG_BETA,
+                                     VELOCITY_ABG_GAMMA,
+                                     VELOCITY_SAMPLING_PERIOD);
+
 // CONTROL SETTINGS
 volatile static float position_target = 0;
 volatile static float velocity_target = 0;
@@ -42,6 +52,7 @@ volatile static float torque_target = 0;
 enum class TargetMode { position, velocity, torque };
 volatile static TargetMode target_mode = TargetMode::torque;
 volatile static bool run_IRQ = false;
+volatile static bool tuning_mode = false;
 
 volatile static float current_limit = 0;
 volatile static float torque_limit = 0;
@@ -57,12 +68,18 @@ volatile static float U_current = 0;
 volatile static float V_current = 0;
 volatile static float W_current = 0;
 volatile static float VMOT_voltage = 0;
-volatile static inverter::TargetSector sector = inverter::TargetSector::UV_V;
+volatile static inverter::TargetSector sector = inverter::TargetSector::U;
+volatile static float U_on_time = 0;
+volatile static float V_on_time = 0;
+volatile static float W_on_time = 0;
 
 // VELOCITY CALCULATION
+volatile static float velocity = 0;
 volatile static uint32_t actual_pwm_frequency = 0;
 volatile static float time_between_velocity_cycles = 0;
+volatile static uint32_t cycles_between_last_position_change = 1;
 volatile static float velocity_multiplier = 0;
+volatile static float angular_position = 0;
 volatile static float past_angular_position = 0;
 
 // PID frequency corrections
@@ -90,6 +107,21 @@ void zero_position(void);
 void endstop_irq(endstop::Endstop endstop, endstop::State state, void* args);
 #endif
 
+struct TuningData {
+    // int64_t encoder_count = 0;
+    // int32_t encoder_timer_count = 0;
+    // int64_t rollover_count = 0;
+    float torque_target = 0;
+    float velocity_target = 0, velocity = 0;
+    float position_target = 0, position = 0, angular_position = 0;
+    float I_d_target = 0, I_d = 0;
+    float I_q_target = 0, I_q = 0;
+    float U_current = 0, V_current = 0, W_current = 0;
+    float VMOT_voltage = 0;
+} __attribute__((packed));
+volatile static TuningData tuning_data;
+void tuning_task(void* args);
+
 void FOC::init(Parameters parameters) {
     coil_resistance = parameters.coil_resistance;
     speed_constant = parameters.speed_constant;
@@ -102,6 +134,9 @@ void FOC::init(Parameters parameters) {
     gpio::write(DEBUG1, 1);
     gpio::write(DEBUG2, 1);
 
+    BaseType_t task_creation_status =
+        xTaskCreate(tuning_task, "tuning task", 256, NULL, 16, NULL);
+
     debug::debug("FOC: initialising CORDIC");
     cordic::init();
     debug::debug("FOC: initialising ADC");
@@ -110,14 +145,16 @@ void FOC::init(Parameters parameters) {
     encoder::init();
     debug::debug("FOC: initialised encoder, initialising inverter");
     actual_pwm_frequency = inverter::init(PWM_FREQUENCY);
-    debug::debug("FOC: initialised inverter");
+    debug::debug("FOC: initialised inverter, initialising UART");
+    uart::init(921600);
+    debug::debug("FOC: initialised UART");
     current_cycle_frequency = (float)actual_pwm_frequency;
     velocity_cycle_frequency =
         (float)actual_pwm_frequency / (float)FOC_CYCLES_PER_VELOCITY_LOOP;
     position_cycle_frequency =
         (float)actual_pwm_frequency / (float)FOC_CYCLES_PER_POSITION_LOOP;
     time_between_velocity_cycles = (1.0f / velocity_cycle_frequency);
-    velocity_multiplier = 1 / time_between_velocity_cycles;
+    velocity_multiplier = current_cycle_frequency;
 
     // PID frequency correction
     I_q_PID.set_params(CURRENT_Q_KP, CURRENT_Q_KI, 0.0f,
@@ -151,7 +188,9 @@ void FOC::init(Parameters parameters) {
     zero_position();
 #endif
 
-    past_angular_position = get_angular_position();
+    angular_position = get_angular_position();
+    past_angular_position = angular_position;
+    abg_filter.reset(angular_position);
     return;
 }
 
@@ -176,7 +215,17 @@ void FOC::set_PID(PIDParams pid_parameters) {
 
 void zero_encoder(void) {
     encoder_position = encoder::get_count();
-    inverter::svpwm_set(0.0f, ZERO_ENCODER_VOLTAGE, 0.0f, VMOT_voltage);
+
+    float sweep_theta = 0.0f;
+
+    // TODO : implement endstop crash check
+    for (int i = 0; i <= ZERO_ENCODER_SWEEP_STEPS; i++) {
+        inverter::svpwm_set(sweep_theta, ZERO_ENCODER_SWEEP_VOLTAGE, 0.0f,
+                            VMOT_voltage);
+        sweep_theta += ZERO_ENCODER_SWEEP_INCREMENT;
+        vTaskDelay(pdMS_TO_TICKS(1));
+    }
+    inverter::svpwm_set(0.0f, ZERO_ENCODER_HOLD_VOLTAGE, 0.0f, VMOT_voltage);
 
     // keep checking if it has either:
     // 1. hit an endstop
@@ -196,7 +245,7 @@ void zero_encoder(void) {
                 float current_theta = -(M_PI / 2.0f);
                 while (current_theta > -(3.0f / 2.0f) * M_PI) {
                     inverter::svpwm_set(current_theta, 0.0f,
-                                        ZERO_ENCODER_VOLTAGE, voltage);
+                                        ZERO_ENCODER_VOLTAGE, VMOT_voltage);
                     current_theta -= ZERO_ENCODER_CRASH_REVERSE_THETA_INCREMENT;
                     vTaskDelay(pdMS_TO_TICKS(1));
                 }
@@ -204,9 +253,9 @@ void zero_encoder(void) {
                 // crashed into the start, go forward by one set (i.e go until
                 // theta > (3/2)PI)
                 float current_theta = M_PI / 2.0f;
-                while (current_theta < (3.0f / 2.0f) * M_PI) {
+                while (curre12t_theta < (3.0f / 2.0f) * M_PI) {
                     inverter::svpwm_set(current_theta, 0.0f,
-                                        ZERO_ENCODER_VOLTAGE, voltage);
+                                        ZERO_ENCODER_VOLTAGE, VMOT_voltage);
                     current_theta += ZERO_ENCODER_CRASH_REVERSE_THETA_INCREMENT;
                     vTaskDelay(pdMS_TO_TICKS(1));
                 }
@@ -287,7 +336,7 @@ void FOC::handler(void) {
     // NOTE: t=6us
     gpio::write(DEBUG1, 0);
 
-    float angular_position = get_angular_position();
+    angular_position = get_angular_position();
     float electrical_angle =
         std::fmod((angular_position * NUM_WINDING_SETS), 2 * M_PI);
     if (electrical_angle < 0.0f) {
@@ -297,12 +346,25 @@ void FOC::handler(void) {
     // NOTE: t=14us
     gpio::write(DEBUG2, 0);
 
+    // calculate velocity with lowpass filter
+    float velocity_tmp =
+        (angular_position - past_angular_position) * velocity_multiplier;
+    velocity = velocity_tmp;
+    // // velocity = velocity_lowpass_filter.process(velocity_tmp);
+    // velocity_moving_average.add(velocity_tmp);
+    // velocity = velocity_moving_average.get();
+
+    // abg_filter.update(angular_position);
+    // float velocity_tmp = abg_filter.get_velocity();
+    // velocity_moving_average.add(velocity_tmp);
+    // velocity = velocity_moving_average.get();
+
     // run position control (only if in position mode)
     if (handler_counter % FOC_CYCLES_PER_POSITION_LOOP == 0 &&
         target_mode == TargetMode::position) {
         // run position control
         position_PID.set(position_target);
-        position_PID.update(angular_position);
+        position_PID.update(abg_filter.get_position());
         velocity_target = position_PID.get();
         if (velocity_target > velocity_limit) {
             velocity_target = velocity_limit;
@@ -314,7 +376,7 @@ void FOC::handler(void) {
     // NOTE: t=14us
     gpio::write(DEBUG2, 1);
 
-    // run velocity control (only if not in torque mode)
+    // run velocity control (only if in velocity or position mode)
     if (handler_counter % FOC_CYCLES_PER_VELOCITY_LOOP == 0 &&
         (target_mode == TargetMode::velocity ||
          target_mode == TargetMode::position)) {
@@ -349,8 +411,6 @@ void FOC::handler(void) {
             ramped_velocity_target = velocity_target;
         }
         // run velocity control
-        float velocity =
-            (angular_position - past_angular_position) * velocity_multiplier;
         velocity_PID.set(ramped_velocity_target);
         velocity_PID.update(velocity);
         torque_target = velocity_PID.get();
@@ -359,8 +419,8 @@ void FOC::handler(void) {
         } else if (torque_target < -torque_limit) {
             torque_target = -torque_limit;
         }
-        past_angular_position = angular_position;
     }
+    past_angular_position = angular_position;
 
     // NOTE: t=16us
     gpio::write(DEBUG2, 0);
@@ -384,24 +444,57 @@ void FOC::handler(void) {
     gpio::write(DEBUG2, 1);
 
     adc::Values readings = adc::read();
-    U_current = readings.current_U;
-    V_current = readings.current_V;
-    W_current = readings.current_W;
+    U_current = -readings.current_U;
+    V_current = -readings.current_V;
+    W_current = -readings.current_W;
     VMOT_voltage = readings.voltage_VMOT;
 
+    // ISSUE : I screwed up and the sensors only sense negative current
+    // ISSUE : As a workaround, positive values are interpolated
     // figure out which 2 current measurements to trust
+    float divisor = 0;
     switch (sector) {
-        case inverter::TargetSector::U_UV:
-        case inverter::TargetSector::WU_U:
+        case inverter::TargetSector::U:
+            // current going into coil U, exiting V and W
             U_current = -(V_current + W_current);
             break;
-        case inverter::TargetSector::V_VW:
-        case inverter::TargetSector::UV_V:
+        case inverter::TargetSector::UV:
+            // current going into coils U and V, exiting W
+            divisor = U_on_time + V_on_time;
+            if (divisor == 0) {
+                U_current = 0, V_current = 0;
+                break;
+            }
+            U_current = (-W_current) * (U_on_time / divisor);
+            V_current = (-W_current) * (V_on_time / divisor);
+            break;
+        case inverter::TargetSector::V:
+            // current going into coil V, exiting U and W
             V_current = -(U_current + W_current);
             break;
-        case inverter::TargetSector::W_WU:
-        case inverter::TargetSector::VW_W:
+        case inverter::TargetSector::VW:
+            // current going into coils V and W, exiting U
+            divisor = V_on_time + W_on_time;
+            if (divisor == 0) {
+                V_current = 0, W_current = 0;
+                break;
+            }
+            V_current = (-U_current) * (V_on_time / divisor);
+            W_current = (-U_current) * (W_on_time / divisor);
+            break;
+        case inverter::TargetSector::W:
+            // current going into coil W, exiting U and V
             W_current = -(U_current + V_current);
+            break;
+        case inverter::TargetSector::WU:
+            // current going into coils U and W, exiting V
+            divisor = U_on_time + W_on_time;
+            if (divisor == 0) {
+                U_current = 0, W_current = 0;
+                break;
+            }
+            U_current = (-V_current) * (U_on_time / divisor);
+            W_current = (-V_current) * (W_on_time / divisor);
             break;
     }
 
@@ -418,14 +511,18 @@ void FOC::handler(void) {
     I_q_PID.set(I_target);
     I_q_PID.update(I_q);
 
-    float V_limit = current_limit * COIL_RESISTANCE;
-    float V_d = I_d_PID.get() * COIL_RESISTANCE;
+    float V_limit =
+        current_limit * COIL_RESISTANCE + velocity * BACK_EMF_CONSTANT;
+    // float V_d = I_d_PID.get() * COIL_RESISTANCE;
+    float V_d = 0.0f * COIL_RESISTANCE;
     if (V_d > V_limit) {
         V_d = V_limit;
     } else if (V_d < -V_limit) {
         V_d = -V_limit;
     }
-    float V_q = I_q_PID.get() * COIL_RESISTANCE;
+    // float V_q = I_q_PID.get() * COIL_RESISTANCE + velocity *
+    // BACK_EMF_CONSTANT;
+    float V_q = I_target * COIL_RESISTANCE + velocity * BACK_EMF_CONSTANT;
     if (V_q > V_limit) {
         V_q = V_limit;
     } else if (V_q < -V_limit) {
@@ -435,7 +532,14 @@ void FOC::handler(void) {
     // NOTE: t=24us
     gpio::write(DEBUG2, 0);
 
-    sector = inverter::svpwm_set(sin_theta, cos_theta, V_d, V_q, VMOT_voltage);
+    // sector = inverter::svpwm_set(sin_theta, cos_theta, V_d, V_q,
+    // VMOT_voltage);
+    inverter::SVPWMData svpwm_data =
+        inverter::svpwm_set(sin_theta, cos_theta, V_d, -3.0f, VMOT_voltage);
+    sector = svpwm_data.sector;
+    U_on_time = svpwm_data.U_on_time;
+    V_on_time = svpwm_data.V_on_time;
+    W_on_time = svpwm_data.W_on_time;
 
     // NOTE: t=30us
     gpio::write(DEBUG2, 1);
@@ -450,6 +554,16 @@ void FOC::enable(void) {
 
 void FOC::disable(void) {
     run_IRQ = false;
+    return;
+}
+
+void FOC::enable_tuning_mode(void) {
+    tuning_mode = true;
+    return;
+}
+
+void FOC::disable_tuning_mode(void) {
+    tuning_mode = false;
     return;
 }
 
@@ -544,4 +658,31 @@ void FOC::set_parameters(Parameters parameters) {
     speed_constant = parameters.speed_constant;
     torque_constant = 1.0f / speed_constant;
     return;
+}
+
+void tuning_task([[maybe_unused]] void* args) {
+    for (;;) {
+        if (tuning_mode) {
+            tuning_data.torque_target = torque_target;
+            tuning_data.velocity_target = velocity_PID.get_target();
+            tuning_data.velocity = velocity;
+            tuning_data.position_target = position_PID.get_target();
+            tuning_data.position = position_PID.get_actual();
+            tuning_data.angular_position = angular_position;
+            tuning_data.I_d_target = I_d_PID.get_target();
+            tuning_data.I_d = I_d_PID.get_actual();
+            tuning_data.I_q_target = I_q_PID.get_target();
+            tuning_data.I_q = I_q_PID.get_actual();
+            tuning_data.U_current = U_current;
+            tuning_data.V_current = V_current;
+            tuning_data.W_current = W_current;
+            tuning_data.VMOT_voltage = VMOT_voltage;
+
+            // tuning_data.encoder_count = encoder_position;
+            // tuning_data.encoder_timer_count = encoder::get_timer_count();
+            // tuning_data.rollover_count = encoder::get_rollovers();
+            uart::transmit(0xFFFE, (uint8_t*)&tuning_data, sizeof(tuning_data));
+        }
+        vTaskDelay(pdMS_TO_TICKS(1));
+    }
 }

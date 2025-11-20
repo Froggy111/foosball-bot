@@ -3,7 +3,15 @@
 namespace FOC {
 
 PID::PID(float Kp, float Ki, float Kd, float frequency)
-    : Kp(Kp), Ki(Ki), Kd(Kd), frequency(frequency) {}
+    : Kp(Kp),
+      Ki(Ki),
+      Kd(Kd),
+      frequency(frequency),
+      curr_err(0.0f),
+      sum_err(0.0f),
+      past_err(0.0f),
+      target(0.0f),
+      actual(0.0f) {}
 
 void PID::update(float actual) {
     past_err = curr_err;

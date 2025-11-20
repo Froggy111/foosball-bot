@@ -37,6 +37,8 @@ void rollover_irq(void);
 
 uint32_t get_z_pulses(void);
 
+uint16_t get_timer_count(void);
+
 int64_t get_rollovers(void);
 
 int32_t get_delta(void);

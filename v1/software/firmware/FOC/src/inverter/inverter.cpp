@@ -85,14 +85,15 @@ const float SIN_LOOKUP[6] = {
 const uint8_t SECTOR_MAP[8] = {
     0, 1, 5, 0, 3, 2, 4, 0,
 };
+// const uint8_t SECTOR_MAP[8] = {0, 0, 2, 1, 4, 5, 3, 0};
 
-inverter::TargetSector inverter::svpwm_set(float theta, float V_d, float V_q,
-                                           float V_dc) {
+inverter::SVPWMData inverter::svpwm_set(float theta, float V_d, float V_q,
+                                        float V_dc) {
     return svpwm_set(std::sinf(theta), std::cosf(theta), V_d, V_q, V_dc);
 }
 
-inverter::TargetSector inverter::svpwm_set(float sin_theta, float cos_theta,
-                                           float V_d, float V_q, float V_dc) {
+inverter::SVPWMData inverter::svpwm_set(float sin_theta, float cos_theta,
+                                        float V_d, float V_q, float V_dc) {
     // inverse Park transformation
     float V_alpha = V_d * cos_theta - V_q * sin_theta;
     float V_beta = V_d * sin_theta + V_q * cos_theta;
@@ -147,48 +148,52 @@ inverter::TargetSector inverter::svpwm_set(float sin_theta, float cos_theta,
     TargetSector sector_enum = (TargetSector)sector;
 
     switch (sector_enum) {
-        case TargetSector::U_UV:
+        case TargetSector::U:
             duty_U = duty_zero + duty_1 + duty_2;
             duty_V = duty_zero + duty_2;
             duty_W = duty_zero;
-            debug::trace("Inverter SVPWM: Sector U_UV");
+            debug::trace("Inverter SVPWM: Sector U");
             break;
-        case TargetSector::UV_V:
+        case TargetSector::UV:
             duty_U = duty_zero + duty_1;
             duty_V = duty_zero + duty_1 + duty_2;
             duty_W = duty_zero;
-            debug::trace("Inverter SVPWM: Sector UV_V");
+            debug::trace("Inverter SVPWM: Sector UV");
             break;
-        case TargetSector::V_VW:
+        case TargetSector::V:
             duty_U = duty_zero;
             duty_V = duty_zero + duty_1 + duty_2;
             duty_W = duty_zero + duty_2;
-            debug::trace("Inverter SVPWM: Sector V_VW");
+            debug::trace("Inverter SVPWM: Sector V");
             break;
-        case TargetSector::VW_W:
+        case TargetSector::VW:
             duty_U = duty_zero;
             duty_V = duty_zero + duty_1;
             duty_W = duty_zero + duty_1 + duty_2;
-            debug::trace("Inverter SVPWM: Sector VW_W");
+            debug::trace("Inverter SVPWM: Sector VW");
             break;
-        case TargetSector::W_WU:
+        case TargetSector::W:
             duty_U = duty_zero + duty_2;
             duty_V = duty_zero;
             duty_W = duty_zero + duty_1 + duty_2;
-            debug::trace("Inverter SVPWM: Sector W_WU");
+            debug::trace("Inverter SVPWM: Sector W");
             break;
-        case TargetSector::WU_U:
+        case TargetSector::WU:
             duty_U = duty_zero + duty_1 + duty_2;
             duty_V = duty_zero;
             duty_W = duty_zero + duty_1;
-            debug::trace("Inverter SVPWM: Sector WU_U");
+            debug::trace("Inverter SVPWM: Sector WU");
             break;
     }
+    float U_on_time = duty_U - duty_zero, V_on_time = duty_V - duty_zero,
+          W_on_time = duty_W - duty_zero;
 
     debug::trace("duty_U: %f, duty_V: %f, duty_W: %f", duty_U, duty_V, duty_W);
     set(duty_U, duty_V, duty_W);
 
-    return sector_enum;
+    SVPWMData svpwm_data = {sector_enum, U_on_time, V_on_time, W_on_time};
+
+    return svpwm_data;
 }
 
 static PWMFreqParams timer_init(uint32_t pwm_freq) {
@@ -215,7 +220,7 @@ static PWMFreqParams timer_init(uint32_t pwm_freq) {
     PWMFreqParams freq_params =
         calculate_frequency_parameters(pwm_freq, clk_freq);
     timer.Init.Prescaler = freq_params.prescaler;
-    timer.Init.CounterMode = TIM_COUNTERMODE_CENTERALIGNED1;
+    timer.Init.CounterMode = TIM_COUNTERMODE_CENTERALIGNED2;
     timer.Init.Period = freq_params.period;
     timer.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
     timer.Init.RepetitionCounter =

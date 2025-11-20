@@ -21,9 +21,6 @@ ADC_HandleTypeDef* adc_instance_init(ADC_TypeDef* instance);
 
 uint16_t rank_idx_to_val(uint8_t rank_idx);
 
-void start_ADC_read(ADC_HandleTypeDef* handle, ADC_ChannelConfTypeDef* channel);
-uint32_t read_ADC(ADC_HandleTypeDef* handle, uint32_t timeout);
-
 enum class PGAGain : uint8_t {
     GAIN2 = 2,
     GAIN4 = 4,
@@ -49,9 +46,6 @@ PGAGain half_gain(PGAGain gain) {
 }
 
 void set_PGA(OPAMP_HandleTypeDef* handle, PGAGain gain);
-float read_PGA(OPAMP_HandleTypeDef* opamp, ADC_HandleTypeDef* adc,
-               ADC_ChannelConfTypeDef* channel, PGAGain* gain,
-               uint32_t timeout);
 
 static PGAGain U_phase_gain = PGAGain::GAIN2;
 static PGAGain V_phase_gain = PGAGain::GAIN2;
@@ -178,48 +172,60 @@ adc::Values adc::read(void) {
     values.voltage_5V =
         VSENSE_5V_raw_reading * ADC_VOLTAGE_MULTIPLIER * VSENSE_5V_MULTIPLIER;
 #endif
-    values.current_U = ISENSE_U_PHASE_raw_reading * ADC_VOLTAGE_MULTIPLIER /
-                       (uint8_t)U_phase_gain * ISENSE_CURRENT_PER_VOLT;
+    values.current_U = (((ISENSE_U_PHASE_raw_reading * ADC_VOLTAGE_MULTIPLIER) /
+                         (uint8_t)U_phase_gain) *
+                        ISENSE_CURRENT_PER_VOLT);
     if (direction_reversed) {
-        values.current_V = ISENSE_W_PHASE_raw_reading * ADC_VOLTAGE_MULTIPLIER /
-                           (uint8_t)W_phase_gain * ISENSE_CURRENT_PER_VOLT;
-        values.current_W = ISENSE_V_PHASE_raw_reading * ADC_VOLTAGE_MULTIPLIER /
-                           (uint8_t)V_phase_gain * ISENSE_CURRENT_PER_VOLT;
+        values.current_V =
+            (((ISENSE_W_PHASE_raw_reading * ADC_VOLTAGE_MULTIPLIER) /
+              (uint8_t)W_phase_gain) *
+             ISENSE_CURRENT_PER_VOLT);
+        values.current_W =
+            (((ISENSE_V_PHASE_raw_reading * ADC_VOLTAGE_MULTIPLIER) /
+              (uint8_t)V_phase_gain) *
+             ISENSE_CURRENT_PER_VOLT);
     } else {
-        values.current_V = ISENSE_V_PHASE_raw_reading * ADC_VOLTAGE_MULTIPLIER /
-                           (uint8_t)V_phase_gain * ISENSE_CURRENT_PER_VOLT;
-        values.current_W = ISENSE_W_PHASE_raw_reading * ADC_VOLTAGE_MULTIPLIER /
-                           (uint8_t)W_phase_gain * ISENSE_CURRENT_PER_VOLT;
+        values.current_V =
+            (((ISENSE_V_PHASE_raw_reading * ADC_VOLTAGE_MULTIPLIER) /
+              (uint8_t)V_phase_gain) *
+             ISENSE_CURRENT_PER_VOLT);
+        values.current_W =
+            (((ISENSE_W_PHASE_raw_reading * ADC_VOLTAGE_MULTIPLIER) /
+              (uint8_t)W_phase_gain) *
+             ISENSE_CURRENT_PER_VOLT);
     }
+    // values.current_U = (float)ISENSE_U_PHASE_raw_reading;
+    // values.current_V = (float)ISENSE_V_PHASE_raw_reading;
+    // values.current_W = (float)ISENSE_W_PHASE_raw_reading;
 
-    // adjust PGA gain if needed
-    if (ISENSE_U_PHASE_raw_reading > ISENSE_HALF_GAIN_THRESHOLD &&
-        U_phase_gain != PGAGain::GAIN2) {
-        U_phase_gain = half_gain(U_phase_gain);
-        set_PGA(&U_phase_opamp, U_phase_gain);
-    } else if (ISENSE_U_PHASE_raw_reading < ISENSE_DOUBLE_GAIN_THRESHOLD &&
-               U_phase_gain != PGAGain::GAIN64) {
-        U_phase_gain = double_gain(U_phase_gain);
-        set_PGA(&U_phase_opamp, U_phase_gain);
-    }
-    if (ISENSE_V_PHASE_raw_reading > ISENSE_HALF_GAIN_THRESHOLD &&
-        V_phase_gain != PGAGain::GAIN2) {
-        V_phase_gain = half_gain(V_phase_gain);
-        set_PGA(&V_phase_opamp, V_phase_gain);
-    } else if (ISENSE_V_PHASE_raw_reading < ISENSE_DOUBLE_GAIN_THRESHOLD &&
-               V_phase_gain != PGAGain::GAIN64) {
-        V_phase_gain = double_gain(V_phase_gain);
-        set_PGA(&V_phase_opamp, V_phase_gain);
-    }
-    if (ISENSE_W_PHASE_raw_reading > ISENSE_HALF_GAIN_THRESHOLD &&
-        W_phase_gain != PGAGain::GAIN2) {
-        W_phase_gain = half_gain(W_phase_gain);
-        set_PGA(&W_phase_opamp, W_phase_gain);
-    } else if (ISENSE_W_PHASE_raw_reading < ISENSE_DOUBLE_GAIN_THRESHOLD &&
-               W_phase_gain != PGAGain::GAIN64) {
-        W_phase_gain = double_gain(W_phase_gain);
-        set_PGA(&W_phase_opamp, W_phase_gain);
-    }
+    // // adjust PGA gain if needed
+    // if (ISENSE_U_PHASE_raw_reading > ISENSE_HALF_GAIN_THRESHOLD &&
+    //     U_phase_gain != PGAGain::GAIN2) {
+    //     U_phase_gain = half_gain(U_phase_gain);
+    //     set_PGA(&U_phase_opamp, U_phase_gain);
+    // } else if (ISENSE_U_PHASE_raw_reading < ISENSE_DOUBLE_GAIN_THRESHOLD &&
+    //            U_phase_gain != PGAGain::GAIN64) {
+    //     U_phase_gain = double_gain(U_phase_gain);
+    //     set_PGA(&U_phase_opamp, U_phase_gain);
+    // }
+    // if (ISENSE_V_PHASE_raw_reading > ISENSE_HALF_GAIN_THRESHOLD &&
+    //     V_phase_gain != PGAGain::GAIN2) {
+    //     V_phase_gain = half_gain(V_phase_gain);
+    //     set_PGA(&V_phase_opamp, V_phase_gain);
+    // } else if (ISENSE_V_PHASE_raw_reading < ISENSE_DOUBLE_GAIN_THRESHOLD &&
+    //            V_phase_gain != PGAGain::GAIN64) {
+    //     V_phase_gain = double_gain(V_phase_gain);
+    //     set_PGA(&V_phase_opamp, V_phase_gain);
+    // }
+    // if (ISENSE_W_PHASE_raw_reading > ISENSE_HALF_GAIN_THRESHOLD &&
+    //     W_phase_gain != PGAGain::GAIN2) {
+    //     W_phase_gain = half_gain(W_phase_gain);
+    //     set_PGA(&W_phase_opamp, W_phase_gain);
+    // } else if (ISENSE_W_PHASE_raw_reading < ISENSE_DOUBLE_GAIN_THRESHOLD &&
+    //            W_phase_gain != PGAGain::GAIN64) {
+    //     W_phase_gain = double_gain(W_phase_gain);
+    //     set_PGA(&W_phase_opamp, W_phase_gain);
+    // }
 
     return values;
 }
@@ -335,6 +341,8 @@ void adc_init(void) {
     channel_config.SingleDiff = ADC_SINGLE_ENDED;                             \
     channel_config.OffsetNumber = ADC_OFFSET_NONE;                            \
     channel_config.Offset = 0;                                                \
+    channel_config.OffsetSign = ADC_OFFSET_SIGN_POSITIVE;                     \
+    channel_config.OffsetSaturation = DISABLE;                                \
     if (HAL_ADC_ConfigChannel(peripheral_name##_ADC_data.handle,              \
                               &channel_config) != HAL_OK) {                   \
         debug::error("Failed to configure " #peripheral_name " ADC channel"); \

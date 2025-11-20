@@ -39,6 +39,8 @@ void set_PID(PIDParams pid_parameters);
 void handler(void);
 void enable(void);
 void disable(void);
+void enable_tuning_mode(void);
+void disable_tuning_mode(void);
 
 uint32_t get_handler_counter(void);
 float get_V_d_target(void);
